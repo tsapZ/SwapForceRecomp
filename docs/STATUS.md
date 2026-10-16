@@ -101,8 +101,9 @@ Updated at the end of every session. Only record what a build actually did.
   shader constants and vertex data of the video draw are identical for KB2f and KB2g. While green
   was visible, the Y plane bound as texture held the frame only in the left half of its rows: the
   decoder sometimes writes at half width. Green only appeared with the Bink 1 VV logo open at the
-  same time. Hypothesis: two concurrent Bink instances clobber each other's state (TLS/PCR
-  emulation or a shared global). Next steps are listed in #36.
+  same time. Confirmed: with `skip_intro=false` 20 of 50 sampled frames were green, with
+  `skip_intro=true` (logo cut to 1 frame) 1 of 52. Two concurrently decoding Bink movies clobber
+  each other's state (TLS/PCR emulation or a shared global). Next steps are listed in #36.
 - **Note:** after changing graphics settings, the first start rebuilds all pipelines from the shader
   cache (about 35 s of black screen with `resolution_scale=1`).
 - **Next:** #36 (diff the KB2f vs KB2g video draw call); frame rate above 30, 4K and ultrawide
