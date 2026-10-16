@@ -65,6 +65,13 @@ cmake --build --preset win-amd64-release
 The codegen step turns your `default.xex` into C++ on your machine; that code is never uploaded.
 Use the `debug` presets/recipes when chasing a crash, `release` for playing.
 
+Without a ROM, configuring still works (about 2 minutes, tested): CMake prints "No recompiled code
+yet" with the codegen steps and writes the build files. There is just no game code to compile until
+codegen has run.
+
+Keep the checkout path short. In a deep folder, CMake warns that FidelityFX object paths may exceed
+its 250-character limit.
+
 ## Everyday commands
 
 | Command | What it does |
