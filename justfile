@@ -14,8 +14,12 @@ set windows-shell := ["C:/Program Files/Git/usr/bin/sh.exe", "-cu"]
 
 # On Windows, `just` is a native program, so it always sees PATH in Windows form (';'-separated),
 # even when started from Git Bash; append in the same form, and sh.exe converts the whole value.
+# rexruntime.dll imports amd_fidelityfx_dx12.dll, which is not copied next to the codegen tool
+# (thirdparty/rexglue-sdk/out/win-amd64/rexglue.exe); without it on PATH, codegen exits 0xC0000135.
+ffx_dll_dirs := justfile_directory() + "\\out\\build\\win-amd64-release\\_deps\\fidelityfx-src\\PrebuiltSignedDLL;" + justfile_directory() + "\\out\\build\\win-amd64-debug\\_deps\\fidelityfx-src\\PrebuiltSignedDLL"
+
 export PATH := if os() == "windows" {
-    env_var('PATH') + ";C:\\Program Files\\Git\\usr\\bin;C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin"
+    env_var('PATH') + ";C:\\Program Files\\Git\\usr\\bin;C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin;" + ffx_dll_dirs
 } else {
     env_var('PATH')
 }
