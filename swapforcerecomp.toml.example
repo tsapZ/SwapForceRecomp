@@ -11,8 +11,9 @@ resolution = "1920x1080"                  # startup window size
 resolution_scale = 2                      # 1-8 supersample multiplier, 1 = off
 frame_rate_limit = 60                     # 0 = unlimited
 gpu_allow_invalid_fetch_constants = true  # works around a GPU quirk, on by default
-ultrawide_fov = true                      # widen camera FOV to match resolution's aspect ratio
-ultrawide_hud = true                      # lay out the HUD and menus for the real screen width
+# Not available yet: the ultrawide and intro-skip hooks are still Giants templates (Phase 4).
+# ultrawide_fov = true                      # widen camera FOV to match resolution's aspect ratio
+# ultrawide_hud = true                      # lay out the HUD and menus for the real screen width
 # vulkan_device = -1                      # GPU index for multi-GPU systems, -1 = auto-pick
 
 ["GPU"]
@@ -30,7 +31,7 @@ present_use_actual_aspect = true          # present the real rendered frame at '
 mnk_mode = true                           # enable keyboard/mouse controller emulation
 
 ["Game"]
-skip_intro = true                         # skip the Activision and Toys for Bob logo movies
+# skip_intro = true                         # skip the intro logo movies (hook not ported yet)
 
 ["Runtime"]
 # user_data_root = "C:\\path\\to\\folder" # empty = Documents\swapforcerecomp
