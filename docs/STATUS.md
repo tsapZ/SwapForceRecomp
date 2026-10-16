@@ -103,5 +103,7 @@ Updated at the end of every session. Only record what a build actually did.
   "KB2f videos are green" were this artifact. Closed; reopen if a real cutscene shows it.
 - **Note:** after changing graphics settings, the first start rebuilds all pipelines from the shader
   cache (about 35 s of black screen with `resolution_scale=1`).
+- **4K:** `--resolution=4k --resolution_scale=1` starts and holds the 30 FPS cap on the title screen
+  (same as the default settings). Not yet measured in a level.
 - **Next:** play further into the game and collect real bugs; frame rate above 30, 4K and
   ultrawide (Phase 4).
