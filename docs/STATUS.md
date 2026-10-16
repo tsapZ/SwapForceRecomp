@@ -81,5 +81,18 @@ Updated at the end of every session. Only record what a build actually did.
   `readback_resolve` (`fast`, `full`), `d3d12_readback_resolve` and `d3d12_readback_memexport` changed
   nothing. ROV is now set in `swapforcerecomp.toml.example` and the installer template. It costs
   performance (ROV emulates EDRAM in pixel shaders), and the first run recompiles all shaders.
-- **Next:** confirm ROV is picked up from the settings file without the command-line flag; measure
-  frame rate; the green right half of KB2f videos (#36); German language (`language = "german"`).
+- **Frame rate:** steady 30 FPS (33 ms) in the tutorial, the game's own cap (F3 debug overlay,
+  "Guest FPS"). Occasional hitches in fights while new shaders compile; the cache was fresh after the
+  switch to ROV.
+- **German works** (`--language=german`, or `language = "german"` under `["Game"]`).
+- **Real USB portal works with an old portal** (PS3 portal, USB `1430:0150`, ready reply
+  `52 01 3D`), tested with Hex. Two fixes in `skylanders-portal`, now pointed at the fork
+  `tsapZ/skylanders-portal`, branch `swapforce/old-portal-support`:
+  - Swap Force rejects old portal IDs ("Wrong Portal version"); the USB backend reports `52 02 1B`
+    for `52 01 xx`.
+  - The portal streams status frames faster than Swap Force polls (~10 Hz). Replies reached the game
+    seconds late (an `R` answered 6 s later), the game reset the portal every ~20 s and never read a
+    figure. `Read()` now drains the HID queue.
+  The game never sent `J` or `M` in the traces, so nothing is synthesized for those.
+- **Next:** green right half of KB2f videos (#36); intro skip in code instead of the local video
+  swap; frame rate above 30 (Phase 4).

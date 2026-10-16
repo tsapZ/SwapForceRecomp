@@ -3,4 +3,5 @@
 	url = https://github.com/TheBiemGamer/rexglue-sdk.git
 [submodule "thirdparty/skylanders-portal"]
 	path = thirdparty/skylanders-portal
-	url = https://github.com/TheBiemGamer/skylanders-portal.git
+	url = https://github.com/tsapZ/skylanders-portal.git
+	branch = swapforce/old-portal-support

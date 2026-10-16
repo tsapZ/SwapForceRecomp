@@ -24,6 +24,7 @@ anisotropic_override = 5                  # texture filtering: 5 = 16x, 3 = 4x, 
 mnk_mode = true                           # enable keyboard/mouse controller emulation
 
 ["Game"]
+# language = "english"                   # english, french, german, spanish, italian (EU disc: english, german)
 # skip_intro = true                         # skip the intro logo movies (hook not ported yet)
 
 ["Runtime"]
