@@ -43,7 +43,6 @@ the XEX loader into `logs/toolchain/` (gitignored); run it in Phase 1, not earli
 
 - `src/hooks/*.cpp`: disabled templates (`#if 0`), addresses belong to Giants.
 - `config/default.toml`: empty, filled in Phase 1.
-- `docs/game/default.xex.sha256`: all zeros until the real dump's hash is recorded (Phase 1).
 
 ## Status convention
 

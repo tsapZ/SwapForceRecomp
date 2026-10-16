@@ -39,8 +39,11 @@ for VS 2022** (Start menu). Elsewhere CMake does not find the compiler.
 **4. Put the game files in place.** `rom\default.xex` must exist, next to the rest of the disc:
 
 ```
-extract-xiso -x "path\to\Swap Force.iso" -d rom
+extract-xiso -d rom "path\to\Swap Force.iso"
 ```
+
+Options must come **before** the file name. A `-d` after it is ignored, and the disc lands in a new
+folder named after the ISO in the current directory, which `.gitignore` does not cover.
 
 An already extracted folder is copied as is. GOD containers (folders with hex names) are not
 supported directly. `rom/` is git-ignored.

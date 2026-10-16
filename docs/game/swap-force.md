@@ -14,18 +14,18 @@ checked. Facts marked *unverified* come from other sources and have not been mea
 
 | Property | Value | Source |
 |---|---|---|
-| Release | Europe (English/German), XGD2 | matches the size below; *region not yet checked against the XEX* |
+| Release | Europe (English/German), XGD2 | size matches; region flags below |
 | ISO size | 8,738,846,720 bytes | measured |
-| Disc content | 2,474 files, 8,448,047,409 bytes | `extract-xiso -l`, measured |
-| `default.xex` size | 18,563,072 bytes, in the disc root | `extract-xiso -l`, measured |
-| `default.xex` SHA-256 | not recorded yet | Phase 1 → `default.xex.sha256` |
-| Title ID, version | not recorded yet | Phase 1 |
+| Disc content | 2,474 files, 8,448,047,409 bytes | `extract-xiso`, measured |
+| `default.xex` size | 18,563,072 bytes, in the disc root | measured |
+| `default.xex` SHA-256 | `dc58d3851bbd89935e9ecf2ee84b158ec400f049da46c937a4713477a50c79d7` | measured, in `default.xex.sha256` |
+| Title ID | `415608E9` (media ID `236350A9`) | XEX execution info |
+| Version | `0.0.0.26` (base version the same), disc 1 of 1 | XEX execution info |
+| Region flags | `0x00FF0000`: all PAL regions | XEX security info |
 
 Only the `default.xex` from the disc is used. A title update from a console hard drive is a
-different executable with different addresses and is not supported.
-
-`default.xex.sha256` is an all-zero placeholder until Phase 1. Until then the startup check
-rejects every XEX, which is intended.
+different executable with different addresses and is not supported. The startup check accepts only
+this exact file.
 
 ## Differences from Giants that matter
 
@@ -51,7 +51,7 @@ useful as a list of stumbling blocks.
 
 | Question | How to check | Answer |
 |---|---|---|
-| Exact version and region of `default.xex` | XEX header (Phase 1) | |
+| Exact version and region of `default.xex` | XEX header | `0.0.0.26`, PAL, title `415608E9` |
 | Does the game import `XamInputNonControllerGetRaw/SetRaw` (1185/1186)? | Import table / Ghidra | |
 | Which functions wrap the portal read/write calls? | Ghidra, callers of the imports | |
 | Does the boot get past the first Bink 2 video? | First runs in Phase 1 | |
