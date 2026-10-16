@@ -10,3 +10,37 @@
 # never registered it. Found from the first codegen run: "UnresolvedCall ... target not in any
 # function". What the function does is not identified yet; no size given, the analyzer finds the end.
 0x82F60BD8 = {}
+
+# Jump tables the analyzer under-counted, so the generated switch trapped (__builtin_trap, host
+# exception 0xC000001D) on the missing indices. All four tables sit directly after their bctr;
+# entries were read from the image with Ghidra until the first word that is no longer a code
+# address next to the bctr. Candidates came from scanning generated/ for switches whose first case
+# label lies further behind the table than the emitted case count allows.
+
+# Bink 2 bit-stream decoder in sub_83094710. On this path the index is (bits & 3) + 7, i.e. 7..10,
+# with no bounds check, so codegen saw 4 entries. Found from the crash when a KB2f video plays
+# (Tutorial_B_Intro.bk2 after the first tutorial fight); the table ends where case 0's code begins.
+[[switch_tables]]
+address = 0x830947BC
+register = 10
+labels = [0x830947EC, 0x83094800, 0x83094850, 0x830948A0, 0x830948F0, 0x83094940, 0x83094988, 0x830949D8, 0x83094A28, 0x83094AA4, 0x83094B20]
+
+# Same decoder structure, detected with 8 entries; it has 11 (the same fix GiantsRecomp needs for
+# its Bink decoder, register 19 there too).
+[[switch_tables]]
+address = 0x83090868
+register = 19
+labels = [0x83090898, 0x830908C0, 0x83090AA8, 0x83090C90, 0x83090E78, 0x83091060, 0x83091248, 0x83091430, 0x83091618, 0x8309184C, 0x83091A80]
+
+# Same decoder structure, detected with 8 entries; it has 11.
+[[switch_tables]]
+address = 0x83093150
+register = 20
+labels = [0x83093180, 0x83093190, 0x8309331C, 0x830934A8, 0x83093634, 0x830937C0, 0x8309394C, 0x83093AD8, 0x83093C64, 0x83093E14, 0x83093FC4]
+
+# Bounds-checked switch (cmplwi cr6,r11,39 / bgt 0x8247A9F0, then mr r10,r11): 40 entries, codegen
+# emitted 8. Not yet identified what the function does; found by the scan, not by a crash.
+[[switch_tables]]
+address = 0x8247A658
+register = 10
+labels = [0x8247A890, 0x8247A6FC, 0x8247A710, 0x8247A724, 0x8247A7A0, 0x8247A7D4, 0x8247A808, 0x8247A81C, 0x8247A740, 0x8247A81C, 0x8247A950, 0x8247A950, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A9F0, 0x8247A89C, 0x8247A89C, 0x8247A89C, 0x8247A89C, 0x8247A89C, 0x8247A89C, 0x8247A89C, 0x8247A89C, 0x8247A89C]
