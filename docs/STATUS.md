@@ -42,5 +42,14 @@ Updated at the end of every session. Only record what a build actually did.
 - **Placeholders:** the hooks in `src/hooks/` are disabled Giants templates; `ultrawide_fov`,
   `ultrawide_hud` and `skip_intro` are commented out in the settings examples.
 - **Known bugs:** none recorded.
-- **Next:** press Start with a controller and see how far it gets; check whether the game calls
+- **Manual run with a controller (release):** title screen → save slot → new save → the intro movie
+  plays (cannot be skipped) → "Place your Skylander on the Portal of Power". Controller input works.
+  **No audio is heard**; the runtime opened the endpoint "LG ULTRAGEAR (AMD High Definition Audio
+  Device)", which may simply be a monitor without speakers. Four one-off XMA errors ("XmaContext N:
+  There are no bits to copy!") appear at that point. Not yet clear whether this is a device issue or
+  an audio bug.
+- **Portal path confirmed:** with `portal_mode = software` the game asks to place a Skylander instead
+  of "can't find the Portal of Power", so the emulated portal answers through the XAM handler, as in
+  Giants. No game hook is needed for the portal.
+- **Next (old):** press Start with a controller and see how far it gets; check whether the game calls
   XAM ordinals 1185/1186 (portal); set up the Ghidra tooling for the first real crash.
