@@ -16,7 +16,9 @@ is implemented yet.
 - **Game speed, first test:** in the tutorial the level runs at about 56-60 FPS with interval 1,
   and holding forward for 1.5 s moves the character the same distance as at 30 FPS. Player movement
   uses real elapsed time. Not yet checked: attacks, enemies, particles, physics objects, timers,
-  cutscene sync. Several systems use fixed 1/30 timesteps (table below), so some may still run fast.
+  cutscene sync. A call-rate check of the functions in the table below (tutorial, 30 vs 60 FPS):
+  only `sub_82BCC438` runs every frame, and it converts an integer counter to seconds (`x * 1/60`)
+  rather than stepping by a fixed 1/60; the six 1/30 functions are not called in that scene.
 - **Above 60 FPS:** `--video_mode_refresh_rate=120` does not speed up the vblank pacing (30 FPS with
   interval 2), and together with interval 1 and `--vsync=false` it dropped to 31.8 FPS. Getting past
   60 needs work on the vblank/swap timing (the swap code also uses the refresh rate for its late-frame
