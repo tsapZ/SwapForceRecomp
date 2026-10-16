@@ -96,15 +96,12 @@ Updated at the end of every session. Only record what a build actually did.
     seconds late (an `R` answered 6 s later), the game reset the portal every ~20 s and never read a
     figure. `Read()` now drains the HID queue.
   The game never sent `J` or `M` in the traces, so nothing is synthesized for those.
-- **Green right half of KB2f videos (#36), not fixed, much narrowed:** the screen's left half shows
-  the whole frame squeezed by 2 and the right half is zero texels. Shaders, texture fetch constants,
-  shader constants and vertex data of the video draw are identical for KB2f and KB2g. While green
-  was visible, the Y plane bound as texture held the frame only in the left half of its rows: the
-  decoder sometimes writes at half width. Green only appeared with the Bink 1 VV logo open at the
-  same time. Confirmed: with `skip_intro=false` 20 of 50 sampled frames were green, with
-  `skip_intro=true` (logo cut to 1 frame) 1 of 52. Two concurrently decoding Bink movies clobber
-  each other's state (TLS/PCR emulation or a shared global). Next steps are listed in #36.
+- **Green video half (#36) does not affect the game.** Screen timelines show KB2f and KB2g movies
+  render correctly, alone and back to back; a normal boot (both logos, Bink 1) has no green either.
+  Only a Bink 1 movie playing right after a KB2f movie shows a green right half, which happened only
+  in my test setup (KB2f video in the boot-logo slot, followed by the VV logo). Earlier notes saying
+  "KB2f videos are green" were this artifact. Closed; reopen if a real cutscene shows it.
 - **Note:** after changing graphics settings, the first start rebuilds all pipelines from the shader
   cache (about 35 s of black screen with `resolution_scale=1`).
-- **Next:** #36 (diff the KB2f vs KB2g video draw call); frame rate above 30, 4K and ultrawide
-  (Phase 4).
+- **Next:** play further into the game and collect real bugs; frame rate above 30, 4K and
+  ultrawide (Phase 4).
