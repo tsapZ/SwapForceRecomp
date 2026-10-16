@@ -105,5 +105,8 @@ Updated at the end of every session. Only record what a build actually did.
   cache (about 35 s of black screen with `resolution_scale=1`).
 - **4K:** `--resolution=4k --resolution_scale=1` starts and holds the 30 FPS cap on the title screen
   (same as the default settings). Not yet measured in a level.
+- **30 FPS cap is game-side:** `--video_mode_refresh_rate=120 --frame_rate_limit=0` still gives
+  30.0 FPS, so the game does not count vblanks but paces itself (likely timer-based). 60 FPS needs
+  the game's frame limiter found in code, and a check that game logic does not speed up.
 - **Next:** play further into the game and collect real bugs; frame rate above 30, 4K and
   ultrawide (Phase 4).
