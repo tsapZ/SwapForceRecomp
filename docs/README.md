@@ -13,6 +13,7 @@ This folder is the project wiki. Pages, roughly in reading order:
 | [reverse-engineering.md](reverse-engineering.md) | Headless Ghidra: identify and name functions |
 | [portal.md](portal.md) | Portal of Power: protocol, figures, swappers, overlay |
 | [releasing.md](releasing.md) | Packaging the installer and publishing a release |
+| [high-framerate.md](high-framerate.md) | Research: unlocking 60/120/144 FPS without breaking game speed |
 
 Most of the tooling and several of these pages are adapted from
 [GiantsRecomp](https://github.com/TheBiemGamer/GiantsRecomp). Anything that was measured on
