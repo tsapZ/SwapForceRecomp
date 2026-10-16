@@ -1,0 +1,29 @@
+# Copy next to swapforcerecompiled.exe, rename to "swapforcerecomp.toml". Full docs in README.md.
+# The in-game Settings overlay (F4) reads and writes this same file.
+
+["Portal"]
+portal_mode = "__PORTAL_MODE__"           # "software", "usb" (real portal), or "none"
+portal_figures_dir = ""                   # empty = "figures" next to your saves
+# portal_figure = "C:\\path\\to\\Skylander.dump"  # loads this dump onto the portal at startup
+
+["Graphics"]
+resolution = "__RESOLUTION__"             # startup window size
+resolution_scale = __RESOLUTION_SCALE__   # 1-8 supersample multiplier, 1 = off
+frame_rate_limit = 60                     # 0 = unlimited
+gpu_allow_invalid_fetch_constants = true  # works around a GPU quirk, on by default
+# vulkan_device = -1                      # GPU index for multi-GPU systems, -1 = auto-pick
+
+["GPU"]
+anisotropic_override = 5                  # texture filtering: 5 = 16x, 3 = 4x, 0 = off
+
+["UI"]
+# ui_scale = 1.5                          # ImGui overlay font/widget scale
+
+["Input"]
+mnk_mode = true                           # enable keyboard/mouse controller emulation
+
+["Game"]
+skip_intro = true                         # skip the Activision and Toys for Bob logo movies
+
+["Runtime"]
+# user_data_root = "C:\\path\\to\\folder" # empty = Documents\swapforcerecomp
