@@ -52,8 +52,9 @@ useful as a list of stumbling blocks.
 | Question | How to check | Answer |
 |---|---|---|
 | Exact version and region of `default.xex` | XEX header | `0.0.0.26`, PAL, title `415608E9` |
-| Does the game import `XamInputNonControllerGetRaw/SetRaw` (1185/1186)? | Import table / Ghidra | |
-| Which functions wrap the portal read/write calls? | Ghidra, callers of the imports | |
-| Does the boot get past the first Bink 2 video? | First runs in Phase 1 | |
-| Does it need `gpu_allow_invalid_fetch_constants` like Giants? | Phase 2, with and without | |
-| Where is the projection-matrix function (ultrawide)? | Ghidra, Phase 4 | |
+| Does the game import `XamInputNonControllerGetRaw/SetRaw` (1185/1186)? | Import table / Ghidra | Yes in effect: the emulated portal answers through the XAM handler |
+| Which functions wrap the portal read/write calls? | Ghidra, callers of the imports | Not needed: no game hook required for the portal |
+| Does the boot get past the first Bink 2 video? | First runs in Phase 1 | Yes, after four jump-table fixes in the Bink 2 decoder |
+| Does it need `gpu_allow_invalid_fetch_constants` like Giants? | Phase 2, with and without | On by default, not tested without; characters need `render_target_path_d3d12 = "rov"` |
+| Where is the projection-matrix function (ultrawide)? | Ghidra, Phase 4 | Open |
+| What limits the frame rate? | Stack walk, Phase 4 | D3D presentation interval 2 in `sub_82F5C258`, overridable |

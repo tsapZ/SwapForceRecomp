@@ -23,6 +23,8 @@ RE tooling. The phase plan lives in `../PROJEKT.md` (outside the repo, never com
 - If Swap Force differs technically from Giants in a significant way, report it immediately and
   adapt the plan.
 - Git identity is repo-local (`git config user.name/user.email`), never global.
+- Scripted or experimental game runs use a copied `--user_data_root`, never the user's real
+  `Documents\swapforcerecomp` (saves and figure dumps). See docs/development.md.
 
 ## Build
 

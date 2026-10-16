@@ -9,7 +9,10 @@ Power, and a settings overlay.
 
 ## Status
 
-Phase 0, project scaffold. Nothing has been built or run yet. See [docs/STATUS.md](docs/STATUS.md).
+Early but playable: the game boots, menus, saving and the tutorial level work, including cutscenes,
+German and English, the emulated portal (F6) and real USB portals (also older Spyro's Adventure/Giants
+portals). Experimental 60 FPS and more (`present_interval`). Details and known issues in
+[docs/STATUS.md](docs/STATUS.md).
 
 ## Building
 
