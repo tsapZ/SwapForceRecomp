@@ -14,9 +14,11 @@ set windows-shell := ["C:/Program Files/Git/usr/bin/sh.exe", "-cu"]
 
 # On Windows, `just` is a native program, so it always sees PATH in Windows form (';'-separated),
 # even when started from Git Bash; append in the same form, and sh.exe converts the whole value.
-# rexruntime.dll imports amd_fidelityfx_dx12.dll, which is not copied next to the codegen tool
-# (thirdparty/rexglue-sdk/out/win-amd64/rexglue.exe); without it on PATH, codegen exits 0xC0000135.
-ffx_dll_dirs := justfile_directory() + "\\out\\build\\win-amd64-release\\_deps\\fidelityfx-src\\PrebuiltSignedDLL;" + justfile_directory() + "\\out\\build\\win-amd64-debug\\_deps\\fidelityfx-src\\PrebuiltSignedDLL"
+# rexruntime.dll imports amd_fidelityfx_dx12.dll (debug: amd_fidelityfx_dx12d.dll). The SDK builds it into
+# bin/ (git-ignored), but the codegen tool (thirdparty/rexglue-sdk/out/win-amd64/rexglue[d].exe) does not
+# depend on it, so the regen recipes build it first and PATH points there. Without it codegen
+# exits with 0xC0000135 (DLL not found).
+ffx_dll_dirs := justfile_directory() + "\\bin"
 
 export PATH := if os() == "windows" {
     env_var('PATH') + ";C:\\Program Files\\Git\\usr\\bin;C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin;" + ffx_dll_dirs
@@ -73,12 +75,14 @@ build-release:
 # after replacing rom/default.xex with a different dump -- see README.md's "For developers".
 regen-debug:
     if [ ! -f out/build/{{ triple }}-debug/build.ninja ]; then just configure-debug; fi
+    if [ "{{ os() }}" = "windows" ]; then cmake --build --preset {{ triple }}-debug --target amd_fidelityfx_dx12; fi
     cmake --build --preset {{ triple }}-debug --target swapforcerecomp_codegen
     cmake --preset {{ triple }}-debug
     cmake --build --preset {{ triple }}-debug
 
 regen-release:
     if [ ! -f out/build/{{ triple }}-release/build.ninja ]; then just configure-release; fi
+    if [ "{{ os() }}" = "windows" ]; then cmake --build --preset {{ triple }}-release --target amd_fidelityfx_dx12; fi
     cmake --build --preset {{ triple }}-release --target swapforcerecomp_codegen
     cmake --preset {{ triple }}-release
     cmake --build --preset {{ triple }}-release
