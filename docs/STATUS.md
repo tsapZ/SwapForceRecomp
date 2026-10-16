@@ -51,5 +51,19 @@ Updated at the end of every session. Only record what a build actually did.
 - **Portal path confirmed:** with `portal_mode = software` the game asks to place a Skylander instead
   of "can't find the Portal of Power", so the emulated portal answers through the XAM handler, as in
   Giants. No game hook is needed for the portal.
-- **Next (old):** press Start with a controller and see how far it gets; check whether the game calls
-  XAM ordinals 1185/1186 (portal); set up the Ghidra tooling for the first real crash.
+- **First gameplay (release, software portal):** a figure created with the F6 overlay is accepted, the
+  tutorial level loads with textures, the character can be moved, and progress is written back to
+  the figure file ("Portal: saved changes back to slot 0's figure file"). Problems seen:
+  - **All characters and enemies render black** (player, Chompy, Creedle). Suspect: the 20
+    `float16_4` pack warnings. The codegen handler for `vpkd3d128` FLOAT16_4
+    (`thirdparty/rexglue-sdk/src/codegen/builders/vector.cpp`, case 5) only expects pack mode 2 with
+    shift ≤ 2 and emits the same layout for every other variant. Not yet confirmed that this code is
+    on the character rendering path.
+  - **Holding the attack button ends the game.** No fatal line in the log, no Windows crash event;
+    `just` reports exit code 1024. The last log line is an unrelated failed probe for an optional
+    sound bank (`Tutorial_B_Intro_genbank_en.pak`, not on the disc; the game probes several such
+    files and carries on).
+  - Low frame rate (not measured yet).
+  - Repeated `XmaContext 6–9: There are no bits to copy!` errors (audio).
+- **Next:** reproduce the attack crash in a debug build; set up Ghidra and check what calls the
+  `float16_4` code at `0x82F87E84`–`0x82F88A10`; rule out the audio device.
