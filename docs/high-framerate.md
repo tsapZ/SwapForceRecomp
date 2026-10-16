@@ -19,10 +19,12 @@ is implemented yet.
   cutscene sync. A call-rate check of the functions in the table below (tutorial, 30 vs 60 FPS):
   only `sub_82BCC438` runs every frame, and it converts an integer counter to seconds (`x * 1/60`)
   rather than stepping by a fixed 1/60; the six 1/30 functions are not called in that scene.
-- **Above 60 FPS:** `--video_mode_refresh_rate=120` does not speed up the vblank pacing (30 FPS with
-  interval 2), and together with interval 1 and `--vsync=false` it dropped to 31.8 FPS. Getting past
-  60 needs work on the vblank/swap timing (the swap code also uses the refresh rate for its late-frame
-  logic) or one of the approaches below.
+- **Above 60 FPS:** combine `--present_interval=1` with `--frame_rate_limit=<target>`. A limit above
+  the video mode's refresh rate raises the emulated vblank rate (`graphics_system.cpp`), so interval 1
+  follows it: 122.8 FPS on the title screen with 144. In the tutorial it stays at ~58 FPS, which is a
+  performance limit (ROV, `resolution_scale` 2), not a pacing one. Walking speed is unchanged even
+  with the vblank at 144 Hz. Do **not** raise `video_mode_refresh_rate` instead: the game adapts to
+  the display mode and stays at 30 FPS.
 - How it was found: the main thread waits on an engine semaphore (`sub_823F2358` -> the game's
   `WaitForSingleObject`), signalled after the swap. A dbghelp `StackWalk64` of all game threads in the
   debug build, `VdSwap`'s only caller (`sub_82F5D018`) and the vblank handler led to the swap queue.

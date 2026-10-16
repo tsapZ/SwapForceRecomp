@@ -109,7 +109,8 @@ Updated at the end of every session. Only record what a build actually did.
   the swap queue (`sub_82F5C258`). `--present_interval=1` gives 60.1 FPS on the title screen and
   ~56-60 FPS in the tutorial; walking speed is unchanged (same distance in 1.5 s as at 30 FPS).
   In the tutorial no frame-rate-bound logic found so far (call-rate check of the 1/30 and 1/60
-  users). Other levels, bosses and minigames not checked yet (#37). Details in
-  `docs/high-framerate.md`.
+  users). Above 60: add `--frame_rate_limit=144` (raises the emulated vblank rate): 122.8 FPS on
+  the title screen, ~58 FPS in the tutorial (performance-bound). Other levels, bosses and minigames
+  not checked yet (#37). Details in `docs/high-framerate.md`.
 - **Next:** play further into the game and collect real bugs; frame rate above 30, 4K and
   ultrawide (Phase 4).

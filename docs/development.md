@@ -87,6 +87,15 @@ its 250-character limit.
 | `just logs-debug -f` | follow the newest log file |
 | `just clean` | remove build output |
 
+## Testing without touching your saves
+
+Automated or experimental runs write saves and figure progress. Point them at a copy:
+
+    just play-release --user_data_root=C:\path\to\test-userdata
+
+Copy `Documents\swapforcerecomp` (saves under `B13EBABEBABEBABE\`, figures under `figures\`) into
+that folder first. Never test against the real user folder.
+
 ## Troubleshooting
 
 - **CMake can't find `clang`/`clang++`:** use the `just` recipes instead of calling `cmake`
