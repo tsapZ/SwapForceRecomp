@@ -5,11 +5,23 @@ is implemented yet.
 
 ## Where Swap Force stands
 
-- The game runs at a steady **30 FPS (33.3 ms)**, its original cap (F3 overlay, "Guest FPS").
-- `--video_mode_refresh_rate=120 --frame_rate_limit=0` still gives 30 FPS. So the game does **not**
-  count vblanks; it paces itself (likely a fixed 1/30 s timestep or a presentation interval set in
-  code). Unlocking needs that limiter found in code.
-- `frame_rate_limit` (ReXGlue) only caps from above; it cannot make the game run faster.
+- Original: a steady **30 FPS (33.3 ms)** (F3 overlay, "Guest FPS").
+- **The limiter is found:** the game paces itself through the D3D library's swap queue.
+  `sub_82F5C258` queues a swap; bits 8-11 of its swap word (`r3`) are the presentation interval
+  (vblanks per frame). It computes "earliest vblank = last swap + interval", and the vblank handler
+  `sub_82F5C128` (called from the interrupt callback `0x82F58198`) only flips once the vblank counter
+  reaches it. Swap Force passes swap word `0x00000200`: interval 2, i.e. 30 FPS at 60 Hz.
+- **60 FPS works (title screen):** `src/hooks/frame_rate_hook.cpp` hooks `0x82F5C258` and rewrites the
+  interval. `--present_interval=1` gives **60.1 FPS (16.63 ms)**. Off by default (`present_interval = 0`).
+- **Not verified yet: game speed.** Several systems use fixed 1/30 timesteps (table below), so
+  animations, physics or timers may run too fast at 60 FPS. Needs a test in a level.
+- **Above 60 FPS:** `--video_mode_refresh_rate=120` does not speed up the vblank pacing (30 FPS with
+  interval 2), and together with interval 1 and `--vsync=false` it dropped to 31.8 FPS. Getting past
+  60 needs work on the vblank/swap timing (the swap code also uses the refresh rate for its late-frame
+  logic) or one of the approaches below.
+- How it was found: the main thread waits on an engine semaphore (`sub_823F2358` -> the game's
+  `WaitForSingleObject`), signalled after the swap. A dbghelp `StackWalk64` of all game threads in the
+  debug build, `VdSwap`'s only caller (`sub_82F5D018`) and the vblank handler led to the swap queue.
 
 ## The problem: game speed tied to frame rate
 

@@ -12,6 +12,7 @@ resolution_scale = 2                      # 1-8 supersample multiplier, 1 = off
 frame_rate_limit = 60                     # 0 = unlimited
 gpu_allow_invalid_fetch_constants = true  # works around a GPU quirk, on by default
 render_target_path_d3d12 = "rov"           # accurate render target emulation; "rtv" is faster but renders characters black
+# present_interval = 1                    # EXPERIMENTAL 60 FPS (game default 2 = 30 FPS); game speed may change
 # Not available yet: the ultrawide hook is still a Giants template (Phase 4).
 # ultrawide_fov = true                      # widen camera FOV to match resolution's aspect ratio
 # ultrawide_hud = true                      # lay out the HUD and menus for the real screen width

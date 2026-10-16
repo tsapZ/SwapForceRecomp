@@ -39,6 +39,7 @@ set(SWAPFORCERECOMP_SOURCES
     src/main.cpp
     src/game/kernel_stubs.cpp
     src/hooks/intro_skip_hook.cpp
+    src/hooks/frame_rate_hook.cpp
     src/hooks/ultrawide_hook.cpp
     src/localization.cpp
 )
