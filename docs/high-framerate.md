@@ -37,6 +37,18 @@ How to find the pieces in Swap Force (Phase 4):
    instead of patching every system.
 3. Test for speed: animations, physics, timers and cutscene sync at 60 FPS against 30 FPS.
 
+First survey of Swap Force (2026-10-16), from the running game's image and the generated code:
+
+| Constant | Addresses in the XEX data | Functions that load it (`lis` + `lfs`) |
+|---|---|---|
+| 1/30 (`0x3D088889`) | `82143D10`, `82192468`, `822940A8`, `8312640C` | `sub_8263B1F8`, `sub_8263B3B0`, `sub_82B34610`, `sub_82BA0958`, `sub_82D1F508`, `sub_82F6A600` |
+| 1/60 (`0x3C888889`) | `82105018`, `8214E3B0`, `82294100` | `sub_82B9E308`, `sub_82BCC438`, `sub_82D14328`, `sub_82E59A30`, `sub_83014190`, `sub_83014AC8` |
+
+`sub_8263B1F8` and `sub_8263B3B0` (adjacent, both 1/30) do float integration (`fsubs`, `fmuls`,
+`fdivs`) without reading a timer: likely fixed-timestep physics or animation, i.e. places that would
+speed up at 60 FPS. None of them is confirmed as the frame limiter yet. 30.0 and 60.0 also appear
+(10 and 8 times) and were not traced.
+
 ## Approach 2: unlock and fix glitches one by one (Unleashed Recompiled)
 
 [Unleashed Recompiled](https://cdn.jsdelivr.net/gh/hedge-dev/unleashedrecomp@main/README.md)
