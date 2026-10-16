@@ -110,7 +110,8 @@ Updated at the end of every session. Only record what a build actually did.
   ~56-60 FPS in the tutorial; walking speed is unchanged (same distance in 1.5 s as at 30 FPS).
   In the tutorial no frame-rate-bound logic found so far (call-rate check of the 1/30 and 1/60
   users). Above 60: add `--frame_rate_limit=144` (raises the emulated vblank rate): 122.8 FPS on
-  the title screen, ~58 FPS in the tutorial (performance-bound). Other levels, bosses and minigames
+  the title screen; in the tutorial ~58 FPS with `resolution_scale` 2 and 104.7 FPS with
+  `resolution_scale` 1 (supersampling is the limit). Other levels, bosses and minigames
   not checked yet (#37). Details in `docs/high-framerate.md`.
 - **Next:** play further into the game and collect real bugs; frame rate above 30, 4K and
   ultrawide (Phase 4).

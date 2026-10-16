@@ -21,8 +21,9 @@ is implemented yet.
   rather than stepping by a fixed 1/60; the six 1/30 functions are not called in that scene.
 - **Above 60 FPS:** combine `--present_interval=1` with `--frame_rate_limit=<target>`. A limit above
   the video mode's refresh rate raises the emulated vblank rate (`graphics_system.cpp`), so interval 1
-  follows it: 122.8 FPS on the title screen with 144. In the tutorial it stays at ~58 FPS, which is a
-  performance limit (ROV, `resolution_scale` 2), not a pacing one. Walking speed is unchanged even
+  follows it: 122.8 FPS on the title screen with 144. In the tutorial: ~58 FPS with
+  `resolution_scale` 2, **104.7 FPS with `resolution_scale` 1** (RX 6800 XT, ROV, 1080p). The 2x
+  supersampling is the limit, not the CPU. Walking speed is unchanged even
   with the vblank at 144 Hz. Do **not** raise `video_mode_refresh_rate` instead: the game adapts to
   the display mode and stays at 30 FPS.
 - How it was found: the main thread waits on an engine semaphore (`sub_823F2358` -> the game's
