@@ -75,5 +75,11 @@ Updated at the end of every session. Only record what a build actually did.
 - **Local workaround, not in the repo:** `rom/archives/FMV01.bk2` (the 5-minute new-game intro) is
   replaced with a short `KB2g` video to skip it; the original is kept outside the repo. A 540-byte
   `KB2f` placeholder crashed (before the jump table fix).
-- **Next:** black characters: test `readback_resolve`, `render_target_path_d3d12 = "rov"`,
-  `d3d12_readback_memexport` and the Vulkan backend on the black cutscene.
+- **Black characters: fixed with `render_target_path_d3d12 = "rov"`** (manual test, release, AMD
+  RX 6800 XT): characters, enemies, intro cards and the portal swap screen render correctly. With the
+  default RTV path they were dark: base lighting missing, specular, effects and shadows still visible.
+  `readback_resolve` (`fast`, `full`), `d3d12_readback_resolve` and `d3d12_readback_memexport` changed
+  nothing. ROV is now set in `swapforcerecomp.toml.example` and the installer template. It costs
+  performance (ROV emulates EDRAM in pixel shaders), and the first run recompiles all shaders.
+- **Next:** confirm ROV is picked up from the settings file without the command-line flag; measure
+  frame rate; the green right half of KB2f videos (#36); German language (`language = "german"`).

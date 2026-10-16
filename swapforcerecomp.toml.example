@@ -11,6 +11,7 @@ resolution = "1920x1080"                  # startup window size
 resolution_scale = 2                      # 1-8 supersample multiplier, 1 = off
 frame_rate_limit = 60                     # 0 = unlimited
 gpu_allow_invalid_fetch_constants = true  # works around a GPU quirk, on by default
+render_target_path_d3d12 = "rov"           # accurate render target emulation; "rtv" is faster but renders characters black
 # Not available yet: the ultrawide and intro-skip hooks are still Giants templates (Phase 4).
 # ultrawide_fov = true                      # widen camera FOV to match resolution's aspect ratio
 # ultrawide_hud = true                      # lay out the HUD and menus for the real screen width

@@ -11,6 +11,7 @@ resolution = "__RESOLUTION__"             # startup window size
 resolution_scale = __RESOLUTION_SCALE__   # 1-8 supersample multiplier, 1 = off
 frame_rate_limit = 60                     # 0 = unlimited
 gpu_allow_invalid_fetch_constants = true  # works around a GPU quirk, on by default
+render_target_path_d3d12 = "rov"           # accurate render target emulation; "rtv" is faster but renders characters black
 # vulkan_device = -1                      # GPU index for multi-GPU systems, -1 = auto-pick
 
 ["GPU"]
