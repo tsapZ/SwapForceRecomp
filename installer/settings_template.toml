@@ -13,6 +13,7 @@ frame_rate_limit = 60                     # 0 = unlimited
 gpu_allow_invalid_fetch_constants = true  # works around a GPU quirk, on by default
 render_target_path_d3d12 = "rov"           # accurate render target emulation; "rtv" is faster but renders characters black
 # present_interval = 1                    # EXPERIMENTAL 60 FPS (game default 2 = 30 FPS); game speed may change
+#                                         # for more than 60: also raise frame_rate_limit (e.g. 120 or 144)
 # vulkan_device = -1                      # GPU index for multi-GPU systems, -1 = auto-pick
 
 ["GPU"]

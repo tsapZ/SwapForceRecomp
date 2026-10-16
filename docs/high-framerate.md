@@ -100,6 +100,27 @@ Possible in principle, but a large project.
 - **Driver or tool frame generation** (AMD Fluid Motion Frames, Lossless Scaling): works today
   without changes, doubles the presented frames, but adds input latency and artifacts.
 
+## Generic method for other Xbox 360 games
+
+The function hooked in Swap Force (`sub_82F5C258`) is not game code: it is part of Microsoft's Xbox 360
+D3D library, which every title links statically. So the same recipe should carry over to the other
+recomps (Giants, Trap Team, SuperChargers, Imaginators), with different addresses per game:
+
+1. Find the D3D swap-queue function. Recognisable from its start: it decodes the swap word with
+   `rlwinm rX,rY,24,28,31` (interval, bits 8-11) and `clrlwi rZ,rY,24` (late threshold), reads the
+   device's vblank counter and writes a ring of `(address, earliest vblank)` entries. Alternatives:
+   the only caller of the `VdSwap` import, or the vblank handler registered via `SetInterruptCallback`
+   (logged by the runtime at boot).
+2. Log the game's interval with a midasm hook (2 = 30 FPS, 1 = 60 FPS by design).
+3. Override it (`present_interval = 1`) and raise `frame_rate_limit` for more than 60.
+4. Check game speed: walk a fixed time and compare distance; count calls per second of functions
+   that load `1/30` or `1/60` constants at both frame rates. Games whose logic counts frames or
+   vblanks need extra fixes (approach 2).
+
+Tools that made this fast in Swap Force: a dbghelp `StackWalk64` of all game threads in the debug
+build (shows where each thread waits), symbolized with `llvm-symbolizer`; keyboard-driven test runs
+with `mnk_mode`; a copied `user_data_root` so saves are never touched.
+
 ## Recommendation for the hub
 
 | Goal | Best approach |
