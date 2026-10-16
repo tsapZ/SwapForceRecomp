@@ -96,11 +96,13 @@ Updated at the end of every session. Only record what a build actually did.
     seconds late (an `R` answered 6 s later), the game reset the portal every ~20 s and never read a
     figure. `Read()` now drains the HID queue.
   The game never sent `J` or `M` in the traces, so nothing is synthesized for those.
-- **Green right half of KB2f videos (#36), narrowed down, not fixed:** KB2f only (a 1024-wide KB2g
-  video renders fully), same header flags, both Bink async threads busy during playback, unchanged
-  with RTV/ROV and with `resolution_scale=1`. The right half is decoded but never reaches the
-  picture. Needs reverse engineering of the KB2f decode path.
+- **Green right half of KB2f videos (#36), narrowed to the draw, not fixed:** KB2f only (a
+  1024-wide KB2g video renders fully), unchanged with RTV/ROV and `resolution_scale=1`. The CPU
+  decode is correct: during playback both Y planes (1024x608, linear) and the chroma planes are
+  completely filled, also on the right. The GPU textures are the same for KB2f and KB2g. So the
+  difference is in the draw call (shader/fetch constants or quad). Next: capture and diff the video
+  draw for both formats. Details and addresses in #36.
 - **Note:** after changing graphics settings, the first start rebuilds all pipelines from the shader
   cache (about 35 s of black screen with `resolution_scale=1`).
-- **Next:** #36 (Bink KB2f RE); intro skip in code instead of the local video swap; frame rate above
-  30 (Phase 4).
+- **Next:** #36 (diff the KB2f vs KB2g video draw call); frame rate above 30, 4K and ultrawide
+  (Phase 4).
