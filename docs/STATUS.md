@@ -44,26 +44,36 @@ Updated at the end of every session. Only record what a build actually did.
 - **Known bugs:** none recorded.
 - **Manual run with a controller (release):** title screen → save slot → new save → the intro movie
   plays (cannot be skipped) → "Place your Skylander on the Portal of Power". Controller input works.
-  **No audio is heard**; the runtime opened the endpoint "LG ULTRAGEAR (AMD High Definition Audio
-  Device)", which may simply be a monitor without speakers. Four one-off XMA errors ("XmaContext N:
-  There are no bits to copy!") appear at that point. Not yet clear whether this is a device issue or
-  an audio bug.
+  No audio at first: the runtime used the Windows default output, a monitor without speakers.
 - **Portal path confirmed:** with `portal_mode = software` the game asks to place a Skylander instead
   of "can't find the Portal of Power", so the emulated portal answers through the XAM handler, as in
   Giants. No game hook is needed for the portal.
 - **First gameplay (release, software portal):** a figure created with the F6 overlay is accepted, the
   tutorial level loads with textures, the character can be moved, and progress is written back to
   the figure file ("Portal: saved changes back to slot 0's figure file"). Problems seen:
-  - **All characters and enemies render black** (player, Chompy, Creedle). Suspect: the 20
-    `float16_4` pack warnings. The codegen handler for `vpkd3d128` FLOAT16_4
-    (`thirdparty/rexglue-sdk/src/codegen/builders/vector.cpp`, case 5) only expects pack mode 2 with
-    shift ≤ 2 and emits the same layout for every other variant. Not yet confirmed that this code is
-    on the character rendering path.
-  - **Holding the attack button ends the game.** No fatal line in the log, no Windows crash event;
-    `just` reports exit code 1024. The last log line is an unrelated failed probe for an optional
-    sound bank (`Tutorial_B_Intro_genbank_en.pak`, not on the disc; the game probes several such
-    files and carries on).
+  - **All characters and enemies render black** (player, Chompy, Creedle), and so do the character
+    intro cards and the in-engine cutscene after the intro video (audio plays, picture black). The
+    level geometry and textures are fine. Open, see below.
   - Low frame rate (not measured yet).
-  - Repeated `XmaContext 6–9: There are no bits to copy!` errors (audio).
-- **Next:** reproduce the attack crash in a debug build; set up Ghidra and check what calls the
-  `float16_4` code at `0x82F87E84`–`0x82F88A10`; rule out the audio device.
+  - Repeated `XmaContext 6–9: There are no bits to copy!` errors; audio itself works.
+- **Audio works.** "No audio" was the Windows output device (monitor without speakers).
+- **Crash after the first tutorial fight: fixed (debug verified).** Not caused by attacking. The game
+  dies when a Bink 2 video in format `KB2f` starts (`Tutorial_B_Intro.bk2`). 47 of the 92 `.bk2`
+  files are `KB2f`, 44 are `KB2g` (those play), 1 is `KB2i`. Exit code `0xC000001D` (illegal
+  instruction) from `__builtin_trap` in `sub_83094710`: an inline jump table in the Bink bit-stream
+  decoder, index `(bits & 3) + 7`, codegen emitted 4 of 11 cases. A scan of `generated/` plus
+  Ghidra found four under-counted tables (three in the Bink decoder, like GiantsRecomp; one 40-entry
+  bounds-checked switch at `0x8247A658`), now in `config/default.toml`. Repro without input: copy a
+  `KB2f` video to `rom/archives/gsbp_atvi.bk2`; the game plays it at boot. Before the fix it died
+  after 24 s, after the fix it runs.
+- **`float16_4` warnings are harmless.** All 20 are `vpkd3d128 …,5,3,0` (mask 3, shift 0). The SDK's
+  own test notes and its D3DCOLOR handler treat mask 3 like mask 2 except with shift 3, so the
+  generated code is correct. Not the cause of the black characters.
+- **Tooling:** headless Ghidra works under Windows PowerShell 5.1 (`setup`, `import` done; project in
+  `logs/ghidra_project/`). The debug build works after a `justfile` fix (debug codegen needs
+  `amd_fidelityfx_dx12d.dll`, which the SDK writes to `bin/`).
+- **Local workaround, not in the repo:** `rom/archives/FMV01.bk2` (the 5-minute new-game intro) is
+  replaced with a short `KB2g` video to skip it; the original is kept outside the repo. A 540-byte
+  `KB2f` placeholder crashed (before the jump table fix).
+- **Next:** black characters: test `readback_resolve`, `render_target_path_d3d12 = "rov"`,
+  `d3d12_readback_memexport` and the Vulkan backend on the black cutscene.
