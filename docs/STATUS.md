@@ -103,8 +103,8 @@ Updated at the end of every session. Only record what a build actually did.
   "KB2f videos are green" were this artifact. Closed; reopen if a real cutscene shows it.
 - **Note:** after changing graphics settings, the first start rebuilds all pipelines from the shader
   cache (about 35 s of black screen with `resolution_scale=1`).
-- **4K:** `--resolution=4k --resolution_scale=1` starts and holds the 30 FPS cap on the title screen
-  (same as the default settings). Not yet measured in a level.
+- **4K:** `--resolution=4k --resolution_scale=1` holds the 30 FPS cap, and with
+  `--present_interval=1` runs at a steady 60.1 FPS in the tutorial (RX 6800 XT, ROV).
 - **60 FPS unlocked (experimental, off by default):** the cap is the D3D presentation interval 2 in
   the swap queue (`sub_82F5C258`). `--present_interval=1` gives 60.1 FPS on the title screen and
   ~56-60 FPS in the tutorial; walking speed is unchanged (same distance in 1.5 s as at 30 FPS).
