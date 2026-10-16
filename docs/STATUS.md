@@ -94,5 +94,11 @@ Updated at the end of every session. Only record what a build actually did.
     seconds late (an `R` answered 6 s later), the game reset the portal every ~20 s and never read a
     figure. `Read()` now drains the HID queue.
   The game never sent `J` or `M` in the traces, so nothing is synthesized for those.
-- **Next:** green right half of KB2f videos (#36); intro skip in code instead of the local video
-  swap; frame rate above 30 (Phase 4).
+- **Green right half of KB2f videos (#36), narrowed down, not fixed:** KB2f only (a 1024-wide KB2g
+  video renders fully), same header flags, both Bink async threads busy during playback, unchanged
+  with RTV/ROV and with `resolution_scale=1`. The right half is decoded but never reaches the
+  picture. Needs reverse engineering of the KB2f decode path.
+- **Note:** after changing graphics settings, the first start rebuilds all pipelines from the shader
+  cache (about 35 s of black screen with `resolution_scale=1`).
+- **Next:** #36 (Bink KB2f RE); intro skip in code instead of the local video swap; frame rate above
+  30 (Phase 4).
