@@ -2,7 +2,23 @@
 
 Updated at the end of every session. Only record what a build actually did.
 
-## 2026-10-16: Phase 0 complete, Phase 1 boots to the title screen
+## Current state (end of 2026-10-16)
+
+| Area | State |
+|---|---|
+| Boot, menus, saves | work; logo movies skipped (`skip_intro`), opening movie optional (`skip_opening_movie`) |
+| Tutorial level | playable with controller or keyboard (`mnk_mode`); cutscenes and dialogue work |
+| Graphics | correct with `render_target_path_d3d12 = "rov"` (default in templates); 4K works |
+| Audio | works (check the Windows output device) |
+| Language | English and German (`language`) |
+| Portal | emulated (F6), real USB incl. old PS3/Wii portals (fork `tsapZ/skylanders-portal`), `none` |
+| Frame rate | 30 FPS default; experimental `present_interval = 1` -> 60 FPS (4K: 60.1 FPS in level); with `frame_rate_limit` up to ~105 FPS at 1080p scale 1. Game speed: walking verified (#37) |
+| Videos | Bink 2 (KB2f/KB2g) play; green half only in a test-only Bink 1-after-KB2f sequence (#36, closed) |
+
+Open next: swapper test (#20, manual via F6), 60 FPS checks beyond walking (#37), first level full
+playthrough (#17), ultrawide hook (#24), installer (#27). Testing rule: copied `--user_data_root`.
+
+## 2026-10-16: session log (chronological)
 
 - **Works:** `just configure-release` without a ROM succeeds on Windows 11 (VS 2022 17.14,
   clang-cl 19.1.5, CMake 4.4.4, Ninja), about 2 minutes. It builds the ReXGlue SDK from the
