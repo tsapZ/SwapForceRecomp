@@ -3,4 +3,10 @@
 # Every entry (or group of same-reason entries) needs a comment: what's at the address, how it was
 # found, and why the fix is safe. Addresses from GiantsRecomp do NOT apply to this XEX.
 #
-# Empty on purpose: entries are added in Phase 1 as codegen and the runtime report them.
+# Entries are added in Phase 1 as codegen and the runtime report them.
+
+[functions]
+# Function start only reached by a tail-call branch (b 0x82F60BD8 at 0x82515C04), so the analyzer
+# never registered it. Found from the first codegen run: "UnresolvedCall ... target not in any
+# function". What the function does is not identified yet; no size given, the analyzer finds the end.
+0x82F60BD8 = {}
