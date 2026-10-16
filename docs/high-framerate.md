@@ -106,7 +106,8 @@ The function hooked in Swap Force (`sub_82F5C258`) is not game code: it is part 
 D3D library, which every title links statically. So the same recipe should carry over to the other
 recomps (Giants, Trap Team, SuperChargers, Imaginators), with different addresses per game:
 
-1. Find the D3D swap-queue function. Recognisable from its start: it decodes the swap word with
+1. Find the D3D swap-queue function: `python tools/find_swap_interval.py` (in Swap Force it finds
+   exactly one function, `sub_82F5C258`). Recognisable from its start: it decodes the swap word with
    `rlwinm rX,rY,24,28,31` (interval, bits 8-11) and `clrlwi rZ,rY,24` (late threshold), reads the
    device's vblank counter and writes a ring of `(address, earliest vblank)` entries. Alternatives:
    the only caller of the `VdSwap` import, or the vblank handler registered via `SetInterruptCallback`
