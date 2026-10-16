@@ -13,8 +13,10 @@ is implemented yet.
   reaches it. Swap Force passes swap word `0x00000200`: interval 2, i.e. 30 FPS at 60 Hz.
 - **60 FPS works (title screen):** `src/hooks/frame_rate_hook.cpp` hooks `0x82F5C258` and rewrites the
   interval. `--present_interval=1` gives **60.1 FPS (16.63 ms)**. Off by default (`present_interval = 0`).
-- **Not verified yet: game speed.** Several systems use fixed 1/30 timesteps (table below), so
-  animations, physics or timers may run too fast at 60 FPS. Needs a test in a level.
+- **Game speed, first test:** in the tutorial the level runs at about 56-60 FPS with interval 1,
+  and holding forward for 1.5 s moves the character the same distance as at 30 FPS. Player movement
+  uses real elapsed time. Not yet checked: attacks, enemies, particles, physics objects, timers,
+  cutscene sync. Several systems use fixed 1/30 timesteps (table below), so some may still run fast.
 - **Above 60 FPS:** `--video_mode_refresh_rate=120` does not speed up the vblank pacing (30 FPS with
   interval 2), and together with interval 1 and `--vsync=false` it dropped to 31.8 FPS. Getting past
   60 needs work on the vblank/swap timing (the swap code also uses the refresh rate for its late-frame

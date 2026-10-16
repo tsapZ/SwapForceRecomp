@@ -106,7 +106,8 @@ Updated at the end of every session. Only record what a build actually did.
 - **4K:** `--resolution=4k --resolution_scale=1` starts and holds the 30 FPS cap on the title screen
   (same as the default settings). Not yet measured in a level.
 - **60 FPS unlocked (experimental, off by default):** the cap is the D3D presentation interval 2 in
-  the swap queue (`sub_82F5C258`). `--present_interval=1` gives 60.1 FPS on the title screen. Game
-  speed at 60 FPS is not verified yet. Details in `docs/high-framerate.md`.
+  the swap queue (`sub_82F5C258`). `--present_interval=1` gives 60.1 FPS on the title screen and
+  ~56-60 FPS in the tutorial; walking speed is unchanged (same distance in 1.5 s as at 30 FPS).
+  Other systems not checked yet (#37). Details in `docs/high-framerate.md`.
 - **Next:** play further into the game and collect real bugs; frame rate above 30, 4K and
   ultrawide (Phase 4).
