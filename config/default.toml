@@ -11,6 +11,15 @@
 # function". What the function does is not identified yet; no size given, the analyzer finds the end.
 0x82F60BD8 = {}
 
+# 0x83081EB8 is in BinkOpen (sub_83081CE8), right after it reads the 44-byte Bink header into
+# r1+112 and just before the signature compares (KB2f, KB2g, BIKf..BIKi). Found from the "Not a Bink
+# file." / "Error reading Bink header." string references in that function. src/hooks/
+# intro_skip_hook.cpp shortens the logo movies (and, optionally, the opening movie) to one frame.
+[[midasm_hook]]
+address = 0x83081EB8
+name = "BinkHeaderLoaded"
+registers = ["r1"]
+
 # Jump tables the analyzer under-counted, so the generated switch trapped (__builtin_trap, host
 # exception 0xC000001D) on the missing indices. All four tables sit directly after their bctr;
 # entries were read from the image with Ghidra until the first word that is no longer a code

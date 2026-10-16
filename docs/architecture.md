@@ -68,7 +68,8 @@ hex characters.
 ## Game-specific code
 
 - **Midasm hooks** (`src/hooks/`): declared at a guest address in `config/default.toml`, implemented
-  in C++. Both files are disabled Giants templates (`#if 0`), kept as examples of the pattern.
+  in C++. `intro_skip_hook.cpp` is ported (hook in BinkOpen at `0x83081EB8`); `ultrawide_hook.cpp`
+  is still a disabled Giants template (`#if 0`).
 - **Kernel stubs** (`src/game/kernel_stubs.cpp`): `REX_EXPORT_STUB_RETURN(Import, value)` for imports
   the runtime lacks, each with a comment why returning that value is safe.
 
@@ -95,9 +96,10 @@ them with descriptions:
 - Portal: `portal_mode` (`software`, `usb`, `none`), `portal_figures_dir`, `portal_figure`.
 - Graphics: `resolution`, `resolution_scale`, `frame_rate_limit`, `anisotropic_override`,
   `present_use_actual_aspect`, `gpu_allow_invalid_fetch_constants`, `vulkan_device`.
-- Other: `language`, `mnk_mode` (keyboard and mouse), `ui_scale`, `user_data_root`.
-- **Not available yet:** `ultrawide_fov`, `ultrawide_hud` and `skip_intro`. They are defined in the
-  disabled hook templates and come back when the hooks are ported (Phase 4).
+- Other: `language`, `mnk_mode` (keyboard and mouse), `ui_scale`, `user_data_root`, `skip_intro`
+  (logo movies, on by default), `skip_opening_movie` (the long new-game movie, off by default).
+- **Not available yet:** `ultrawide_fov`, `ultrawide_hud`. They are defined in the disabled
+  ultrawide hook template and come back when it is ported (Phase 4).
 
 `gpu_allow_invalid_fetch_constants` is on by default because Giants needs it (scenes render blank
 without it). Whether Swap Force needs it is unverified.

@@ -25,7 +25,8 @@ mnk_mode = true                           # enable keyboard/mouse controller emu
 
 ["Game"]
 # language = "english"                   # english, french, german, spanish, italian (EU disc: english, german)
-# skip_intro = true                         # skip the intro logo movies (hook not ported yet)
+skip_intro = true                         # skip the Activision and Vicarious Visions logo movies
+# skip_opening_movie = true                # skip the long opening movie of a new game
 
 ["Runtime"]
 # user_data_root = "C:\\path\\to\\folder" # empty = Documents\swapforcerecomp

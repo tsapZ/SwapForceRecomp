@@ -12,7 +12,7 @@ resolution_scale = 2                      # 1-8 supersample multiplier, 1 = off
 frame_rate_limit = 60                     # 0 = unlimited
 gpu_allow_invalid_fetch_constants = true  # works around a GPU quirk, on by default
 render_target_path_d3d12 = "rov"           # accurate render target emulation; "rtv" is faster but renders characters black
-# Not available yet: the ultrawide and intro-skip hooks are still Giants templates (Phase 4).
+# Not available yet: the ultrawide hook is still a Giants template (Phase 4).
 # ultrawide_fov = true                      # widen camera FOV to match resolution's aspect ratio
 # ultrawide_hud = true                      # lay out the HUD and menus for the real screen width
 # vulkan_device = -1                      # GPU index for multi-GPU systems, -1 = auto-pick
@@ -33,7 +33,8 @@ mnk_mode = true                           # enable keyboard/mouse controller emu
 
 ["Game"]
 # language = "english"                   # english, french, german, spanish, italian (EU disc: english, german)
-# skip_intro = true                         # skip the intro logo movies (hook not ported yet)
+skip_intro = true                         # skip the Activision and Vicarious Visions logo movies
+# skip_opening_movie = true                # skip the long opening movie of a new game
 
 ["Runtime"]
 # user_data_root = "C:\\path\\to\\folder" # empty = Documents\swapforcerecomp

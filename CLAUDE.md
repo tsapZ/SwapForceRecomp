@@ -41,7 +41,8 @@ the XEX loader into `logs/toolchain/` (gitignored); run it in Phase 1, not earli
 
 ## Placeholders from the scaffold
 
-- `src/hooks/*.cpp`: disabled templates (`#if 0`), addresses belong to Giants.
+- `src/hooks/ultrawide_hook.cpp`: disabled template (`#if 0`), addresses belong to Giants.
+  `intro_skip_hook.cpp` is ported to Swap Force.
 - `config/default.toml`: empty, filled in Phase 1.
 
 ## Status convention

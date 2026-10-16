@@ -72,9 +72,11 @@ Updated at the end of every session. Only record what a build actually did.
 - **Tooling:** headless Ghidra works under Windows PowerShell 5.1 (`setup`, `import` done; project in
   `logs/ghidra_project/`). The debug build works after a `justfile` fix (debug codegen needs
   `amd_fidelityfx_dx12d.dll`, which the SDK writes to `bin/`).
-- **Local workaround, not in the repo:** `rom/archives/FMV01.bk2` (the 5-minute new-game intro) is
-  replaced with a short `KB2g` video to skip it; the original is kept outside the repo. A 540-byte
-  `KB2f` placeholder crashed (before the jump table fix).
+- **Intro skip ported** (midasm hook in BinkOpen at `0x83081EB8`, header at `r1+112`): the
+  Activision and Vicarious Visions logos are cut to one frame (`skip_intro`, default on), the
+  5-minute new-game movie `FMV01.bk2` too if `skip_opening_movie` is on (default off). Movies are
+  recognized by header size and frame count. Verified in the log for all three; the title screen
+  appears after about 7 s. The earlier local video swap is undone.
 - **Black characters: fixed with `render_target_path_d3d12 = "rov"`** (manual test, release, AMD
   RX 6800 XT): characters, enemies, intro cards and the portal swap screen render correctly. With the
   default RTV path they were dark: base lighting missing, specular, effects and shadows still visible.
