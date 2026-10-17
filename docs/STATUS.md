@@ -2,7 +2,7 @@
 
 Updated at the end of every session. Only record what a build actually did.
 
-## Current state (end of 2026-10-16)
+## Current state (2026-10-17)
 
 | Area | State |
 |---|---|
@@ -12,11 +12,13 @@ Updated at the end of every session. Only record what a build actually did.
 | Audio | works (check the Windows output device) |
 | Language | English and German (`language`) |
 | Portal | emulated (F6), real USB incl. old PS3/Wii portals (fork `tsapZ/skylanders-portal`), `none` |
-| Frame rate | 30 FPS default; experimental `present_interval = 1` -> 60 FPS (4K: 60.1 FPS in level); with `frame_rate_limit` up to ~105 FPS at 1080p scale 1. Game speed: walking verified (#37) |
+| Frame rate | 30 FPS default; experimental `present_interval = 1` -> 60 FPS (4K output: 60.1 FPS in level); with `frame_rate_limit` up to ~105 FPS at 1080p scale 1, ~58 FPS at scale 2 (ROV is the limit). Game speed at 60 FPS verified by playing the tutorial (#37, closed) |
+| Stutter | short one-time hitches when an effect or attack appears for the first time (shader/pipeline creation); stored in the persistent shader cache, so expected once per install |
 | Videos | Bink 2 (KB2f/KB2g) play; green half only in a test-only Bink 1-after-KB2f sequence (#36, closed) |
 
-Open next: swapper test (#20, manual via F6), 60 FPS checks beyond walking (#37), first level full
-playthrough (#17), ultrawide hook (#24), installer (#27). Testing rule: copied `--user_data_root`.
+Open next: swapper test (#20, manual via F6), first level full playthrough (#17), more than 60 FPS
+at full quality (the faster `rtv` path renders characters black), ultrawide hook (#24), installer
+(#27). Testing rule: copied `--user_data_root`.
 
 ## 2026-10-16: session log (chronological)
 
@@ -131,3 +133,16 @@ playthrough (#17), ultrawide hook (#24), installer (#27). Testing rule: copied `
   not checked yet (#37). Details in `docs/high-framerate.md`.
 - **Next:** play further into the game and collect real bugs; frame rate above 30, 4K and
   ultrawide (Phase 4).
+
+## 2026-10-17: session log
+
+- **60 FPS game speed (#37): verified by playing.** Manual tutorial run (release,
+  `--present_interval=1`, software portal): attacks and animations, enemy behaviour, effects and
+  particles, crates, coins and timers all look normal at 60 FPS. Also runs with
+  `--frame_rate_limit=144 --resolution_scale=1`; picture quality at scale 1 (720p internal) is
+  visibly lower. Issue closed; reopen if another level, boss, minigame or cutscene runs too fast or
+  out of sync.
+- **One-time stutter:** short hitches the first time a new attack or effect appears, none when it
+  repeats. That is shader/pipeline creation. `store_shaders` is on: the session updated
+  `cache/shaders/shareable/415608E9.xsh` and `415608E9.rov.d3d12.xpso` in the user data folder, so
+  the same effect should not stutter again in later sessions (not confirmed yet).
