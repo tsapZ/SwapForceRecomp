@@ -10,22 +10,25 @@ observed in a real build or a real play test, not inferred.
 |---|---|---|---|
 | 0 Repository and scaffold | ✅ done | 3/3 | – |
 | 1 Recompile and boot | ✅ done | 8/8 | – |
-| 2 In-game | 🟡 almost | 9/11 | play the first level to the end (#17), German name cards (#38) |
+| 2 In-game | ✅ done | 10/11 | German name cards (#38), if the original has them |
 | 3 Portal | 🟡 almost | 6/7 | a swapper on the real USB portal (#42) |
-| 4 4K and polish | 🟡 in progress | 5/10 | controller portal menu (#40), native 720p scene (#41), installer (#27), ultrawide (#24), wiki (#4) |
+| 4 4K and polish | 🟡 in progress | 5/13 | performance and picture quality (#44, #45, #41), Skylanders-style portal menu and overlays (#40, #43), installer (#27), ultrawide (#24), wiki (#4) |
 | 5 Online co-op (stretch) | ⬜ not started | 0/3 | architecture proposal first |
 
-**Where we are:** the game is playable through the tutorial at 60 FPS and more, with the emulated
-and the real portal. The remaining work is testing further into the game and polish.
+**Where we are:** the first level is played through at over 100 FPS (1440p), the hub runs at about
+80 FPS, with the emulated and the real portal. Gameplay works; the focus now is performance, picture
+quality, then the controller-only Skylanders-style menus and a release.
 
 ## Now, next, later
 
 | When | What | Who |
 |---|---|---|
-| **Now** | Play with the fast RTV path at 1440p and 60+ FPS, as far into the game as you like; report anything black, flickering, crashing or too fast (#17) | you |
-| **Next** | Controller-only portal menu: Guide button opens a figure picker, no mouse needed (#40) | me |
+| **Now** | Performance: why the hub is at about 80 FPS, and what costs the most (#44) | me |
+| **Now** | Smoother edges: FXAA together with CAS (#45) | me |
+| Next | Native 1280x720 3D scene: sharper picture and less upscaling (#41) | me |
+| Then | Controller-only portal menu in Skylanders style, replacing F6 (#40); F3/F4 restyle (#43) | me |
 | Then | Installer for a first release (#27) | me, test on a clean VM |
-| If wanted | Native 1280x720 3D scene, only if the picture with CAS is still too soft (#41) | me |
+| Any time | Keep playing; report anything black, flickering, crashing or too fast | you |
 | Later | Ultrawide (#24), online co-op proposal (Phase 5), GitHub wiki (#4) | me |
 | After Swap Force | Own recompile of the next Skylanders game (Giants), then the launcher hub | both |
 
@@ -50,17 +53,18 @@ Set up the repository from the GiantsRecomp template, without any game data.
 
 **Done when:** the logos or the intro video play. Observed 2026-10-16.
 
-## Phase 2: in-game 🟡
+## Phase 2: in-game ✅
 
 - [x] Main menu, loading into the first level, saving and loading (#12, #13, #15)
 - [x] Audio (#14, #32)
 - [x] Graphics: black characters fixed, first with ROV, then properly for the fast RTV path (#16, #33, #39)
 - [x] Crash on the first Bink KB2f movie fixed (#34); green video half only in a test sequence (#36)
 - [x] Tutorial playable with controller and keyboard, German and English
-- [ ] First level played to the end in one go (#17)
+- [x] First level played to the end, over 100 FPS including fights (#17)
 - [ ] German name card for enemy intros, if the original has one (#38)
 
-**Done when:** the first level can be played through with a controller.
+**Done when:** the first level can be played through with a controller. Observed 2026-10-17 (played
+with keyboard; controller input verified in the tutorial).
 
 ## Phase 3: portal 🟡
 
@@ -81,7 +85,10 @@ Set up the repository from the GiantsRecomp template, without any game data.
 - [x] Fast RTV render path without black characters: 106 FPS at 1440p with `resolution_scale` 2,
   237 FPS at scale 1 (#39)
 - [x] Resolution options measured; `present_effect = "cas"` recommended at scale 2 (#23)
-- [ ] Controller-only portal menu (#40)
+- [ ] Performance: hub bottleneck (#44)
+- [ ] Smoother edges: FXAA with CAS (#45)
+- [ ] Controller-only portal menu in Skylanders style, replacing the F6 overlay (#40)
+- [ ] Skylanders-style F3 and F4 overlays (#43)
 - [ ] Native 1280x720 3D scene, the game renders it at 1040x620 (#41)
 - [ ] Installer tested on a clean Windows VM (#27)
 - [ ] Ultrawide: projection hook for 21:9 (#24)
