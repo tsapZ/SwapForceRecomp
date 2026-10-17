@@ -113,9 +113,10 @@ system dialog in the foreground breaks keyboard-driven test runs). One command p
     log reached level    # mark the point in the log
     scan 00000500 000002D0   # log where these big-endian words are in guest memory
     poke 40008FD0 00000500   # write a big-endian word to guest memory
+    player 2                 # the scripted controller plays as player 2 from now on
     quit
 
-Buttons: `a b x y start back up down left right lb rb ls rs lt rt`. Full syntax in
+Buttons: `guide a b x y start back up down left right lb rb ls rs lt rt`. Full syntax in
 `src/dev/input_script.h`. For RenderDoc, start the game through `renderdoccmd capture`; the capture
 spans whole guest frames (RenderDoc's own triggers capture host frames, and one guest frame's GPU
 work is spread over several of them).

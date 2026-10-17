@@ -16,6 +16,7 @@
 //   scan <hex> [<hex> ...]   logs where this big-endian u32 sequence is in guest memory
 //   poke <hex addr> <hex>    writes a big-endian u32 to guest memory
 //   renderdoc [n]            captures the next n guest frames with an attached RenderDoc
+//   player <n>               the scripted controller plays as player n (1-4) from now on
 //   quit                     ends the game
 // Buttons: a b x y start back guide up down left right lb rb ls rs lt rt
 

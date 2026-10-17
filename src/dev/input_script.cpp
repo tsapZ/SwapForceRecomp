@@ -39,7 +39,7 @@ using rex::X_STATUS;
 constexpr auto kScriptDevice = static_cast<rex::input::DeviceId>(0x53435200);  // "SCR"
 
 struct Event {
-  enum class Kind { kPress, kStick, kLog, kFps, kScan, kPoke, kRenderDoc, kQuit } kind;
+  enum class Kind { kPress, kStick, kLog, kFps, kScan, kPoke, kRenderDoc, kPlayer, kQuit } kind;
   double start = 0.0;     // seconds since the timeline started
   double duration = 0.0;  // seconds, for presses and stick moves
   uint16_t buttons = 0;
@@ -47,7 +47,7 @@ struct Event {
   bool right_trigger = false;
   double x = 0.0, y = 0.0;
   std::string text;
-  uint32_t frames = 0;  // renderdoc: guest frames to capture
+  uint32_t frames = 0;  // renderdoc: guest frames to capture; player: the player (1-4)
   std::vector<uint32_t> words;  // scan: the sequence; poke: address and value
 };
 
@@ -139,6 +139,9 @@ bool ParseScript(std::istream& in, std::vector<Event>& events) {
       e.kind = Event::Kind::kRenderDoc;
       e.frames = 1;
       if (words >> e.frames) ok = e.frames > 0;
+    } else if (cmd == "player") {
+      ok = bool(words >> e.frames) && e.frames >= 1 && e.frames <= 4;
+      e.kind = Event::Kind::kPlayer;
     } else if (cmd == "quit") {
       e.kind = Event::Kind::kQuit;
     } else {
@@ -287,6 +290,9 @@ class ScriptInputDriver final : public rex::input::InputDriver {
           REXLOG_INFO("Input script: poke {:08X} = {:08X}", e.words[0], e.words[1]);
         } else if (e.kind == Event::Kind::kRenderDoc) {
           CaptureGuestFrames(e.frames, guest_frame_count);
+        } else if (e.kind == Event::Kind::kPlayer) {
+          skylanders::menu_input::SetDevicePlayer(kScriptDevice, e.frames - 1);
+          REXLOG_INFO("Input script: now playing as player {}", e.frames);
         } else {
           REXLOG_INFO("Input script: quit");
           std::_Exit(0);
