@@ -61,6 +61,12 @@ def main(controller):
         if ss:
             log("  stencil front", ss[0].function, "pass", ss[0].passOperation, "ref", ss[0].reference,
                 "cmp mask", ss[0].compareMask)
+        try:
+            vp = state.GetViewport(0)
+            sc = state.GetScissor(0)
+            log("  viewport", vp.x, vp.y, vp.width, vp.height, "scissor", sc.x, sc.y, sc.width, sc.height)
+        except Exception as ex:  # noqa: BLE001
+            log("  viewport n/a", ex)
         log("  outputs", [int(t.resource) for t in state.GetOutputTargets()], "depth",
             int(state.GetDepthTarget().resource))
 
