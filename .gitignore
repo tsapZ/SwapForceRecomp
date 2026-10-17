@@ -10,6 +10,7 @@
 /installer/staging/
 /installer/Output/
 /tools/__pycache__
+/tools/renderdoc/__pycache__
 /docs/superpowers/
 /.superpowers/
 .mcp.json

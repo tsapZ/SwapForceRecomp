@@ -122,7 +122,7 @@ work is spread over several of them).
 timeline (`PrintWindow`, so other windows in front don't matter):
 
     tools/run_scripted.ps1 -OutDir logs\shots -Shots "wait 50; shot card; full card_big" `
-        -GameArgs "--user_data_root=C:\path	o	est-userdata --input_script=card.txt --portal_mode=software"
+        -GameArgs "--user_data_root=C:\path\to\test-userdata --input_script=card.txt --portal_mode=software"
 
 ### Graphics debugging with RenderDoc
 
@@ -131,7 +131,8 @@ of the same guest frame. RenderDoc is not installed; use the portable build in t
 toolchain folder:
 
     curl -L -o rd.zip https://renderdoc.org/stable/1.46/RenderDoc_1.46_64.zip
-    # unzip into logs	oolchain\ -> logs	oolchain\RenderDoc_1.46_64
+    # unzip into logs\toolchain\ -> logs\toolchain\RenderDoc_1.46_64\
+
 Capture with `tools/run_scripted.ps1 -RenderDocCapture <prefix>` and a `renderdoc 2` line in the input
 script. Windows asks once whether `swapforcerecompiled.exe` may use the network: that is RenderDoc's
 target control port, local access is enough. With `rov`, the first start under RenderDoc builds all
