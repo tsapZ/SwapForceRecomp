@@ -42,6 +42,7 @@ set(SWAPFORCERECOMP_SOURCES
     src/hooks/frame_rate_hook.cpp
     src/hooks/ultrawide_hook.cpp
     src/localization.cpp
+    src/dev/input_script.cpp
 )
 
 if(WIN32)

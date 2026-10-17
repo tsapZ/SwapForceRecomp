@@ -18,6 +18,7 @@
 #include <rex/logging.h>
 #include <rex/rex_app.h>
 
+#include "dev/input_script.h"
 #include "localization.h"
 #include "portal_rex/portal_rex.h"
 #include "xex_verify.h"
@@ -60,6 +61,10 @@ class SwapforcerecompApp : public rex::ReXApp {
 
   void OnPostSetup() override {
     skylanders::InstallPortal(user_data_root() / "figures");
+    swapforcerecomp::InstallInputScript(runtime()->input_system(), [this]() -> uint64_t {
+      auto* graphics_system = runtime() ? runtime()->graphics_system() : nullptr;
+      return graphics_system ? graphics_system->guest_frame_count() : 0;
+    });
     // The F3 debug overlay's FPS line only shows once something calls this; nothing did, so it
     // silently stayed blank. Sampled from the SDK's dedicated guest-swap counter (which only
     // advances on an actual presented guest frame -- see CommandProcessor::guest_frame_count())

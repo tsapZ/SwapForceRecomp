@@ -96,6 +96,28 @@ Automated or experimental runs write saves and figure progress. Point them at a 
 Copy `Documents\swapforcerecomp` (saves under `B13EBABEBABEBABE\`, figures under `figures\`) into
 that folder first. Never test against the real user folder.
 
+### Scripted input
+
+`--input_script=<file>` plays a fixed controller timeline as an extra input device, independent of
+the window focus (the keyboard emulation only reads keys while the game window has the focus, so a
+system dialog in the foreground breaks keyboard-driven test runs). One command per line or `;`:
+
+    wait 18
+    tap start            # title screen
+    wait 4
+    tap a                # story mode
+    hold right 600       # d-pad, in milliseconds
+    stick 0 1 1500       # left stick forward for 1.5 s
+    fps 10               # log the guest frame rate over 10 s
+    renderdoc 2          # capture the next 2 guest frames with an attached RenderDoc
+    log reached level    # mark the point in the log
+    quit
+
+Buttons: `a b x y start back up down left right lb rb ls rs lt rt`. Full syntax in
+`src/dev/input_script.h`. For RenderDoc, start the game through `renderdoccmd capture`; the capture
+spans whole guest frames (RenderDoc's own triggers capture host frames, and one guest frame's GPU
+work is spread over several of them).
+
 ## Troubleshooting
 
 - **CMake can't find `clang`/`clang++`:** use the `just` recipes instead of calling `cmake`
