@@ -9,10 +9,19 @@ Power, and a settings overlay.
 
 ## Status
 
-Early but playable: the game boots, menus, saving and the tutorial level work, including cutscenes,
-German and English, the emulated portal (F6) and real USB portals (also older Spyro's Adventure/Giants
-portals). Experimental 60 FPS and more (`present_interval`). Details and known issues in
-[docs/STATUS.md](docs/STATUS.md).
+Playable through the tutorial. Where each part stands, and what comes next:
+**[docs/roadmap.md](docs/roadmap.md)**. Session details and known bugs: [docs/STATUS.md](docs/STATUS.md).
+
+| Area | State |
+|---|---|
+| Boot, menus, saving | ✅ works, logo movies skipped |
+| Tutorial level | ✅ playable with controller or keyboard, cutscenes included |
+| Graphics | ✅ correct with the fast RTV path; 4K output works |
+| Frame rate | ✅ 60 FPS and more (`present_interval = 1` + `frame_rate_limit`), e.g. ~105 FPS at 1440p |
+| Portal | ✅ emulated (F6) and real USB, also older portals; swappers work on the emulated portal |
+| Languages | ✅ English and German |
+| Rest of the game | 🟡 not played through yet |
+| Controller-only portal menu, installer, ultrawide | ⬜ planned |
 
 ## Building
 

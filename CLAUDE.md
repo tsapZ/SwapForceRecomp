@@ -50,3 +50,6 @@ the XEX loader into `logs/toolchain/` (gitignored); run it in Phase 1, not earli
 
 `docs/STATUS.md` is updated at the end of every session: what works, what doesn't, known bugs.
 Only record what the build actually did.
+`docs/roadmap.md` is the overview for the owner (phase table, "now / next / later", checklists with
+issue numbers): update it whenever an issue is closed or the plan changes, and keep the README status
+table in step with it.
