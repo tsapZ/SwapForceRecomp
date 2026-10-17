@@ -177,3 +177,7 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   and RenderDoc captures of whole guest frames, independent of the window focus. A Windows firewall
   prompt (RenderDoc's target control port) had blocked focus-based keyboard automation. See
   docs/development.md.
+- **Sharper picture at scale 2 (#23):** `present_effect = "cas"` visibly sharpens edges (1:1 crops at
+  1440p) for less than 1 FPS (105.1 -> 104.4). `fsr` changes little here because the final image is
+  already window-sized; scale 3 is barely sharper because its 4K image is scaled down again. Added as
+  a commented option to the templates; default stays `bilinear`.

@@ -27,6 +27,8 @@ anisotropic_override = 5                  # texture filtering: 5 = 16x, 3 = 4x, 
 # ui_scale = 1.5                          # ImGui overlay font/widget scale
 
 ["UI/Presenter"]
+# present_effect = "cas"                 # sharpen the final picture (default "bilinear"); costs < 1 FPS.
+#                                         # Recommended with resolution_scale 2 on 1440p: the game's 3D scene is 1024x624
 present_use_actual_aspect = true          # present the real rendered frame at 'resolution's real
                                            # aspect instead of the reported video mode's -- matters
                                            # together with ultrawide_fov above
