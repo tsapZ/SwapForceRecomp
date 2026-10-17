@@ -118,6 +118,33 @@ Buttons: `a b x y start back up down left right lb rb ls rs lt rt`. Full syntax 
 spans whole guest frames (RenderDoc's own triggers capture host frames, and one guest frame's GPU
 work is spread over several of them).
 
+`tools/run_scripted.ps1` starts the game for such a run and saves screenshots of its window on a
+timeline (`PrintWindow`, so other windows in front don't matter):
+
+    tools/run_scripted.ps1 -OutDir logs\shots -Shots "wait 50; shot card; full card_big" `
+        -GameArgs "--user_data_root=C:\path	o	est-userdata --input_script=card.txt --portal_mode=software"
+
+### Graphics debugging with RenderDoc
+
+For rendering bugs that only one render target path shows (RTV vs ROV), compare RenderDoc captures
+of the same guest frame. RenderDoc is not installed; use the portable build in the gitignored
+toolchain folder:
+
+    curl -L -o rd.zip https://renderdoc.org/stable/1.46/RenderDoc_1.46_64.zip
+    # unzip into logs	oolchain\ -> logs	oolchain\RenderDoc_1.46_64
+Capture with `tools/run_scripted.ps1 -RenderDocCapture <prefix>` and a `renderdoc 2` line in the input
+script. Windows asks once whether `swapforcerecompiled.exe` may use the network: that is RenderDoc's
+target control port, local access is enough. With `rov`, the first start under RenderDoc builds all
+pipelines very slowly (minutes); wait longer before the first input. `--d3d12_bindless=false` makes
+the textures each draw reads visible to RenderDoc.
+
+`tools/renderdoc/rd.ps1` runs the analysis scripts headless: `list` (actions and their render
+targets; `group.py` folds them into passes), `srvs` (textures read per draw, to find the same draw in
+two captures), `dump` (render targets after given events as PNG) and `inspect` (pipeline state and
+input textures of given draws). Host render targets with the RTV path are EDRAM-shaped (for example
+1040x2528): the surface at an EDRAM base starts at row 0 of the target created for that base. This
+is how the RTV black characters were found (docs/STATUS.md, 2026-10-17).
+
 ## Troubleshooting
 
 - **CMake can't find `clang`/`clang++`:** use the `just` recipes instead of calling `cmake`
