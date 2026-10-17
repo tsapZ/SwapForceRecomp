@@ -20,6 +20,7 @@
 #include <rex/input/input_driver.h>
 #include <rex/input/input_system.h>
 #include <rex/logging.h>
+#include <rex/system/xmemory.h>
 
 REXCVAR_DEFINE_STRING(input_script, "", "Input",
                       "Developer option: play controller input from this script file (see "
@@ -36,7 +37,7 @@ using rex::X_STATUS;
 constexpr auto kScriptDevice = static_cast<rex::input::DeviceId>(0x53435200);  // "SCR"
 
 struct Event {
-  enum class Kind { kPress, kStick, kLog, kFps, kRenderDoc, kQuit } kind;
+  enum class Kind { kPress, kStick, kLog, kFps, kScan, kPoke, kRenderDoc, kQuit } kind;
   double start = 0.0;     // seconds since the timeline started
   double duration = 0.0;  // seconds, for presses and stick moves
   uint16_t buttons = 0;
@@ -45,6 +46,7 @@ struct Event {
   double x = 0.0, y = 0.0;
   std::string text;
   uint32_t frames = 0;  // renderdoc: guest frames to capture
+  std::vector<uint32_t> words;  // scan: the sequence; poke: address and value
 };
 
 bool ParseButton(const std::string& name, Event& e) {
@@ -125,6 +127,11 @@ bool ParseScript(std::istream& in, std::vector<Event>& events) {
     } else if (cmd == "fps") {
       ok = bool(words >> e.duration) && e.duration > 0.0;
       e.kind = Event::Kind::kFps;
+    } else if (cmd == "scan" || cmd == "poke") {
+      std::string word;
+      while (words >> word) e.words.push_back(uint32_t(std::stoul(word, nullptr, 16)));
+      ok = cmd == "scan" ? !e.words.empty() : e.words.size() == 2;
+      e.kind = cmd == "scan" ? Event::Kind::kScan : Event::Kind::kPoke;
     } else if (cmd == "renderdoc") {
       e.kind = Event::Kind::kRenderDoc;
       e.frames = 1;
@@ -142,6 +149,58 @@ bool ParseScript(std::istream& in, std::vector<Event>& events) {
     t += e.duration;
   }
   return true;
+}
+
+// Logs where the big-endian u32 sequence `words` occurs in committed guest memory (the virtual
+// heaps, the image and one view of physical memory), with the words around each hit. For finding
+// engine objects by known field values while reverse engineering.
+void ScanGuestMemory(rex::memory::Memory* memory, const std::vector<uint32_t>& words) {
+  // 0xA0000000-0xBFFFFFFF is one of the three views of physical memory; the other two alias it.
+  static const struct {
+    uint32_t start, end;
+  } kRanges[] = {{0x40000000, 0x7FFFFFFF},
+                 {0x80000000, 0x9FFFFFFF},
+                 {0xA0000000, 0xBFFFFFFF}};
+  auto read = [](const uint8_t* p) {
+    uint32_t v;
+    std::memcpy(&v, p, 4);
+    return rex::byte_swap(v);
+  };
+  uint32_t hits = 0;
+  for (const auto& range : kRanges) {
+    uint64_t address = range.start;
+    while (address < range.end && hits < 32) {
+      rex::memory::BaseHeap* heap = memory->LookupHeap(uint32_t(address));
+      rex::memory::HeapAllocationInfo info{};
+      if (!heap || !heap->QueryRegionInfo(uint32_t(address), &info) || !info.region_size) {
+        address += 0x10000;
+        continue;
+      }
+      const uint64_t region_end = uint64_t(info.base_address) + info.region_size;
+      if ((info.state & rex::memory::kMemoryAllocationCommit) &&
+          (info.protect & rex::memory::kMemoryProtectRead)) {
+        const uint8_t* host = memory->TranslateVirtual<const uint8_t*>(info.base_address);
+        const uint32_t count = info.region_size / 4;
+        for (uint32_t i = 0; i + words.size() <= count && hits < 32; ++i) {
+          bool match = true;
+          for (size_t k = 0; k < words.size() && match; ++k) {
+            match = read(host + 4 * (i + k)) == words[k];
+          }
+          if (!match) continue;
+          std::string around;
+          for (int k = -4; k < 8; ++k) {
+            if (int64_t(i) + k < 0 || i + k >= count) continue;
+            const uint32_t v = read(host + 4 * (i + k));
+            around += k == 0 ? fmt::format(" [{:08X}]", v) : fmt::format(" {:08X}", v);
+          }
+          REXLOG_INFO("Input script: scan hit at {:08X}:{}", info.base_address + 4 * i, around);
+          ++hits;
+        }
+      }
+      address = std::max(region_end, address + 0x1000);
+    }
+  }
+  REXLOG_INFO("Input script: scan done, {} hit(s)", hits);
 }
 
 // Captures `frames` whole guest frames with an injected RenderDoc. RenderDoc's own triggers capture
@@ -189,21 +248,21 @@ void CaptureGuestFrames(uint32_t frames, const std::function<uint64_t()>& guest_
 
 class ScriptInputDriver final : public rex::input::InputDriver {
  public:
-  ScriptInputDriver(std::vector<Event> events, std::function<uint64_t()> guest_frame_count)
+  ScriptInputDriver(std::vector<Event> events, std::function<uint64_t()> guest_frame_count,
+                    rex::memory::Memory* memory)
       : InputDriver(nullptr, 0),
         events_(std::move(events)),
         guest_frame_count_(std::move(guest_frame_count)),
+        memory_(memory),
         start_(Clock::now()) {}
 
   X_STATUS Setup() override {
     // Logs, captures and quit fire at their time even while the game polls no input. The thread
     // works on copies and is detached, so it never outlives what it uses.
-    std::thread([events = events_, start = start_, guest_frame_count = guest_frame_count_] {
+    std::thread([events = events_, start = start_, guest_frame_count = guest_frame_count_,
+                 memory = memory_] {
       for (const Event& e : events) {
-        if (e.kind != Event::Kind::kLog && e.kind != Event::Kind::kFps &&
-            e.kind != Event::Kind::kRenderDoc && e.kind != Event::Kind::kQuit) {
-          continue;
-        }
+        if (e.kind == Event::Kind::kPress || e.kind == Event::Kind::kStick) continue;
         std::this_thread::sleep_until(start + std::chrono::duration_cast<Clock::duration>(
                                                   std::chrono::duration<double>(e.start)));
         if (e.kind == Event::Kind::kLog) {
@@ -216,6 +275,13 @@ class ScriptInputDriver final : public rex::input::InputDriver {
           const double seconds = std::chrono::duration<double>(Clock::now() - time_before).count();
           REXLOG_INFO("Input script: {:.1f} guest FPS ({} frames in {:.2f} s)",
                       double(frames) / seconds, frames, seconds);
+        } else if (e.kind == Event::Kind::kScan) {
+          ScanGuestMemory(memory, e.words);
+        } else if (e.kind == Event::Kind::kPoke) {
+          auto* host = memory->TranslateVirtual<uint8_t*>(e.words[0]);
+          const uint32_t value = rex::byte_swap(e.words[1]);
+          std::memcpy(host, &value, 4);
+          REXLOG_INFO("Input script: poke {:08X} = {:08X}", e.words[0], e.words[1]);
         } else if (e.kind == Event::Kind::kRenderDoc) {
           CaptureGuestFrames(e.frames, guest_frame_count);
         } else {
@@ -291,13 +357,14 @@ class ScriptInputDriver final : public rex::input::InputDriver {
  private:
   std::vector<Event> events_;
   std::function<uint64_t()> guest_frame_count_;
+  rex::memory::Memory* memory_;
   Clock::time_point start_;
   uint32_t packet_number_ = 0;
 };
 
 }  // namespace
 
-void InstallInputScript(rex::system::IInputSystem* input_system,
+void InstallInputScript(rex::system::IInputSystem* input_system, rex::memory::Memory* memory,
                         std::function<uint64_t()> guest_frame_count) {
   const std::string path = REXCVAR_GET(input_script);
   if (path.empty()) return;
@@ -312,7 +379,8 @@ void InstallInputScript(rex::system::IInputSystem* input_system,
     REXLOG_ERROR("Input script: no input system");
     return;
   }
-  auto driver = std::make_unique<ScriptInputDriver>(std::move(events), std::move(guest_frame_count));
+  auto driver =
+      std::make_unique<ScriptInputDriver>(std::move(events), std::move(guest_frame_count), memory);
   driver->Setup();
   input->AddDriver(std::move(driver));
   REXLOG_INFO("Input script: playing '{}'", path);

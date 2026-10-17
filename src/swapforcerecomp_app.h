@@ -61,7 +61,8 @@ class SwapforcerecompApp : public rex::ReXApp {
 
   void OnPostSetup() override {
     skylanders::InstallPortal(user_data_root() / "figures");
-    swapforcerecomp::InstallInputScript(runtime()->input_system(), [this]() -> uint64_t {
+    swapforcerecomp::InstallInputScript(runtime()->input_system(), runtime()->memory(),
+                                        [this]() -> uint64_t {
       auto* graphics_system = runtime() ? runtime()->graphics_system() : nullptr;
       return graphics_system ? graphics_system->guest_frame_count() : 0;
     });
