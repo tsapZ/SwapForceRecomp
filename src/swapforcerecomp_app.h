@@ -20,6 +20,8 @@
 
 #include "dev/input_script.h"
 #include "localization.h"
+#include "portal_rex/portal_menu.h"
+#include "portal_rex/portal_menu_input.h"
 #include "portal_rex/portal_rex.h"
 #include "xex_verify.h"
 
@@ -57,6 +59,14 @@ class SwapforcerecompApp : public rex::ReXApp {
     // Some of the game's text (e.g. the autosave warning dialog) is already resolved by the time
     // OnPostSetup runs -- apply this as early as possible, before the XEX even loads.
     swapforcerecomp::ApplyLanguageSetting();
+    // The portal menu wraps every input driver: it notices its open button on any controller,
+    // knows which player that controller is, and hides input from the game while it is open.
+    config.input_factory = skylanders::CreatePortalMenuInputSystem;
+    // The Guide button opens the portal menu (the menu hides it from the game). SDL drops Guide
+    // presses unless this is on.
+    SetDefault("guide_button", "true");
+    // Swap Force recognizes figures of its own and the two earlier games only.
+    SetDefault("portal_menu_games", "Spyro's Adventure;Giants;Swap Force");
   }
 
   void OnPostSetup() override {
@@ -120,6 +130,7 @@ class SwapforcerecompApp : public rex::ReXApp {
     }
 #endif
     if (font) ImGui::GetIO().FontDefault = font;
+    skylanders::AddPortalMenuFonts(atlas);
   }
 
   void OnConfigureStyle(ImGuiStyle& imgui_style, rex::ui::Style& ui_style) override {
@@ -140,6 +151,7 @@ class SwapforcerecompApp : public rex::ReXApp {
   }
 
   void OnCreateDialogs(rex::ui::ImGuiDrawer* drawer) override {
+    skylanders::RegisterPortalMenu(drawer, &app_context());
     skylanders::RegisterPortalOverlay(drawer);
   }
 
@@ -170,6 +182,13 @@ class SwapforcerecompApp : public rex::ReXApp {
   }
 
  private:
+  // Sets a setting's default without overriding what the user put in the settings file.
+  static void SetDefault(std::string_view name, std::string_view value) {
+    if (!rex::cvar::HasNonDefaultValue(name) && !rex::cvar::SetFlagByName(name, value)) {
+      REXLOG_WARN("Could not set {} to {}", name, value);
+    }
+  }
+
   [[noreturn]] static void Fatal(const std::string& message) {
     REXLOG_ERROR("{}", message);
 #ifdef _WIN32

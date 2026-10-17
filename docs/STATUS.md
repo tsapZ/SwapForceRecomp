@@ -188,3 +188,11 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   1280x720 G-buffer needs 2880 EDRAM tiles; the rexglue-sdk fork has started a 4096-tile EDRAM
   (`edram_tile_count`, not in our pinned commit). Input scripts gained `scan`/`poke` for finding
   such objects at runtime. Where the 1040x620 is computed is not found yet.
+- **Portal menu (#40), first version: works.** Scripted test at the Wolkenbruch checkpoint: the
+  Guide button opens the menu for player 1 and lifts Chop Chop (the game shows its portal screen),
+  choosing a card places that figure and the game continues with it, B puts the lifted figure back,
+  and a swapper from the Swap Force tab asks whole / top / bottom and places both halves (Blast Zone
+  playable). Cards are coloured by element, owned figures first, tabs per game plus "Recent",
+  German texts. Not tested yet: two controllers (each player changes only their own figure),
+  holding View, the real Guide button with the Windows Game Bar. Code in the
+  `feature/portal-menu` branch of the skylanders-portal fork; the old overlay is on F8 now.

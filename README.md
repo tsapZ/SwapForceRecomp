@@ -18,7 +18,7 @@ First level played through. Where each part stands, and what comes next:
 | First level | ✅ played through with keyboard, controller works too; cutscenes included |
 | Graphics | ✅ correct with the fast RTV path; 4K output works |
 | Frame rate | ✅ 60 FPS and more (`present_interval = 1` + `frame_rate_limit`): 100+ FPS in the first level at 1440p, ~80 in the hub |
-| Portal | ✅ emulated (F6) and real USB, also older portals; swappers work on the emulated portal |
+| Portal | ✅ emulated and real USB, also older portals; swappers work; portal menu for controller and keyboard (Guide button / hold View / F6), per player |
 | Languages | ✅ English and German |
 | Rest of the game | 🟡 not played through yet |
 | Picture quality | 🟡 3D scene renders at 1040x620 and is scaled up; sharper native scene planned |

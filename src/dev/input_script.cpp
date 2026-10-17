@@ -22,6 +22,8 @@
 #include <rex/logging.h>
 #include <rex/system/xmemory.h>
 
+#include "portal_rex/portal_menu_input.h"
+
 REXCVAR_DEFINE_STRING(input_script, "", "Input",
                       "Developer option: play controller input from this script file (see "
                       "src/dev/input_script.h), for automated test runs")
@@ -54,6 +56,7 @@ bool ParseButton(const std::string& name, Event& e) {
     const char* name;
     uint16_t bit;
   } kButtons[] = {
+      {"guide", rex::input::X_INPUT_GAMEPAD_GUIDE},
       {"a", rex::input::X_INPUT_GAMEPAD_A},
       {"b", rex::input::X_INPUT_GAMEPAD_B},
       {"x", rex::input::X_INPUT_GAMEPAD_X},
@@ -382,7 +385,8 @@ void InstallInputScript(rex::system::IInputSystem* input_system, rex::memory::Me
   auto driver =
       std::make_unique<ScriptInputDriver>(std::move(events), std::move(guest_frame_count), memory);
   driver->Setup();
-  input->AddDriver(std::move(driver));
+  // Wrapped like the real controllers, so scripted runs can open and drive the portal menu.
+  input->AddDriver(skylanders::WrapForPortalMenu(std::move(driver), true));
   REXLOG_INFO("Input script: playing '{}'", path);
 }
 

@@ -17,7 +17,7 @@
 //   poke <hex addr> <hex>    writes a big-endian u32 to guest memory
 //   renderdoc [n]            captures the next n guest frames with an attached RenderDoc
 //   quit                     ends the game
-// Buttons: a b x y start back up down left right lb rb ls rs lt rt
+// Buttons: a b x y start back guide up down left right lb rb ls rs lt rt
 
 #pragma once
 

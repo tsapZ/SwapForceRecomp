@@ -11,7 +11,7 @@ Phase 3.
 
 | Mode | Backend | What it does |
 |---|---|---|
-| `software` | `portal::SoftwarePortal` | emulated portal with up to 16 figure slots, driven by the F6 overlay |
+| `software` | `portal::SoftwarePortal` | emulated portal with up to 16 figure slots, driven by the portal menu |
 | `usb` | `portal::UsbPortal` | a real portal via hidapi; commands go out as HID `SET_REPORT`, no driver swap (Zadig) needed |
 | `none` | – | no handler; the game shows its own "Can't find the Portal of Power" |
 
@@ -59,20 +59,47 @@ Each swapper half is its own figure with its own id. The built-in catalog
 halves 2000–2015**, game "Swap Force". `portal/figure_stats.cpp` already contains Swap Force's
 level table.
 
-Open for Phase 3:
-
-- Both halves sit on the portal at the same time, in two slots. Does the software portal's slot
-  handling and the overlay make placing and swapping a pair practical?
-- When a half is swapped, the game sees one slot go `removing` and another `added`. Does the
-  timing match what a real portal sends?
-- Where does the game write progress for a combined character, to one half or both?
+Both halves sit on the portal at the same time, in two slots, and the game combines them (tested
+with Blast Zone + Fire Kraken and with whole swappers through the portal menu). Both halves get
+their progress written back. Still to test: a swapper on the real USB portal (#42).
 
 If anything needs changing, it goes into a clearly named branch of `skylanders-portal` so it can be
 offered upstream.
 
-## Overlay (F6)
+## Portal menu (Guide button / F6)
 
-`portal_rex/portal_overlay_dialog.cpp`, an ImGui dialog. **Browse** lists dumps found under
-`portal_figures_dir` and places or removes them in slots 0–15. **New Figure** creates a blank figure
-from the catalog and places it. It only uses the control API, so it works the same with every
-backend.
+`portal_rex/portal_menu.cpp` (input plumbing in `portal_menu_input.cpp`), in the
+`feature/portal-menu` branch of the fork. A Skylanders-style ImGui menu that works with a
+controller or the keyboard:
+
+- **Open:** the Guide (Xbox) button or holding View/Back on a controller
+  (`portal_menu_open_buttons`, default `guide,hold_back`; also chords like `start+back`; hold time
+  `portal_menu_hold_ms`), or F6 on the keyboard (`bind_portal_menu`, player 1). The Windows Game
+  Bar also reacts to the Guide button: turn it off under Settings > Gaming > Xbox Game Bar if it
+  gets in the way, or use the View button.
+- **Per player:** the menu opens for the controller that pressed the button (controller in
+  connection slot N = player N+1, keyboard = player 1) and only changes that player's figure.
+  Opening lifts the figure off the emulated portal, so the game reacts like with a real portal:
+  alone it pauses and asks for a Skylander, in co-op only that player drops out.
+- **Controls:** D-pad / stick or arrows / WASD to move, A / Enter to place, B / Esc to close (the
+  old figure goes back), LT / RT or Q / E to switch the game tab, LB / RB or 1 / 3 to swap only the
+  top / bottom half of a swapper, Y or P to switch between cards and a names-only list. A swapper
+  chosen with A asks: whole Skylander, top half only, or bottom half only.
+- **Figures:** all catalog figures of the games in `portal_menu_games` (Swap Force: Spyro's
+  Adventure, Giants, Swap Force); the owner's figure files under `portal_figures_dir` come first
+  with level and gold. A figure without a file gets one when it is placed, and keeps its progress
+  from then on. Recently placed figures are listed under "Recent"
+  (`<figures>/portal_menu_recent.txt`).
+- **Look:** cards coloured by element (`portal/figure_info.cpp` maps every character of the first
+  three games), the game dimmed around the menu, German texts with `language = "german"`.
+- The whole input system is the SDK's default one with every driver wrapped
+  (`CreatePortalMenuInputSystem`): the wrapper notices the open button, hides all controller and
+  keyboard input from the game while the menu is open, and lets the menu poll each controller.
+  The Guide button never reaches the game.
+
+## Developer tools (F8)
+
+`portal_rex/portal_overlay_dialog.cpp`, the former F6 overlay: **Browse** lists dumps found under
+`portal_figures_dir` and places or removes them in any slot 0–15. **New Figure** creates a blank
+figure from the catalog and places it. With the USB portal it shows what is on the real portal and
+can dump a figure to a file.

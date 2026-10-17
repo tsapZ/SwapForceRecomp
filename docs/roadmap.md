@@ -23,7 +23,8 @@ quality, then the controller-only Skylanders-style menus and a release.
 
 | When | What | Who |
 |---|---|---|
-| **Now** | Portal menu for controller and keyboard in Skylanders style, per player, replacing F6 (#40) | me |
+| **Now** | Test the portal menu: Guide button or hold View, two controllers, swappers (#40) | you |
+| Next | Portal menu polish from your feedback; button rebinding in the settings menu | me |
 | Next | Settings menu in the same style, replacing F4: presets, scale, 4K downsampling, GPU, portal choice (#43, #47); portraits from your game data (#46) | me |
 | Research | Native 1280x720 3D scene (#41): engine classes found, size is computed at render target creation; needs the computing code | me |
 | Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 % | me |
@@ -88,7 +89,7 @@ with keyboard; controller input verified in the tutorial).
 - [x] Resolution options measured; `present_effect = "cas"` recommended at scale 2 (#23)
 - [ ] Performance: GPU-bound; about 25 % of GPU time is EDRAM emulation (transfers, dumps) (#44)
 - [ ] Smoother edges: the SDK's FXAA shifts colours, supersampling costs (#45)
-- [ ] Portal menu for controller and keyboard in Skylanders style, per player, replacing F6 (#40)
+- [ ] Portal menu for controller and keyboard in Skylanders style, per player, replacing F6 (#40): first version works, waiting for the owner's test
 - [ ] Skylander portraits from the owner's game data (#46)
 - [ ] USB portal selection and portal compatibility table (#47)
 - [ ] Settings menu in Skylanders style, usable with controller, replacing F4 (#43)
