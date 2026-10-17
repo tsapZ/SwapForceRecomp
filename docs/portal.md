@@ -81,17 +81,23 @@ controller or the keyboard:
   connection slot N = player N+1, keyboard = player 1) and only changes that player's figure.
   Opening lifts the figure off the emulated portal, so the game reacts like with a real portal:
   alone it pauses and asks for a Skylander, in co-op only that player drops out.
-- **Controls:** D-pad / stick or arrows / WASD to move, A / Enter to place, B / Esc to close (the
-  old figure goes back), LT / RT or Q / E to switch the game tab, LB / RB or 1 / 3 to swap only the
-  top / bottom half of a swapper, Y or P to switch between cards and a names-only list. A swapper
-  chosen with A asks: whole Skylander, top half only, or bottom half only.
+- **Layout:** "Recent" opens first (each player's own list, kept across sessions, in
+  `<figures>/portal_menu_recent_pN.txt`; a swapper combination is one entry and each half only
+  appears in its latest combination). Then one tab per game with the characters that debuted in
+  it, grouped by element; one card per character.
+- **Controls:** D-pad / stick or arrows / WASD to move, A / Enter to choose, B / Esc to go back or
+  close (the old figure goes back on the portal), LT / RT or Q / E to switch the game tab, LB / RB
+  or 1 / 3 to switch the element, X or L for details. A on a character opens its versions
+  (Series 1/2/3, LightCore, variants, chase variants); for a swapper each version offers whole,
+  top half only (keeps the current bottom) and bottom half only.
 - **Figures:** all catalog figures of the games in `portal_menu_games` (Swap Force: Spyro's
-  Adventure, Giants, Swap Force); the owner's figure files under `portal_figures_dir` come first
-  with level and gold. A figure without a file gets one when it is placed, and keeps its progress
-  from then on. Recently placed figures are listed under "Recent"
-  (`<figures>/portal_menu_recent.txt`).
-- **Look:** cards coloured by element (`portal/figure_info.cpp` maps every character of the first
-  three games), the game dimmed around the menu, German texts with `language = "german"`.
+  Adventure, Giants, Swap Force). The owner's figure files under `portal_figures_dir` are used
+  when present (level, gold, nickname shown); a figure without a file gets one when it is placed
+  and keeps its progress from then on.
+- **Look:** element colours and self-drawn element symbols (the official ones can't be used), also
+  as a faded watermark on each card; slightly see-through panel with the game visible around it;
+  German texts with `language = "german"`. Portraits from the game data are planned (#46), the
+  details view will show more of the figure data (#48).
 - The whole input system is the SDK's default one with every driver wrapped
   (`CreatePortalMenuInputSystem`): the wrapper notices the open button, hides all controller and
   keyboard input from the game while the menu is open, and lets the menu poll each controller.
