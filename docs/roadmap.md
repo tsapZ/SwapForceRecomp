@@ -12,7 +12,7 @@ observed in a real build or a real play test, not inferred.
 | 1 Recompile and boot | ✅ done | 8/8 | – |
 | 2 In-game | ✅ done | 11/11 | – |
 | 3 Portal | 🟡 almost | 6/7 | a swapper on the real USB portal (#42) |
-| 4 4K and polish | 🟡 in progress | 5/13 | performance and picture quality (#44, #45, #41), Skylanders-style portal menu and overlays (#40, #43), installer (#27), ultrawide (#24), wiki (#4) |
+| 4 4K and polish | 🟡 in progress | 5/15 | controller portal menu (#40, #46, #47), settings menu (#43), performance and picture quality (#44, #45, #41), installer (#27), ultrawide (#24), wiki (#4) |
 | 5 Online co-op (stretch) | ⬜ not started | 0/3 | architecture proposal first |
 
 **Where we are:** the first level is played through at over 100 FPS (1440p), the hub runs at about
@@ -23,7 +23,8 @@ quality, then the controller-only Skylanders-style menus and a release.
 
 | When | What | Who |
 |---|---|---|
-| **Now** | Controller-only portal menu in Skylanders style, replacing F6 (#40); F3/F4 restyle (#43) | me |
+| **Now** | Portal menu for controller and keyboard in Skylanders style, per player, replacing F6 (#40) | me |
+| Next | Settings menu in the same style, replacing F4: presets, scale, 4K downsampling, GPU, portal choice (#43, #47); portraits from your game data (#46) | me |
 | Research | Native 1280x720 3D scene (#41): engine classes found, size is computed at render target creation; needs the computing code | me |
 | Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 % | me |
 | Research | Smoother edges (#45): the SDK's FXAA shifts colours (bytecode only); supersampling costs | me |
@@ -87,8 +88,10 @@ with keyboard; controller input verified in the tutorial).
 - [x] Resolution options measured; `present_effect = "cas"` recommended at scale 2 (#23)
 - [ ] Performance: GPU-bound; about 25 % of GPU time is EDRAM emulation (transfers, dumps) (#44)
 - [ ] Smoother edges: the SDK's FXAA shifts colours, supersampling costs (#45)
-- [ ] Controller-only portal menu in Skylanders style, replacing the F6 overlay (#40)
-- [ ] Skylanders-style F3 and F4 overlays (#43)
+- [ ] Portal menu for controller and keyboard in Skylanders style, per player, replacing F6 (#40)
+- [ ] Skylander portraits from the owner's game data (#46)
+- [ ] USB portal selection and portal compatibility table (#47)
+- [ ] Settings menu in Skylanders style, usable with controller, replacing F4 (#43)
 - [ ] Native 1280x720 3D scene, the game renders it at 1040x620 (#41)
 - [ ] Installer tested on a clean Windows VM (#27)
 - [ ] Ultrawide: projection hook for 21:9 (#24)
