@@ -23,10 +23,10 @@ quality, then the controller-only Skylanders-style menus and a release.
 
 | When | What | Who |
 |---|---|---|
-| **Now** | Performance: cut the render target emulation overhead, about a quarter of the GPU time (#44) | me |
-| Next | Native 1280x720 3D scene: real 1440p at scale 2, costs about 40 % more pixels (#41) | me |
-| Next | Smoother edges: supersampling (scale 3) once #44 frees GPU time, or a fixed FXAA (#45) | me |
-| Then | Controller-only portal menu in Skylanders style, replacing F6 (#40); F3/F4 restyle (#43) | me |
+| **Now** | Controller-only portal menu in Skylanders style, replacing F6 (#40); F3/F4 restyle (#43) | me |
+| Research | Native 1280x720 3D scene (#41): engine classes found, size is computed at render target creation; needs the computing code | me |
+| Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 % | me |
+| Research | Smoother edges (#45): the SDK's FXAA shifts colours (bytecode only); supersampling costs | me |
 | Then | Installer for a first release (#27) | me, test on a clean VM |
 | Any time | Keep playing; report anything black, flickering, crashing or too fast | you |
 | Later | Ultrawide (#24), online co-op proposal (Phase 5), GitHub wiki (#4) | me |
