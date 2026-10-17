@@ -106,9 +106,10 @@ controller or the keyboard:
   with the chosen swapper whole. Up / down picks a half, left / right (or LB / RB) switches the
   list, the preview shows the combination and its name (top's first word + bottom's last: Blast
   Zone + Fire Kraken = "Blast Kraken"), A puts both halves on.
-- **Items:** magic items and adventure packs of the games in `portal_menu_games`. A puts one on
-  without taking the player's Skylander off (it stays on the portal, in its own slot), A on the
-  item that's on takes it off again, and a new item replaces the player's previous one.
+- **Items:** magic items and adventure packs of the games in `portal_menu_games`. There is one
+  item spot, shared by all players: A puts an item on without taking the player's Skylander off
+  (it stays on the portal in its own slot) and replaces the item that was on; any player takes it
+  off with Y (P on the keyboard) from any tab, or with A on the item marked "On the portal".
 - **Figures:** all catalog figures of the games in `portal_menu_games` (Swap Force: Spyro's
   Adventure, Giants, Swap Force), plus figures from later games that carry the id of a character
   those games know: the game goes by the id, so Eon's Elite Chop Chop (id 30) and Tidal Wave Gill
