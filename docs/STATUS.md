@@ -16,8 +16,9 @@ Updated at the end of every session. Only record what a build actually did.
 | Stutter | short one-time hitches when an effect or attack appears for the first time (shader/pipeline creation); stored in the persistent shader cache, so expected once per install |
 | Videos | Bink 2 (KB2f/KB2g) play; green half only in a test-only Bink 1-after-KB2f sequence (#36, closed) |
 
-Open next: first level full playthrough (#17), sharper picture at scale 2 (`present_effect`, #23),
-ultrawide hook (#24), installer (#27), German name cards (#38), controller portal overlay (#40).
+Open next: first level full playthrough (#17), native 1280x720 3D scene for a sharp picture at
+scale 2 (#41, leads recorded), ultrawide hook (#24), installer (#27), German name cards (#38),
+controller portal overlay (#40).
 Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (docs/development.md).
 
 ## 2026-10-16: session log (chronological)
@@ -181,3 +182,9 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   1440p) for less than 1 FPS (105.1 -> 104.4). `fsr` changes little here because the final image is
   already window-sized; scale 3 is barely sharper because its 4K image is scaled down again. Added as
   a commented option to the templates; default stays `bilinear`.
+- **Native 720p scene (#41): leads only.** The engine (Alchemy) has `_expectedResolutionX/Y` and
+  `_overrideResolutionX/Y` reflection fields on its app/scene manager, Xenon surface objects with
+  `_actualWidth/_actualHeight/_edramBase/_edramTileCount`, and supports predicated tiling. A native
+  1280x720 G-buffer needs 2880 EDRAM tiles; the rexglue-sdk fork has started a 4096-tile EDRAM
+  (`edram_tile_count`, not in our pinned commit). Input scripts gained `scan`/`poke` for finding
+  such objects at runtime. Where the 1040x620 is computed is not found yet.
