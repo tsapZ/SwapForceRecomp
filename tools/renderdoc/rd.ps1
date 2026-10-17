@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
 Runs one of the analysis scripts in this folder on a RenderDoc capture, headless, through the
 portable RenderDoc in logs\toolchain (see docs/development.md for the download). qrenderdoc owns its
@@ -9,11 +9,12 @@ command line, so the capture, the output file and the script arguments go in env
     tools/renderdoc/rd.ps1 srvs    <capture.rdc> <out.txt>                    # textures read per draw
     tools/renderdoc/rd.ps1 dump    <capture.rdc> <out.txt> "<dir> <eid>,<eid> [depth]"   # targets as PNG
     tools/renderdoc/rd.ps1 inspect <capture.rdc> <out.txt> "<dir> <eid>,<eid>" # state + input textures
+    tools/renderdoc/rd.ps1 timings <capture.rdc> <out.txt>                    # GPU time per pass and action
     python3 tools/renderdoc/group.py <list out.txt>                           # list grouped by target
 #>
 param(
     [Parameter(Mandatory = $true, Position = 0)]
-    [ValidateSet("list", "srvs", "dump", "inspect")]
+    [ValidateSet("list", "srvs", "dump", "inspect", "timings", "overhead")]
     [string]$Script,
     [Parameter(Mandatory = $true, Position = 1)] [string]$Capture,
     [Parameter(Mandatory = $true, Position = 2)] [string]$Out,

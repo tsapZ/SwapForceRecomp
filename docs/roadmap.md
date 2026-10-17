@@ -10,7 +10,7 @@ observed in a real build or a real play test, not inferred.
 |---|---|---|---|
 | 0 Repository and scaffold | ✅ done | 3/3 | – |
 | 1 Recompile and boot | ✅ done | 8/8 | – |
-| 2 In-game | ✅ done | 10/11 | German name cards (#38), if the original has them |
+| 2 In-game | ✅ done | 11/11 | – |
 | 3 Portal | 🟡 almost | 6/7 | a swapper on the real USB portal (#42) |
 | 4 4K and polish | 🟡 in progress | 5/13 | performance and picture quality (#44, #45, #41), Skylanders-style portal menu and overlays (#40, #43), installer (#27), ultrawide (#24), wiki (#4) |
 | 5 Online co-op (stretch) | ⬜ not started | 0/3 | architecture proposal first |
@@ -23,9 +23,9 @@ quality, then the controller-only Skylanders-style menus and a release.
 
 | When | What | Who |
 |---|---|---|
-| **Now** | Performance: why the hub is at about 80 FPS, and what costs the most (#44) | me |
-| **Now** | Smoother edges: FXAA together with CAS (#45) | me |
-| Next | Native 1280x720 3D scene: sharper picture and less upscaling (#41) | me |
+| **Now** | Performance: cut the render target emulation overhead, about a quarter of the GPU time (#44) | me |
+| Next | Native 1280x720 3D scene: real 1440p at scale 2, costs about 40 % more pixels (#41) | me |
+| Next | Smoother edges: supersampling (scale 3) once #44 frees GPU time, or a fixed FXAA (#45) | me |
 | Then | Controller-only portal menu in Skylanders style, replacing F6 (#40); F3/F4 restyle (#43) | me |
 | Then | Installer for a first release (#27) | me, test on a clean VM |
 | Any time | Keep playing; report anything black, flickering, crashing or too fast | you |
@@ -61,7 +61,7 @@ Set up the repository from the GiantsRecomp template, without any game data.
 - [x] Crash on the first Bink KB2f movie fixed (#34); green video half only in a test sequence (#36)
 - [x] Tutorial playable with controller and keyboard, German and English
 - [x] First level played to the end, over 100 FPS including fights (#17)
-- [ ] German name card for enemy intros, if the original has one (#38)
+- [x] Name cards: English in the German original too, not a port bug (#38)
 
 **Done when:** the first level can be played through with a controller. Observed 2026-10-17 (played
 with keyboard; controller input verified in the tutorial).
@@ -85,8 +85,8 @@ with keyboard; controller input verified in the tutorial).
 - [x] Fast RTV render path without black characters: 106 FPS at 1440p with `resolution_scale` 2,
   237 FPS at scale 1 (#39)
 - [x] Resolution options measured; `present_effect = "cas"` recommended at scale 2 (#23)
-- [ ] Performance: hub bottleneck (#44)
-- [ ] Smoother edges: FXAA with CAS (#45)
+- [ ] Performance: GPU-bound; about 25 % of GPU time is EDRAM emulation (transfers, dumps) (#44)
+- [ ] Smoother edges: the SDK's FXAA shifts colours, supersampling costs (#45)
 - [ ] Controller-only portal menu in Skylanders style, replacing the F6 overlay (#40)
 - [ ] Skylanders-style F3 and F4 overlays (#43)
 - [ ] Native 1280x720 3D scene, the game renders it at 1040x620 (#41)
