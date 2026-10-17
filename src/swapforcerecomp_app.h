@@ -79,6 +79,18 @@ class SwapforcerecompApp : public rex::ReXApp {
         !rex::cvar::SetFlagByName("anisotropic_override", "5")) {
       REXLOG_WARN("Could not set anisotropic_override to 16x");
     }
+    // Estimate the EDRAM extent of draws without clipping by running their vertex shader on the
+    // CPU (Xenia's default; the SDK defaults to off). Without it, with the faster RTV render target
+    // path, a full-screen pass into the k_32_FLOAT target at EDRAM base 507 counts as using the
+    // whole EDRAM, wrapping around into the lit scene at base 0. The following ownership transfer
+    // copies the 32-bit float data over the scene before the game resolves it, so the resolved
+    // texture is white and every character composited from it turns black (portal intro cards,
+    // in-engine cutscenes, parts of levels). Found with RenderDoc: resolve parameters are identical
+    // to ROV, only the EDRAM contents differ. See docs/STATUS.md (2026-10-17).
+    if (!rex::cvar::HasNonDefaultValue("execute_unclipped_draw_vs_on_cpu") &&
+        !rex::cvar::SetFlagByName("execute_unclipped_draw_vs_on_cpu", "true")) {
+      REXLOG_WARN("Could not enable execute_unclipped_draw_vs_on_cpu");
+    }
   }
 
   void OnConfigureFonts(ImFontAtlas* atlas) override {

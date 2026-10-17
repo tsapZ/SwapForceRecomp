@@ -8,17 +8,17 @@ Updated at the end of every session. Only record what a build actually did.
 |---|---|
 | Boot, menus, saves | work; logo movies skipped (`skip_intro`), opening movie optional (`skip_opening_movie`) |
 | Tutorial level | playable with controller or keyboard (`mnk_mode`); cutscenes and dialogue work |
-| Graphics | correct with `render_target_path_d3d12 = "rov"` (default in templates); 4K works |
+| Graphics | correct with the fast `render_target_path_d3d12 = "rtv"` (default in templates again) since `execute_unclipped_draw_vs_on_cpu` is on (app default); `"rov"` still works but is much slower; 4K works. The 3D scene renders at 1024x624, HUD at 1280x720 |
 | Audio | works (check the Windows output device) |
 | Language | English and German (`language`) |
 | Portal | emulated (F6), real USB incl. old PS3/Wii portals (fork `tsapZ/skylanders-portal`), `none` |
-| Frame rate | 30 FPS default; experimental `present_interval = 1` -> 60 FPS (4K output: 60.1 FPS in level); with `frame_rate_limit` up to ~105 FPS at 1080p scale 1, ~58 FPS at scale 2 (ROV is the limit). Game speed at 60 FPS verified by playing the tutorial (#37, closed) |
+| Frame rate | 30 FPS default; experimental `present_interval = 1` -> 60 FPS, more with `frame_rate_limit` (0 keeps the game at 30). Tutorial, 1440p output, RTV: 237 FPS at scale 1, 106 at scale 2, 46 at scale 3 (ROV scale 2: 67). Game speed at 60 FPS verified by playing the tutorial (#37, closed) |
 | Stutter | short one-time hitches when an effect or attack appears for the first time (shader/pipeline creation); stored in the persistent shader cache, so expected once per install |
 | Videos | Bink 2 (KB2f/KB2g) play; green half only in a test-only Bink 1-after-KB2f sequence (#36, closed) |
 
-Open next: swapper test (#20, manual via F6), first level full playthrough (#17), more than 60 FPS
-at full quality (the faster `rtv` path renders characters black), ultrawide hook (#24), installer
-(#27). Testing rule: copied `--user_data_root`.
+Open next: first level full playthrough (#17), sharper picture at scale 2 (`present_effect`, #23),
+ultrawide hook (#24), installer (#27), German name cards (#38), controller portal overlay (#40).
+Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (docs/development.md).
 
 ## 2026-10-16: session log (chronological)
 
@@ -146,3 +146,34 @@ at full quality (the faster `rtv` path renders characters black), ultrawide hook
   repeats. That is shader/pipeline creation. `store_shaders` is on: the session updated
   `cache/shaders/shareable/415608E9.xsh` and `415608E9.rov.d3d12.xpso` in the user data folder, so
   the same effect should not stutter again in later sessions (not confirmed yet).
+- **Swappers (#20): work.** Manual test: Blast Zone Top (slot 0) plus Fire Kraken Bottom (slot 1)
+  combine into one character; both figure files are written back. Closed.
+- **Black characters with RTV: root cause found and fixed (#39).** The black silhouettes (portal
+  intro cards, the in-engine cutscene before the first summon, parts of levels) were not a lighting
+  problem. Diagnosis with RenderDoc captures of whole guest frames in both paths: G-buffer and
+  lighting are correct in RTV too (Chop Chop is lit at the end of the lighting pass). Later the game
+  resolves the lit scene (k_8_8_8_8, EDRAM base 0, 1024x624) into a texture for its DOF/composite
+  pass; in RTV that texture was pure white, in ROV correct. Logged resolve parameters are identical
+  in both paths, so the EDRAM contents differ: before the resolve, the render target cache
+  transferred the contents of a k_32_FLOAT target at base 507 over the scene. That target had
+  claimed the whole EDRAM (2048 tiles from 507, wrapping into tiles 0-507) because its full-screen
+  draws have clipping disabled and the SDK's `execute_unclipped_draw_vs_on_cpu` is off by default,
+  so the draw extent is the 8192 scissor. Xenia defaults it to on for exactly this reason. The app
+  now turns it on unless the user set it (`swapforcerecomp_app.h`), and the templates use RTV again.
+  Verified by screenshots: intro card, airship cutscene and level, and the Wolkenbruch checkpoint
+  look the same as with ROV; no banding difference at scale 3. Cvar experiments that did not help
+  (for the record): snorm16 full range, gamma as unorm16, native 2x MSAA, float24 depth rounding and
+  conversion, direct host resolve, native stencil output, MRT range clamp, depth transfer test,
+  occlusion queries, bindless.
+- **Performance with RTV** (tutorial start, 2560x1440 output, `present_interval=1`,
+  `frame_rate_limit=240`, RX 6800 XT): scale 1 237.3 FPS (at the limit), scale 2 105.6, scale 3
+  46.1 (same with 3840x2160 output); ROV scale 2 67.2. `frame_rate_limit=0` keeps the game at 30 FPS
+  even with interval 1 (the SDK paces the guest at 30 Hz then); the template comment said
+  "unlimited" and is corrected.
+- **Picture size:** the game renders its 3D scene at 1024x624 (13 EDRAM tiles wide, 39 rows) and the
+  HUD/final image at 1280x720. With `resolution_scale` 2 the scene is 2048x1248, scaled up to a
+  1440p window, which explains the slightly soft picture.
+- **Scripted input (`--input_script`)** for automated runs: controller timeline, frame rate logging
+  and RenderDoc captures of whole guest frames, independent of the window focus. A Windows firewall
+  prompt (RenderDoc's target control port) had blocked focus-based keyboard automation. See
+  docs/development.md.

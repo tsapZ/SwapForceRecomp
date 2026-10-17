@@ -24,7 +24,19 @@ is implemented yet.
   follows it: 122.8 FPS on the title screen with 144. In the tutorial: ~58 FPS with
   `resolution_scale` 2, **104.7 FPS with `resolution_scale` 1** (RX 6800 XT, ROV, 1080p). The 2x
   supersampling is the limit, not the CPU. Walking speed is unchanged even
-  with the vblank at 144 Hz. Do **not** raise `video_mode_refresh_rate` instead: the game adapts to
+  with the vblank at 144 Hz. `frame_rate_limit = 0` does not mean unlimited for the game: the SDK
+  then paces the guest at 30 Hz (`xboxkrnl_video.cpp`), so interval 1 stays at 30 FPS.
+- **With the RTV render target path (2026-10-17):** after the black-character fix
+  (`execute_unclipped_draw_vs_on_cpu`, see STATUS.md) RTV renders correctly and is much faster than
+  ROV. Tutorial start (airship), 2560x1440 output, interval 1, limit 240, RX 6800 XT:
+  | Path | `resolution_scale` | FPS |
+  |---|---|---|
+  | ROV | 2 | 67.2 |
+  | RTV | 1 | 237.3 (at the limit) |
+  | RTV | 2 | 105.6 |
+  | RTV | 3 | 46.1 (also with 3840x2160 output) |
+  The 3D scene itself is 1024x624 (13 EDRAM tiles x 39 rows), the HUD and final image 1280x720, so
+  `resolution_scale` 2 renders the scene at 2048x1248 and scales it up to a 1440p window. Do **not** raise `video_mode_refresh_rate` instead: the game adapts to
   the display mode and stays at 30 FPS.
 - How it was found: the main thread waits on an engine semaphore (`sub_823F2358` -> the game's
   `WaitForSingleObject`), signalled after the swap. A dbghelp `StackWalk64` of all game threads in the
