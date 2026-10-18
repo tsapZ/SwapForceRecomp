@@ -20,6 +20,7 @@
 
 #include "dev/input_script.h"
 #include "game/magic_moment_watch.h"
+#include "game/toy_images.h"
 #include "localization.h"
 #include "portal_rex/portal_menu.h"
 #include "portal_rex/portal_menu_input.h"
@@ -52,7 +53,12 @@ class SwapforcerecompApp : public rex::ReXApp {
   // std::unique_ptr<rex::ui::ImGuiDialog> CreateAchievementsOverlay() override;
   // std::unique_ptr<rex::ui::AchievementNotificationDialog>
   // CreateAchievementNotificationDialog() override;
-  void OnShutdown() override { swapforcerecomp::StopMagicMomentWatch(); }
+  void OnShutdown() override {
+    swapforcerecomp::StopMagicMomentWatch();
+    // The menu's textures belong to the immediate drawer, which goes away right after this.
+    skylanders::ShutdownPortalMenu();
+    swapforcerecomp::ShutdownToyImages();
+  }
 
   void OnPreSetup(rex::RuntimeConfig& config) override {
     // The Xenos GPU plugin renders the Xbox 360 command stream; without it nothing is drawn.
@@ -86,6 +92,8 @@ class SwapforcerecompApp : public rex::ReXApp {
     SetGuestFrameStats([this] { return ComputeFrameStats(); });
     // Opens the portal menu by itself when the game shows its "place your Skylander" prompt.
     swapforcerecomp::StartMagicMomentWatch(runtime()->memory());
+    // Pictures and names for the portal menu from the game's own toy data and collection icons.
+    swapforcerecomp::InstallToyImages(runtime()->memory(), game_data_root() / "archives");
     // Default to 16x anisotropic filtering (the SDK defaults to 4x): ground and floor textures seen
     // at a shallow angle stay sharp, for a negligible cost on PC GPUs. Only when the user hasn't set
     // it themselves.
@@ -154,7 +162,7 @@ class SwapforcerecompApp : public rex::ReXApp {
   }
 
   void OnCreateDialogs(rex::ui::ImGuiDrawer* drawer) override {
-    skylanders::RegisterPortalMenu(drawer, &app_context());
+    skylanders::RegisterPortalMenu(drawer, &app_context(), immediate_drawer());
     skylanders::RegisterPortalOverlay(drawer);
   }
 

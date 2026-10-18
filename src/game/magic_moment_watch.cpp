@@ -25,13 +25,13 @@
 #include <atomic>
 #include <chrono>
 #include <cstdint>
-#include <cstring>
 #include <optional>
 #include <thread>
 
 #include <rex/logging.h>
 #include <rex/system/xmemory.h>
 
+#include "guest_memory.h"
 #include "portal_rex/portal_menu.h"
 
 namespace swapforcerecomp {
@@ -50,20 +50,6 @@ constexpr auto kOpenDelay = std::chrono::milliseconds(100);
 
 std::thread g_thread;
 std::atomic<bool> g_stop{false};
-
-std::optional<uint32_t> ReadGuest32(rex::memory::Memory* memory, uint32_t address) {
-  rex::memory::BaseHeap* heap = memory->LookupHeap(address);
-  rex::memory::HeapAllocationInfo info{};
-  if (!heap || !heap->QueryRegionInfo(address, &info) ||
-      !(info.state & rex::memory::kMemoryAllocationCommit) ||
-      !(info.protect & rex::memory::kMemoryProtectRead) ||
-      uint64_t(address) + 4 > uint64_t(info.base_address) + info.region_size) {
-    return std::nullopt;
-  }
-  uint32_t value;
-  std::memcpy(&value, memory->TranslateVirtual<const uint8_t*>(address), 4);
-  return rex::byte_swap(value);
-}
 
 struct Prompt {
   uint32_t player;

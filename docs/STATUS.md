@@ -218,6 +218,12 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   208 collection icons (every Skylander and variant, items, adventure packs); pak = Alchemy IGA
   v0x0A with LZMA/deflate blocks, textures in IGZ v7 as linear DXT5. A stdlib-only Python proof of
   concept decoded them correctly (outside the repo).
-- **Installer prepared for an alpha:** 0.1.0-alpha.1, 1440p preselected, 60 FPS, CAS. Not built
-  yet (Inno Setup missing on the build machine).
 - Test script: `player N` makes the scripted controller act as another player.
+- **Pictures in the portal menu (#46):** the collection icons and the German/English toy names now
+  come from the owner's game files at runtime (`src/game/toy_images.cpp`, readers in
+  `src/game/alchemy/`). The game's toy type enum (read from the loaded executable at 0x820FD058)
+  has exactly the catalog ids. Indexed in about 150 ms (136 toys, 208 materials, 208 textures).
+  Two traps found: object names in the toydata files are only unique per file (every swapper's
+  toy is `ToyData`), and the icons are stored bottom row first (they come from .tga files).
+- **Installer built:** `SwapForceRecompSetup-0.1.0-alpha.1.exe`; the owner installed it from the
+  ISO, the game ran at 60 FPS and asked for a figure. Language choice and desktop shortcut added.

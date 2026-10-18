@@ -127,10 +127,20 @@ controller or the keyboard:
   game. The owner's figure files under `portal_figures_dir` are used when present (level, gold,
   nickname shown); a figure without a file gets one when it is placed and keeps its progress from
   then on.
-- **Look:** element colours and self-drawn element symbols (the official ones can't be used): a
-  medallion with gold ring and shaded disc in the element row, preview and details, a faded
-  watermark on each card; slightly see-through panel with the game visible around it; German
-  texts with `language = "german"`. Portraits from the game data are planned (#46), the details
+- **Pictures and names from the game's own data (#46):** every card shows the figure's toy
+  collection icon, the same art as the game's collection screen, for every Skylander, variant,
+  swapper and magic item; magic items and adventure packs get the names the game shows in its
+  language (`Ambossregen` in German). The app reads them at runtime from the owner's game files
+  (`src/game/toy_images.cpp`): the game's toy type table in the loaded executable (its values
+  are the catalog ids), `toydata.pak` (toy -> collection material per variant, names in English
+  and German) and `toycollectionimages.pak` (material -> 192x192 DXT5 texture). Readers for the
+  Alchemy formats are in `src/game/alchemy/` (IGA archives with LZMA blocks, IGZ textures, IGX
+  text). Indexing takes about 150 ms in the background the first time the menu opens; pictures are
+  decoded when they first show. Nothing of the game's data goes into the repository. The menu
+  library only sees a picture/name provider (`SetFigureImageProvider`, `SetFigureNameProvider`).
+- **Look:** collection tiles (picture on top, name below), self-drawn element symbols (the
+  official ones can't be used) as medallions in the element row and band; slightly see-through
+  panel with the game visible around it; German texts with `language = "german"`. The details
   view will show more of the figure data (#48).
 - The whole input system is the SDK's default one with every driver wrapped
   (`CreatePortalMenuInputSystem`): the wrapper notices the open button, hides all controller and

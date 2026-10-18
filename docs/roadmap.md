@@ -25,7 +25,6 @@ quality, then the controller-only Skylanders-style menus and a release.
 |---|---|---|
 | **Now** | Test the portal menu: Guide, Back+Start or hold Back; Items tab, swapper builder, "Taken" with two players, `keyboard_player = 2` (#40) | you |
 | Next | Open the portal menu by itself when the game asks for a Skylander (player 1 at the start, player 2 on joining) (#40) | me |
-| Next | Pictures for Skylanders and items from your game files (#46) | me |
 | Next | Settings menu in the same style, replacing F4: presets, scale, 4K downsampling, GPU, portal choice (#43, #47); portraits from your game data (#46) | me |
 | Research | Native 1280x720 3D scene (#41): engine classes found, size is computed at render target creation; needs the computing code | me |
 | Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 % | me |
@@ -95,7 +94,8 @@ with keyboard; controller input verified in the tutorial).
   open by itself when the game asks for a Skylander
 - [ ] Player assignment at game start, Switch style: each controller presses a button and gets a
   player number (idea, not started)
-- [ ] Skylander portraits from the owner's game data (#46)
+- [x] Pictures and names from the owner's game data: collection icons for every figure and item,
+  German item names (#46)
 - [ ] USB portal selection and portal compatibility table (#47)
 - [ ] Settings menu in Skylanders style, usable with controller, replacing F4 (#43)
 - [ ] Native 1280x720 3D scene, the game renders it at 1040x620 (#41)
