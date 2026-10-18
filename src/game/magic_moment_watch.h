@@ -17,4 +17,8 @@ void StartMagicMomentWatch(rex::memory::Memory* memory);
 // Stops and joins it; call before the runtime (and its guest memory) goes away.
 void StopMagicMomentWatch();
 
+// True while the game runs its figure sequence (asking for a Skylander, bringing one in): any
+// CMagicMoment state but Inactive, as of the last poll.
+bool MagicMomentActive();
+
 }  // namespace swapforcerecomp

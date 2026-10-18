@@ -119,6 +119,9 @@ controller or the keyboard:
   item spot, shared by all players: A puts an item on without taking the player's Skylander off
   (it stays on the portal in its own slot) and replaces the item that was on; any player takes it
   off with Y (P on the keyboard) from any tab, or with A on the item marked "On the portal".
+  The item changes only after the player's Skylander is back in the game (the menu puts the
+  figure back first, then waits until the game's figure sequence is over, at least 0.7 s, at most
+  10 s): changing both at once made the game ask for a Skylander again.
 - **Figures:** all catalog figures of the games in `portal_menu_games` (Swap Force: Spyro's
   Adventure, Giants, Swap Force), plus figures from later games that carry the id of a character
   those games know: the game goes by the id, so Eon's Elite Chop Chop (id 30) and Tidal Wave Gill
@@ -138,7 +141,8 @@ controller or the keyboard:
   text). Indexing takes about 150 ms in the background the first time the menu opens; pictures are
   decoded when they first show. Nothing of the game's data goes into the repository. The menu
   library only sees a picture/name provider (`SetFigureImageProvider`, `SetFigureNameProvider`).
-- **Look:** collection tiles (picture on top, name below), self-drawn element symbols (the
+- **Look:** collection tiles (picture on top, name below), the preview figure standing on a drawn
+  Portal of Power (dark base, silver rim, glowing top, rising light), self-drawn element symbols (the
   official ones can't be used) as medallions in the element row and band; slightly see-through
   panel with the game visible around it; German texts with `language = "german"`. The details
   view will show more of the figure data (#48).

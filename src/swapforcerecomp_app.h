@@ -92,6 +92,8 @@ class SwapforcerecompApp : public rex::ReXApp {
     SetGuestFrameStats([this] { return ComputeFrameStats(); });
     // Opens the portal menu by itself when the game shows its "place your Skylander" prompt.
     swapforcerecomp::StartMagicMomentWatch(runtime()->memory());
+    // Items go on and off the portal only once the player's Skylander is back in the game.
+    skylanders::SetGameBusyProvider([] { return swapforcerecomp::MagicMomentActive(); });
     // Pictures and names for the portal menu from the game's own toy data and collection icons.
     swapforcerecomp::InstallToyImages(runtime()->memory(), game_data_root() / "archives");
     // Default to 16x anisotropic filtering (the SDK defaults to 4x): ground and floor textures seen

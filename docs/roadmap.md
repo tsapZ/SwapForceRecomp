@@ -94,6 +94,9 @@ with keyboard; controller input verified in the tutorial).
   open by itself when the game asks for a Skylander
 - [ ] Player assignment at game start, Switch style: each controller presses a button and gets a
   player number (idea, not started)
+- [ ] Ideas for the menu (not started): the game's own font from the game files for more Skylanders
+  feel; more information per variant (#48); in the launcher hub, pictures from each game's own
+  files, so an owner with only Spyro's Adventure gets that game's pictures
 - [x] Pictures and names from the owner's game data: collection icons for every figure and item,
   German item names (#46)
 - [ ] USB portal selection and portal compatibility table (#47)

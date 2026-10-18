@@ -50,6 +50,7 @@ constexpr auto kOpenDelay = std::chrono::milliseconds(100);
 
 std::thread g_thread;
 std::atomic<bool> g_stop{false};
+std::atomic<bool> g_active{false};  // state != Inactive at the last poll
 
 struct Prompt {
   uint32_t player;
@@ -61,8 +62,12 @@ std::optional<Prompt> CurrentPrompt(rex::memory::Memory* memory) {
   const auto instance = ReadGuest32(memory, kMagicMomentInstance);
   // The instance lives in physical memory (seen at 0xBF6B816C); ReadGuest32 checks that whatever
   // the pointer says is committed.
-  if (!instance || !*instance) return std::nullopt;
+  if (!instance || !*instance) {
+    g_active.store(false);
+    return std::nullopt;
+  }
   const auto state = ReadGuest32(memory, *instance + kStateOffset);
+  g_active.store(state && *state != 0 && *state <= 16);
   const auto player = ReadGuest32(memory, *instance + kPlayerOffset);
   const auto reason = ReadGuest32(memory, *instance + kReasonOffset);
   if (!state || !player || !reason || *state != kStateIdle || *player >= 4) return std::nullopt;
@@ -100,6 +105,8 @@ void StartMagicMomentWatch(rex::memory::Memory* memory) {
   g_stop.store(false);
   g_thread = std::thread(Watch, memory);
 }
+
+bool MagicMomentActive() { return g_active.load(); }
 
 void StopMagicMomentWatch() {
   g_stop.store(true);
