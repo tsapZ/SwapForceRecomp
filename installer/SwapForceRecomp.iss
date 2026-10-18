@@ -36,8 +36,12 @@ Source: "redist\msvcp140_atomic_wait.dll"; DestDir: "{app}"; Flags: ignoreversio
 Source: "redist\msvcp140.dll"; DestDir: "{tmp}"; Flags: dontcopy
 Source: "redist\vcruntime140.dll"; DestDir: "{tmp}"; Flags: dontcopy
 
+[Tasks]
+Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Shortcuts:"
+
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 Name: "{group}\Uninstall {#MyAppName}"; Filename: "{uninstallexe}"
 
 [Run]
