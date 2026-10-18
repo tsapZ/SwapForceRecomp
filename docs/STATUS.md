@@ -2,7 +2,7 @@
 
 Updated at the end of every session. Only record what a build actually did.
 
-## Current state (2026-10-17)
+## Current state (2026-10-18)
 
 | Area | State |
 |---|---|
@@ -11,7 +11,7 @@ Updated at the end of every session. Only record what a build actually did.
 | Graphics | correct with the fast `render_target_path_d3d12 = "rtv"` (default in templates again) since `execute_unclipped_draw_vs_on_cpu` is on (app default); `"rov"` still works but is much slower; 4K works. The 3D scene renders at 1024x624, HUD at 1280x720 |
 | Audio | works (check the Windows output device) |
 | Language | English and German (`language`) |
-| Portal | emulated (F6), real USB incl. old PS3/Wii portals (fork `tsapZ/skylanders-portal`), `none` |
+| Portal | emulated, driven by the portal menu (opens by itself when the game asks for a Skylander; Guide, Back+Start, hold Back, F6), real USB incl. old PS3/Wii portals (fork `tsapZ/skylanders-portal`), `none` |
 | Frame rate | 30 FPS default; experimental `present_interval = 1` -> 60 FPS, more with `frame_rate_limit` (0 keeps the game at 30). Tutorial, 1440p output, RTV: 237 FPS at scale 1, 106 at scale 2, 46 at scale 3 (ROV scale 2: 67). Game speed at 60 FPS verified by playing the tutorial (#37, closed) |
 | Stutter | short one-time hitches when an effect or attack appears for the first time (shader/pipeline creation); stored in the persistent shader cache, so expected once per install |
 | Videos | Bink 2 (KB2f/KB2g) play; green half only in a test-only Bink 1-after-KB2f sequence (#36, closed) |
@@ -196,3 +196,28 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   German texts. Not tested yet: two controllers (each player changes only their own figure),
   holding View, the real Guide button with the Windows Game Bar. Code in the
   `feature/portal-menu` branch of the skylanders-portal fork; the old overlay is on F8 now.
+
+## 2026-10-18: session log (portal menu)
+
+- **Portal menu, verified with scripted runs and by the owner:** Items tab (one shared item spot,
+  any player takes it off with Y), swapper builder (combination named like the game, "Hoot
+  Charge"), "Taken · P1" for characters another player has on the portal, `keyboard_player`,
+  later figures by character id (Eon's Elite and Series 3/4 yes, SuperChargers no), redrawn
+  element symbols, rounded cards. German "Varianten".
+- **Open buttons no longer leak into the game:** Back is held back until it's clear it doesn't
+  open the menu (`back+start`, `hold_back`); a short tap still reaches the game. Found with a
+  Logitech Dual Action whose button 9 (Back) opened the game's Skylander menu on the way.
+- **Menu opens by itself** when the game shows "Player N: place your Skylander": the app polls the
+  game's `CMagicMoment` object (`src/game/magic_moment_watch.cpp`). Verified for player 1
+  after loading a save and for player 2 one second after pressing A to join. The object sits in
+  physical memory (0xBF6B816C in the test), which a first range check wrongly excluded.
+- **Ghidra project:** about 15,400 functions were cut short because the register-save helpers at
+  0x82FF2D00-0x82FF2D3C were marked as non-returning; a repaired copy was made outside the repo
+  for this search. The project in `logs/ghidra_project` itself is still unrepaired.
+- **Images from the game data are feasible (#46):** `rom/archives/toycollectionimages.pak` holds
+  208 collection icons (every Skylander and variant, items, adventure packs); pak = Alchemy IGA
+  v0x0A with LZMA/deflate blocks, textures in IGZ v7 as linear DXT5. A stdlib-only Python proof of
+  concept decoded them correctly (outside the repo).
+- **Installer prepared for an alpha:** 0.1.0-alpha.1, 1440p preselected, 60 FPS, CAS. Not built
+  yet (Inno Setup missing on the build machine).
+- Test script: `player N` makes the scripted controller act as another player.
