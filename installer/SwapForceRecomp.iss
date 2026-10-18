@@ -56,7 +56,8 @@ var
   RomStatusLabel: TNewStaticText;
   RomProgressBar: TNewProgressBar;
   SettingsPage: TWizardPage;
-  PortalModeLabel, ResolutionLabel, ResolutionScaleLabel, ControllerLabel: TNewStaticText;
+  LanguageLabel, PortalModeLabel, ResolutionLabel, ResolutionScaleLabel, ControllerLabel: TNewStaticText;
+  LanguageCombo: TNewComboBox;
   PortalModeCombo: TNewComboBox;
   ResolutionCombo: TNewComboBox;
   ResolutionScaleEdit: TNewEdit;
@@ -232,6 +233,14 @@ begin
   if IsIso then DelTree(ExpandConstant('{app}') + '\rom', True, True, True);
 end;
 
+function LanguageTomlValue: AnsiString;
+begin
+  if LanguageCombo.ItemIndex = 1 then
+    Result := 'german'
+  else
+    Result := 'english';
+end;
+
 function PortalModeTomlValue: AnsiString;
 begin
   case PortalModeCombo.ItemIndex of
@@ -261,7 +270,7 @@ begin
   Result := Work;
 end;
 
-// Writes {app}\swapforcerecomp.toml from the vendored template, substituting the three wizard-chosen
+// Writes {app}\swapforcerecomp.toml from the vendored template, substituting the wizard-chosen
 // values. Never overwrites an existing file: an update run (Task 7) relies on this exact check to
 // leave a previously-configured, possibly hand-edited toml untouched.
 procedure WriteSettingsFile;
@@ -286,6 +295,7 @@ begin
   if ScaleValue > 8 then ScaleValue := 8;
   ResolutionScale := IntToStr(ScaleValue);
 
+  Contents := ReplaceAll(Contents, '__LANGUAGE__', LanguageTomlValue);
   Contents := ReplaceAll(Contents, '__PORTAL_MODE__', PortalModeTomlValue);
   Contents := ReplaceAll(Contents, '__RESOLUTION__', ResolutionCombo.Items[ResolutionCombo.ItemIndex]);
   Contents := ReplaceAll(Contents, '__RESOLUTION_SCALE__', ResolutionScale);
@@ -371,12 +381,31 @@ begin
   RomProgressBar.Visible := False;
 
   SettingsPage := CreateCustomPage(RomPage.ID, 'Settings',
-    'Choose your Portal of Power and display settings (everything else can be changed later with F4 in-game)');
+    'Choose language, Portal of Power and display settings (everything else can be changed later with F4 in-game)');
+
+  LanguageLabel := TNewStaticText.Create(SettingsPage);
+  LanguageLabel.Parent := SettingsPage.Surface;
+  LanguageLabel.Caption := 'Game language:';
+  LanguageLabel.Top := 0;
+
+  // The European disc has English and German text and voices. Preselect German on a German
+  // Windows (primary language id 0x07).
+  LanguageCombo := TNewComboBox.Create(SettingsPage);
+  LanguageCombo.Parent := SettingsPage.Surface;
+  LanguageCombo.Style := csDropDownList;
+  LanguageCombo.Items.Add('English');
+  LanguageCombo.Items.Add('Deutsch (German)');
+  if (GetUILanguage and $3FF) = $07 then
+    LanguageCombo.ItemIndex := 1
+  else
+    LanguageCombo.ItemIndex := 0;
+  LanguageCombo.Top := LanguageLabel.Top + LanguageLabel.Height + 4;
+  LanguageCombo.Width := SettingsPage.SurfaceWidth;
 
   PortalModeLabel := TNewStaticText.Create(SettingsPage);
   PortalModeLabel.Parent := SettingsPage.Surface;
   PortalModeLabel.Caption := 'Portal of Power:';
-  PortalModeLabel.Top := 0;
+  PortalModeLabel.Top := LanguageCombo.Top + LanguageCombo.Height + 16;
 
   PortalModeCombo := TNewComboBox.Create(SettingsPage);
   PortalModeCombo.Parent := SettingsPage.Surface;

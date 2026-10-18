@@ -38,7 +38,7 @@ mnk_mode = true                           # enable keyboard/mouse controller emu
 # connected is player 1, the second player 2.
 
 ["Game"]
-# language = "english"                   # english, french, german, spanish, italian (EU disc: english, german)
+language = "__LANGUAGE__"                 # english, french, german, spanish, italian (EU disc: english, german)
 skip_intro = true                         # skip the Activision and Vicarious Visions logo movies
 # skip_opening_movie = true                # skip the long opening movie of a new game
 
