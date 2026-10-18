@@ -19,6 +19,7 @@
 #include <rex/rex_app.h>
 
 #include "dev/input_script.h"
+#include "game/magic_moment_watch.h"
 #include "localization.h"
 #include "portal_rex/portal_menu.h"
 #include "portal_rex/portal_menu_input.h"
@@ -51,7 +52,7 @@ class SwapforcerecompApp : public rex::ReXApp {
   // std::unique_ptr<rex::ui::ImGuiDialog> CreateAchievementsOverlay() override;
   // std::unique_ptr<rex::ui::AchievementNotificationDialog>
   // CreateAchievementNotificationDialog() override;
-  // void OnShutdown() override {}
+  void OnShutdown() override { swapforcerecomp::StopMagicMomentWatch(); }
 
   void OnPreSetup(rex::RuntimeConfig& config) override {
     // The Xenos GPU plugin renders the Xbox 360 command stream; without it nothing is drawn.
@@ -83,6 +84,8 @@ class SwapforcerecompApp : public rex::ReXApp {
     // the host's presentation rate, which is a different clock than the guest's and would have
     // reported host FPS mislabeled as "Guest".
     SetGuestFrameStats([this] { return ComputeFrameStats(); });
+    // Opens the portal menu by itself when the game shows its "place your Skylander" prompt.
+    swapforcerecomp::StartMagicMomentWatch(runtime()->memory());
     // Default to 16x anisotropic filtering (the SDK defaults to 4x): ground and floor textures seen
     // at a shallow angle stay sharp, for a negligible cost on PC GPUs. Only when the user hasn't set
     // it themselves.

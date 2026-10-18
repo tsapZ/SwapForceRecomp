@@ -90,6 +90,15 @@ controller or the keyboard:
   the menu too (the game doesn't poll that controller, so the wrapper checks it on every poll of
   the others) and joins by placing a figure. Tested with an Xbox 360 controller as player 1 and a
   Dual Action as player 2, and with the test script's `player 2` command.
+- **Opens by itself:** when the game shows its "Player N: place your Skylander on the Portal of
+  Power" prompt (player 1 at the start or after losing the figure, player 2 right after pressing
+  A to join), the menu opens for that player, steered by their controller(s); if the game stops
+  waiting first, it closes again, and after B it stays closed until the next prompt. Off with
+  `portal_menu_auto_open = false`. The app reads the game's `CMagicMoment` object for this
+  (`src/game/magic_moment_watch.cpp`: instance pointer at `0x83131BE0`, state +0x20 = 5 while
+  the prompt is up, player +0x148), found statically in Ghidra through the `MM_pleaseplaceText`
+  UI string and the class's reflection tables; the object lives in physical memory.
+- **All controllers of a player** steer that player's menu, not only the one that opened it.
 - **One collection:** all players share the same figures (level, gold and upgrades live in each
   figure file). A character another player has on the portal is shown as "Taken · P1" in that
   player's colour and can't be chosen; that also goes for recent entries and swapper halves. Only
