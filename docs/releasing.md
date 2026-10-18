@@ -11,7 +11,7 @@ just package-installer
 ```
 
 Builds the release binary, stages it with the installer's other inputs, and compiles
-`installer/SwapForceRecomp.iss` with Inno Setup 6 into `installer/Output/SwapForceRecompSetup.exe`.
+`installer/SwapForceRecomp.iss` with Inno Setup 6 into `installer/Output/SwapForceRecompSetup-<version>.exe`.
 Inno Setup: `winget install JRSoftware.InnoSetup`. The recipe looks in both common install locations
 for `ISCC.exe`.
 
@@ -33,7 +33,7 @@ The installer has its own `AppId`, separate from GiantsRecomp, so both can be in
 ## Publish
 
 Bump `MyAppVersion` in `installer/SwapForceRecomp.iss` to match the tag. Upload
-`installer/Output/SwapForceRecompSetup.exe` to a GitHub release, and state which exact game version
+`installer/Output/SwapForceRecompSetup-<version>.exe` to a GitHub release, and state which exact game version
 and region it was built and tested against.
 
 The repository is private for now. Making it public is a separate decision; check the history for

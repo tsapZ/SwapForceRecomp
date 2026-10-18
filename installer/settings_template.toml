@@ -5,6 +5,10 @@
 portal_mode = "__PORTAL_MODE__"           # "software", "usb" (real portal), or "none"
 portal_figures_dir = ""                   # empty = "figures" next to your saves
 # portal_figure = "C:\\path\\to\\Skylander.dump"  # loads this dump onto the portal at startup
+# Portal menu: opens by itself when the game asks for a Skylander, or with the Guide button,
+# Back+Start, holding Back, or F6 on the keyboard.
+# portal_menu_open_buttons = "guide,back+start,hold_back"
+# portal_menu_auto_open = true
 
 ["Graphics"]
 resolution = "__RESOLUTION__"             # startup window size
@@ -13,7 +17,7 @@ frame_rate_limit = 60                     # FPS cap, also the game's pace with p
 #                                         # (0 = no host cap, but the game stays at 30 FPS)
 gpu_allow_invalid_fetch_constants = true  # works around a GPU quirk, on by default
 render_target_path_d3d12 = "rtv"           # fast render target emulation; "rov" is bit-exact but much slower
-# present_interval = 1                    # EXPERIMENTAL 60 FPS (game default 2 = 30 FPS); game speed may change
+present_interval = 1                      # 60 FPS (game default 2 = 30 FPS); game speed verified at 60
 #                                         # for more than 60: also raise frame_rate_limit (e.g. 120 or 144)
 # vulkan_device = -1                      # GPU index for multi-GPU systems, -1 = auto-pick
 
@@ -24,11 +28,14 @@ anisotropic_override = 5                  # texture filtering: 5 = 16x, 3 = 4x, 
 # ui_scale = 1.5                          # ImGui overlay font/widget scale
 
 ["UI/Presenter"]
-# present_effect = "cas"                 # sharpen the final picture (default "bilinear"); costs < 1 FPS.
+present_effect = "cas"                   # sharpen the final picture (default "bilinear"); costs < 1 FPS.
 #                                         # Recommended with resolution_scale 2 on 1440p: the game's 3D scene is 1024x624
 
 ["Input"]
 mnk_mode = true                           # enable keyboard/mouse controller emulation
+# keyboard_player = 2                     # which player the keyboard plays as (1-4)
+# Controllers (Xbox, PlayStation, most USB pads) are detected automatically: the first one
+# connected is player 1, the second player 2.
 
 ["Game"]
 # language = "english"                   # english, french, german, spanish, italian (EU disc: english, german)

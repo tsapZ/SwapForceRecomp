@@ -133,7 +133,7 @@ package-installer: build-release
     [ -e "$iscc" ] || iscc="$USERPROFILE/AppData/Local/Programs/Inno Setup 6/ISCC.exe" && \
     [ -e "$iscc" ] || (echo "ISCC.exe not found -- install Inno Setup 6 (winget install JRSoftware.InnoSetup)" && exit 1) && \
     "$iscc" installer/SwapForceRecomp.iss && \
-    echo "Installer built at installer/Output/SwapForceRecompSetup.exe"
+    echo "Installer built in installer/Output/"
 
 # --- Test ------------------------------------------------------------------
 

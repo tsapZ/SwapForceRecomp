@@ -1,5 +1,5 @@
 #define MyAppName "Swap Force Recompiled"
-#define MyAppVersion "0.1.0"
+#define MyAppVersion "0.1.0-alpha.1"
 #define MyAppExeName "swapforcerecompiled.exe"
 
 [Setup]
@@ -13,7 +13,7 @@ PrivilegesRequired=lowest
 ArchitecturesInstallIn64BitMode=x64compatible
 InfoBeforeFile=disclaimer.txt
 OutputDir=Output
-OutputBaseFilename=SwapForceRecompSetup
+OutputBaseFilename=SwapForceRecompSetup-{#MyAppVersion}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -52,7 +52,7 @@ var
   RomStatusLabel: TNewStaticText;
   RomProgressBar: TNewProgressBar;
   SettingsPage: TWizardPage;
-  PortalModeLabel, ResolutionLabel, ResolutionScaleLabel: TNewStaticText;
+  PortalModeLabel, ResolutionLabel, ResolutionScaleLabel, ControllerLabel: TNewStaticText;
   PortalModeCombo: TNewComboBox;
   ResolutionCombo: TNewComboBox;
   ResolutionScaleEdit: TNewEdit;
@@ -221,7 +221,7 @@ begin
   else if ResultCode = 3 then
     ErrorMsg := 'Could not read ' + CandidateXex + ' to check its version.'
   else if ResultCode = 2 then
-    ErrorMsg := 'This is not the supported Skylanders: Swap Force version (1.0, USA or Europe). ' +
+    ErrorMsg := 'This is not the supported Skylanders: Swap Force version (Xbox 360, Europe / PAL). ' +
       'The installer will not continue with an unsupported copy of the game.'
   else
     ErrorMsg := 'The version-check tool reported an unexpected error (code ' + IntToStr(ResultCode) + ').';
@@ -323,7 +323,7 @@ end;
 procedure InitializeWizard;
 begin
   RomPage := CreateCustomPage(wpSelectDir, 'Game Files',
-    'Locate your Skylanders: Swap Force disc (version 1.0, USA or Europe)');
+    'Locate your Skylanders: Swap Force disc (Xbox 360, Europe / PAL)');
 
   RomIsIsoRadio := TNewRadioButton.Create(RomPage);
   RomIsIsoRadio.Parent := RomPage.Surface;
@@ -395,7 +395,7 @@ begin
   ResolutionCombo.Items.Add('1920x1080');
   ResolutionCombo.Items.Add('2560x1440');
   ResolutionCombo.Items.Add('3840x2160');
-  ResolutionCombo.ItemIndex := 0;
+  ResolutionCombo.ItemIndex := 1;
   ResolutionCombo.Top := ResolutionLabel.Top + ResolutionLabel.Height + 4;
   ResolutionCombo.Width := SettingsPage.SurfaceWidth;
 
@@ -409,6 +409,17 @@ begin
   ResolutionScaleEdit.Text := '1';
   ResolutionScaleEdit.Top := ResolutionScaleLabel.Top + ResolutionScaleLabel.Height + 4;
   ResolutionScaleEdit.Width := 60;
+
+  ControllerLabel := TNewStaticText.Create(SettingsPage);
+  ControllerLabel.Parent := SettingsPage.Surface;
+  ControllerLabel.Top := ResolutionScaleEdit.Top + ResolutionScaleEdit.Height + 20;
+  ControllerLabel.Width := SettingsPage.SurfaceWidth;
+  ControllerLabel.AutoSize := False;
+  ControllerLabel.WordWrap := True;
+  ControllerLabel.Height := 64;
+  ControllerLabel.Caption := 'Controllers are detected automatically (the first one is player 1). The game runs at 60 FPS. ' +
+    'The portal menu opens by itself when the game asks for a Skylander, or with the Guide button, ' +
+    'Back+Start or holding Back (F6 on the keyboard).';
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
