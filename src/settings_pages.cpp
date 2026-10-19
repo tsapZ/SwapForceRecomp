@@ -67,6 +67,20 @@ SettingsPage GraphicsPage() {
         {"2", "2x (1440p)", "2x (1440p)"},
         {"3", "3x (4K)", "3x (4K)"},
         {"4", "4x", "4x"}}});
+  Setting scene{"scene_size", "Native 3D picture (experimental)",
+                "Natives 3D-Bild (experimentell)",
+                "The Xbox 360 draws the 3D scene at only 1040x620 and stretches it to 720p. Native: "
+                "the scene at a real 1280x720, so everything is sharper at every internal "
+                "resolution. Costs about a fifth of the frame rate. Needs D3D12; only tried in "
+                "the hub so far.",
+                "Die Xbox 360 zeichnet die 3D-Szene nur in 1040x620 und streckt sie auf 720p. "
+                "Nativ: die Szene in echten 1280x720, dadurch ist alles bei jeder internen "
+                "Aufl\xC3\xB6sung sch\xC3\xA4rfer. Kostet etwa ein F\xC3\xBC" "nftel der Bildrate. "
+                "Braucht D3D12; bisher nur im Hub ausprobiert.",
+                {{"", "Off (1040x620)", "Aus (1040x620)"},
+                 {"1280x720", "Native (1280x720)", "Nativ (1280x720)"}}};
+  scene.restart = true;
+  page.settings.push_back(scene);
   page.settings.push_back(
       {"present_effect", "Sharpening", "Sch\xC3\xA4rfe",
        "How the finished picture is scaled to your window. Sharpened (CAS): best when the "

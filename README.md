@@ -21,7 +21,7 @@ First level played through. Where each part stands, and what comes next:
 | Portal | ✅ emulated and real USB, also older portals; swappers work; portal menu for controller and keyboard (Guide / Back+Start / hold Back / F6), per player, with items, a swapper builder, options and a way out for player 2; player menu (L3 + R3) to reassign controllers |
 | Languages | ✅ English and German |
 | Rest of the game | 🟡 not played through yet |
-| Picture quality | 🟡 3D scene renders at 1040x620 and is scaled up; sharper native scene planned |
+| Picture quality | 🟡 3D scene renders at 1040x620 like on the Xbox 360; native 1280x720 as an experimental option (D3D12) |
 | Settings menu | ✅ in the portal menu's style, for controller and keyboard (F4 / Back + RB): presets, resolution, sharpening, frame rate, portal, controls |
 | Ultrawide | 🟡 the 3D view widens for 21:9 and wider; the HUD is still stretched |
 | Installer tested on a clean PC | ⬜ planned |

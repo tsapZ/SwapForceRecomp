@@ -2,13 +2,13 @@
 
 Updated at the end of every session. Only record what a build actually did.
 
-## Current state (2026-10-19)
+## Current state (2026-10-20)
 
 | Area | State |
 |---|---|
 | Boot, menus, saves | work; logo movies skipped (`skip_intro`), opening movie optional (`skip_opening_movie`) |
 | Tutorial level | playable with controller or keyboard (`mnk_mode`); cutscenes and dialogue work |
-| Graphics | correct with the fast `render_target_path_d3d12 = "rtv"` (default in templates again) since `execute_unclipped_draw_vs_on_cpu` is on (app default); `"rov"` still works but is much slower; 4K works. The 3D scene renders at 1040x620, HUD at 1280x720. The game's own FXAA now works at the internal resolution (`fxaa_follow_resolution_scale`) |
+| Graphics | correct with the fast `render_target_path_d3d12 = "rtv"` (default in templates again) since `execute_unclipped_draw_vs_on_cpu` is on (app default); `"rov"` still works but is much slower; 4K works. The 3D scene renders at 1040x620 like on the Xbox 360, HUD at 1280x720; experimental `scene_size = "1280x720"` draws it natively (D3D12, sharper, about a fifth of the frame rate, tried in the hub). The game's own FXAA now works at the internal resolution (`fxaa_follow_resolution_scale`) |
 | Audio | works (check the Windows output device) |
 | Language | English and German (`language`) |
 | Portal | emulated, driven by the portal menu (opens by itself when the game asks for a Skylander; Guide, Back+Start, hold Back, F6; with the button it fades in during the game's zoom-out), real USB incl. old PS3/Wii portals (fork `tsapZ/skylanders-portal`), `none`. Back+Y / F5 take the item off, L3+R3 / F9 open the player menu, player 2 leaves through Start > "Leave the game" |
@@ -16,9 +16,8 @@ Updated at the end of every session. Only record what a build actually did.
 | Stutter | short one-time hitches when an effect or attack appears for the first time (shader/pipeline creation); stored in the persistent shader cache, so expected once per install |
 | Videos | Bink 2 (KB2f/KB2g) play; green half only in a test-only Bink 1-after-KB2f sequence (#36, closed) |
 
-Open next: first level full playthrough (#17), native 1280x720 3D scene for a sharp picture at
-scale 2 (#41, size hook works, the EDRAM is too small for it), ultrawide HUD (#24, the 3D view
-works), installer (#27), German name cards (#38), controller portal overlay (#40).
+Open next: first level full playthrough (#17), native 1280x720 3D scene in the levels (#41,
+works in the hub as an experimental option), ultrawide HUD (#24, the 3D view works), installer (#27), German name cards (#38), controller portal overlay (#40).
 Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (docs/development.md).
 
 ## 2026-10-16: session log (chronological)
@@ -395,3 +394,33 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   with `igRenderPass._active` was tried and dropped: it is only read when the pipeline is built,
   and the bloom and motion blur passes write targets that later passes read (the motion blur pass
   also applies the colour LUT).
+
+## 2026-10-20: session log (native scene)
+
+- **Native 1280x720 3D scene (#41): works (experimental, off by default).** The black picture had
+  three causes, found in this order with RenderDoc and by logging every resolve's EDRAM base at
+  both sizes:
+  1. The per-pass fallback allocation (`sub_82514448`) puts the depth surface at the top of a
+     2048-tile EDRAM (`subfic` at 0x82514608), which at 1280x720 overlaps the colours.
+  2. Passes above 2048 tiles are split into predicated tiling strips (`sub_825138F8`, 880 + 400
+     pixels), which the SDK cannot resolve ("outside the surface pitch 880").
+  3. The frame planner (`sub_82593AD0`) gives every render target an EDRAM range for its lifetime
+     from a heap of 2048 tiles. At 1280x720 that heap runs out, every target falls back to the
+     per-pass allocation, and later passes overwrite what earlier ones left in the EDRAM: the
+     G-buffer and the lit scene were right, the scene texture the water pass read was not.
+
+  The SDK (pinned at b46d9d2) emulates a 4096-tile EDRAM (`edram_tile_count`, D3D12, resolution
+  scale area up to 25). Three hooks use it: the planning heap gets 4096 tiles (0x82593B04),
+  passes up to 4096 tiles stay untiled (0x82513A08), and a fallback depth surface moves to the top
+  of the larger EDRAM (0x8251460C). They do nothing with the normal 2048-tile EDRAM. Setting
+  `scene_size` turns on the larger EDRAM by itself unless `edram_tile_count` is set; without it
+  (Vulkan, or a scale above 5) the hook warns once and keeps 1040x620 (verified with Vulkan:
+  warning, normal picture, 90 FPS).
+
+  Hub, 1440p window, 240 limit: scale 1 156.5 FPS (about 167 without), scale 2 73.3 FPS (about 93
+  without). Screenshots are visibly sharper at both scales. In
+  the settings menu as "Native 3D picture (experimental)" on the graphics page (restart). Not yet
+  tried in the levels.
+- **UFO Hat card:** the item has no picture of its own in the game data; it is a hat item
+  (`_collectibleTracker` Hat_UFOHat), so its card now shows the game's hat icon (verified in the
+  Items tab, Swap Force row).

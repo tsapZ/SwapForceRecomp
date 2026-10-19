@@ -36,6 +36,8 @@
 #include "portal_rex/portal_rex.h"
 #include "xex_verify.h"
 
+REXCVAR_DECLARE(std::string, scene_size);  // hooks/scene_size_hook.cpp
+
 // Manual override for the ImGui overlay's size, since there's no reliable way to auto-detect "the
 // default looks too small/big" across platforms: the SDK's own physical-to-logical DPI conversion
 // (ImGuiDrawer::Draw/UpdateMousePosition) already compensates for actual OS display scaling, so
@@ -89,6 +91,11 @@ class SwapforcerecompApp : public rex::ReXApp {
     // instead of the presenter's black bars, unless present_letterbox was set by hand.
     if (swapforcerecomp::UltrawideActive() && !rex::cvar::HasNonDefaultValue("present_letterbox")) {
       rex::cvar::SetFlagByName("present_letterbox", "false");
+    }
+    // A 3D scene larger than the 360's needs more EDRAM than it has (#41, scene_size_hook.cpp),
+    // unless edram_tile_count was set by hand.
+    if (!REXCVAR_GET(scene_size).empty() && !rex::cvar::HasNonDefaultValue("edram_tile_count")) {
+      rex::cvar::SetFlagByName("edram_tile_count", "4096");
     }
     // The Xenos GPU plugin renders the Xbox 360 command stream; without it nothing is drawn.
     if (config.gpu_plugin.empty()) config.gpu_plugin = "xenos";

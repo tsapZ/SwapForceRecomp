@@ -16,10 +16,43 @@
 // by the IGX parser (sub_82455FD8 -> sscanf) while it parses outdoor_shading_xenon, and read only by
 // this function, on the way from the title screen to the hub.
 //
-// State: with 1280x720 every pass gets the new size (64 instead of 86 FPS in the hub), but the
-// four G-buffer surfaces need 4 x 720 = 2880 EDRAM tiles of 2048; the engine shrinks one (the SDK
-// reports "Resolve region 0 <= x < 1280 is outside the surface pitch 880") and the 3D scene is
-// black. Next: the engine's EDRAM surface allocation and the SDK fork's 4096-tile EDRAM.
+// With 1280x720 every pass gets the new size (64 instead of 86 FPS in the hub), but the G-buffer
+// pass needs 4 x 720 = 2880 EDRAM tiles of the 360's 2048, and the 3D scene was black. Where the
+// surfaces go: sub_82514448 (per render pass) puts the colour surfaces one after the other from
+// tile 0 (Xenon surface _edramBase +0x80, _edramTileCount +0x84, counted by sub_82516EB8 from
+// _actualWidth / _actualHeight +0x6C / +0x70) and the depth surface at the top,
+// 2048 - its tiles (subfic r9,r11,0x800 at 0x82514608), with _overrideBase (+0x7D) skipping both.
+// At 1280x720 the colours end at 2160 and the depth starts at 1328, so they overlap. Found
+// 2026-10-19 from the reflection field table at 0x822BB340 (offsets at 0x822BB3B0), XGSurfaceSize
+// (sub_82F5A0D8: tiles of 80x16 samples, 5120 bytes) and XGSetSurfaceHeader (sub_82F5B778, which
+// keeps 12 bits of the base) up to their only caller with an allocation.
+//
+// Before that, sub_825138F8 decides whether a pass fits at all: it adds up the pass's tiles (rows x
+// columns x the surfaces' 32-bit units; the G-buffer at 1280x720: 45 x 16 x 4 = 2880) and, above
+// 2048 (cmpwi cr6,r5,0x800 at 0x82513A08), switches to predicated tiling: the screen is cut into
+// strips that fit, 2048 / (45 x 4) = 11 tiles = 880 pixels and the remaining 400, and every
+// surface of the pass gets the strip's size (_actualWidth / _actualHeight). The SDK doesn't
+// emulate predicated tiling well, which is where the "surface pitch 880" and the black scene came
+// from.
+//
+// That per-pass allocation is only the fallback. Normally the engine plans the whole frame once
+// (sub_82593AD0): every render target gets an EDRAM range for its lifetime (_firstUse.._lastUse)
+// from a heap of 2048 tiles at 1024 bytes per tile (lis r5,0x20 = 0x200000 before the heap's init
+// call at 0x82593B14; a second heap of 3600 is for hierarchical Z), so that targets later passes
+// read stay in the EDRAM. sub_82593870 allocates (sub_82472370), sub_825939E0 turns the address
+// into _edramBase with _overrideBase set. At 1040x620 this gives the G-buffer depth 0 and colours
+// 507 / 1014 / 1521. At 1280x720 the heap runs out, every target falls back to the per-pass
+// allocation, later passes overwrite what earlier ones left in the EDRAM, and the scene goes black
+// (traced 2026-10-19 with RenderDoc: the G-buffer and the lit scene were right, the scene texture
+// the water pass read was not; and by logging every resolve's EDRAM base in both sizes).
+//
+// The SDK can emulate a 4096-tile EDRAM (edram_tile_count, D3D12, up to a resolution scale area of
+// 25). With it, the hook at 0x82593B04 makes the planning heap 4096 tiles, the hook at 0x82513A08
+// lets every pass that fits into 4096 tiles go untiled, and the hook at 0x8251460C moves a
+// fallback depth surface to the top of that EDRAM, 4096 - its tiles. A
+// scene_size larger than the game's turns edram_tile_count 4096 on by itself
+// (swapforcerecomp_app.h). Passes larger than 4096 tiles (a scene above about 1440x810) are still
+// tiled and stay broken.
 
 #include <atomic>
 #include <cstdint>
@@ -27,6 +60,7 @@
 #include <string>
 
 #include <rex/cvar.h>
+#include <rex/graphics/edram_layout.h>
 #include <rex/logging.h>
 #include <rex/memory.h>
 #include <rex/memory/utils.h>
@@ -34,9 +68,10 @@
 #include <rex/system/kernel_state.h>
 
 REXCVAR_DEFINE_STRING(scene_size, "", "Graphics",
-                      "EXPERIMENTAL, not working yet: draw the 3D scene at this size instead of "
-                      "the Xbox 360's 1040x620, e.g. 1280x720. For now the scene stays black: "
-                      "its surfaces no longer fit into the EDRAM (#41). Empty: the game's size")
+                      "EXPERIMENTAL: draw the 3D scene at this size instead of the Xbox 360's "
+                      "1040x620, e.g. 1280x720 (#41). Needs the larger emulated EDRAM, which it "
+                      "turns on (edram_tile_count 4096, D3D12 and resolution_scale up to 5 only; "
+                      "otherwise the game's size stays). Empty: the game's size")
     .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
 
 namespace {
@@ -65,9 +100,60 @@ Size ConfiguredSize() {
 
 }  // namespace
 
+// Before 0x82593B04 (li r4,0x400): r5 = 0x200000 is the size of the frame's EDRAM planning heap,
+// 2048 tiles of 1024 bytes, passed to its init call two instructions on. With the larger EDRAM it
+// gets that many tiles.
+void EdramHeapSizeHook(PPCRegister& r5) {
+  const uint32_t tiles = rex::graphics::ActiveEdramLayout().tile_count;
+  if (tiles <= 2048 || r5.u32 != 2048 * 1024) return;
+  r5.u64 = uint64_t(tiles) * 1024;
+  static std::atomic<bool> logged{false};
+  if (!logged.exchange(true)) REXLOG_INFO("Scene size: EDRAM planning heap of {} tiles", tiles);
+}
+
+// Before 0x82513A08 (cmpwi cr6,r5,0x800): r5 is the pass's tile count. Between 2048 and the larger
+// EDRAM it becomes 2048, so the comparison takes the "fits" path (r5 isn't read on that path; the
+// strip size it stores is then the whole surface).
+void EdramTilingHook(PPCRegister& r5) {
+  const uint32_t tiles = rex::graphics::ActiveEdramLayout().tile_count;
+  if (tiles <= 2048 || r5.u32 <= 2048 || r5.u32 > tiles) return;
+  static std::atomic<int> logged{0};
+  if (logged.fetch_add(1) < 4) {
+    REXLOG_INFO("Scene size: a pass of {} tiles fits into the {}-tile EDRAM, no tiling", r5.u32,
+                tiles);
+  }
+  r5.u64 = 2048;
+}
+
+// Before 0x8251460C (cmplwi cr6,r10,0xe10): r9 = 2048 - r11 is the depth surface's EDRAM base,
+// r11 its tile count; stw r9,0x80(r23) stores it next. With a 4096-tile EDRAM in use the depth
+// goes to the top of that instead. Only r9 changes, and only when the EDRAM is the larger one.
+void EdramDepthBaseHook(PPCRegister& r9, PPCRegister& r11) {
+  const uint32_t tiles = rex::graphics::ActiveEdramLayout().tile_count;
+  if (tiles <= 2048 || r11.u32 > tiles) return;
+  r9.u64 = tiles - r11.u32;
+  static std::atomic<int> logged{0};
+  if (logged.fetch_add(1) < 4) {
+    REXLOG_INFO("Scene size: depth surface of {} tiles at EDRAM tile {} of {}", r11.u32, r9.u32,
+                tiles);
+  }
+}
+
 void SceneSizeHook(PPCRegister& r3) {
   static const Size size = ConfiguredSize();
   if (!size.width) return;
+  // Without the larger EDRAM (Vulkan, or a resolution scale area above 25) a larger scene doesn't
+  // fit and would stay black; then the game keeps its own size.
+  if (size.width * size.height > kGameWidth * kGameHeight &&
+      !rex::graphics::ActiveEdramLayout().is_extended()) {
+    static std::atomic<bool> warned{false};
+    if (!warned.exchange(true)) {
+      REXLOG_WARN("Scene size: {}x{} needs the 4096-tile EDRAM (D3D12, resolution scale up to 5); "
+                  "keeping 1040x620",
+                  size.width, size.height);
+    }
+    return;
+  }
   uint8_t* target = rex::system::kernel_state()->memory()->virtual_membase() + r3.u32;
   if (rex::memory::load_and_swap<int32_t>(target + kWidthOffset) != kGameWidth ||
       rex::memory::load_and_swap<int32_t>(target + kHeightOffset) != kGameHeight) {

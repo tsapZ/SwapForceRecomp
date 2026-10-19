@@ -50,6 +50,41 @@ address = 0x8258EBE8
 name = "SceneSizeHook"
 registers = ["r3"]
 
+# 0x82593B04 follows lis r5,0x20 in sub_82593AD0, which plans the frame's EDRAM use: r5 = 0x200000
+# is the size of the planning heap (2048 tiles of 1024 bytes) handed to its init call (bctrl at
+# 0x82593B14). Found by following the targets' _overrideBase / _edramBase writer (sub_825939E0) back
+# to the allocation (sub_82593870 -> sub_82472370) and this heap. src/hooks/scene_size_hook.cpp
+# makes it 4096 tiles when the SDK runs a 4096-tile EDRAM, so a larger scene keeps its planned
+# layout; r5 is only that argument.
+[[midasm_hook]]
+address = 0x82593B04
+name = "EdramHeapSizeHook"
+registers = ["r5"]
+
+# 0x82513A08 is cmpwi cr6,r5,0x800 in sub_825138F8, which adds up a render pass's EDRAM tiles (r5)
+# and above 2048 cuts the screen into predicated-tiling strips (the G-buffer at 1280x720: 2880
+# tiles, strips of 880 and 400 pixels, which the SDK doesn't emulate well: black scene). Found by
+# logging the failing resolve (depth base 4096 - 495, surface pitch 880) and the function that
+# writes the strip size into the surfaces (_actualWidth / _actualHeight). src/hooks/
+# scene_size_hook.cpp lowers r5 to 2048 when the pass fits into a 4096-tile EDRAM the SDK runs, so
+# the pass goes untiled; r5 is not read on that path.
+[[midasm_hook]]
+address = 0x82513A08
+name = "EdramTilingHook"
+registers = ["r5"]
+
+# 0x8251460C follows subfic r9,r11,0x800 in sub_82514448, the per-render-pass EDRAM allocation:
+# colour surfaces go one after the other from tile 0, the depth surface to the top, 2048 minus its
+# tiles (r11), stored by the stw r9,0x80(r23) two instructions on. Found from the Xenon surface
+# reflection fields (_edramBase +0x80, _edramTileCount +0x84) and XGSurfaceSize / XGSetSurfaceHeader
+# (sub_82F5A0D8 / sub_82F5B778) up to their only allocating caller. src/hooks/scene_size_hook.cpp
+# puts the depth at the top of a 4096-tile EDRAM instead when the SDK runs one
+# (edram_tile_count = 4096, which a larger scene_size needs); r9 is only read by that store.
+[[midasm_hook]]
+address = 0x8251460C
+name = "EdramDepthBaseHook"
+registers = ["r9", "r11"]
+
 # 0x82A4A828 is CPlayerJumpComponent's per-frame "stuck while falling" check: a falling player who
 # moved less than CPlayerSystemData._stuckFallingDistanceThreshold (+0x5C) since the last frame
 # runs a timer, and after _stuckFallingTime (+0x60) is put back (sub_82A4A5D0 with 4). Found from

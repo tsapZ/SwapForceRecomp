@@ -27,7 +27,7 @@ quality, then the controller-only Skylanders-style menus and a release.
 | **Now** | Try the new settings menu (F4 or Back + RB): presets, frame rate page, changes marked "next start" (#43); new on the graphics page: glow (bloom) and motion blur strength (#50) | you |
 | **Now** | At 200 FPS, jump off a long drop: the game used to put the player back after 3 s of falling, now fixed (`fix_stuck_falling`) | you |
 | Next | USB portal device list in the settings menu (#47) | me |
-| Research | Native 1280x720 3D scene (#41): size found and switchable (`scene_size`, experimental), but the picture is black because the EDRAM is too small; needs the engine's EDRAM layout plus a bigger EDRAM in the SDK | me |
+| **Now** | Try "Native 3D picture (experimental)" on the graphics page in a level: sharper 3D scene at 1280x720 instead of 1040x620, about a fifth of the frame rate; report anything black or flickering (#41) | you |
 | Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 %; smaller shadow maps tried and dropped (shadows vanish) | me |
 | Research | Best default settings (#50): D3D12 vs. Vulkan, what RPCS3 / Cemu / Dolphin do for a clean Skylanders picture, measured presets | me |
 | Then | Installer for a first release (#27) | me, test on a clean VM |
@@ -115,7 +115,8 @@ with keyboard; controller input verified in the tutorial).
   written back (docs/hybrid-portal.md); waiting for a test with a real portal
 - [x] Settings menu in Skylanders style, usable with controller, replacing F4 (#43): six pages,
   presets, changes saved line by line; the SDK's list moved to F10
-- [ ] Native 1280x720 3D scene, the game renders it at 1040x620 (#41)
+- [ ] Native 1280x720 3D scene, the game renders it at 1040x620 (#41): works in the hub as an
+  experimental option (`scene_size`, D3D12); open until tried in the levels
 - [ ] Best default settings, researched and measured: renderer, presets (#50); done so far:
   measured presets, the game's FXAA at the internal resolution, bloom and motion blur strength,
   long falls at high frame rates
