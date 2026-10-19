@@ -14,23 +14,25 @@ using skylanders::SettingsPage;
 
 // UTF-8 is written as escapes, split where a hex digit follows ("n\xC3\xA4" "chsten").
 
-// Resolution scale and present effect together. The numbers come from the measurements in
-// docs/STATUS.md (#23, #44: 2560x1440 output, RTV).
+// Resolution scale and present effect together. The FPS are the hub measurements of 2026-10-19
+// (#50: 2560x1440 output, RTV, no frame rate limit): scale 1 + FSR 169, scale 2 + CAS 83,
+// scale 3 + CAS 40.
 Setting PresetSetting() {
   Setting s;
   s.en = "Preset";
   s.de = "Voreinstellung";
   s.help_en =
       "Sets the internal resolution and sharpening together. Performance: the game's own 720p "
-      "picture, upscaled with FSR, for slower PCs. Quality (recommended): twice the resolution, "
-      "sharpened; sharp on a 1440p screen, about 100 FPS in the tests. Best: three times the "
-      "resolution, sharp in 4K, needs a strong graphics card (about 45 FPS in the tests).";
+      "picture, upscaled with FSR, for slower PCs (about 170 FPS in the hub in the tests). "
+      "Quality (recommended): twice the resolution, sharpened; sharp on a 1440p screen, about "
+      "85 FPS in the hub. Best: three times the resolution, sharp in 4K, needs a strong graphics "
+      "card (about 40 FPS in the hub).";
   s.help_de =
       "Stellt Aufl\xC3\xB6sung und Sch\xC3\xA4rfe zusammen ein. Leistung: das 720p-Bild des "
-      "Spiels, mit FSR hochskaliert, f\xC3\xBCr schw\xC3\xA4" "chere PCs. Qualit\xC3\xA4t "
-      "(empfohlen): doppelte Aufl\xC3\xB6sung, gesch\xC3\xA4rft; scharf auf einem "
-      "1440p-Bildschirm, in den Tests rund 100 FPS. Beste: dreifache Aufl\xC3\xB6sung, scharf in "
-      "4K, braucht eine starke Grafikkarte (in den Tests um 45 FPS).";
+      "Spiels, mit FSR hochskaliert, f\xC3\xBCr schw\xC3\xA4" "chere PCs (in den Tests rund 170 "
+      "FPS im Hub). Qualit\xC3\xA4t (empfohlen): doppelte Aufl\xC3\xB6sung, gesch\xC3\xA4rft; "
+      "scharf auf einem 1440p-Bildschirm, rund 85 FPS im Hub. Beste: dreifache Aufl\xC3\xB6sung, "
+      "scharf in 4K, braucht eine starke Grafikkarte (um 40 FPS im Hub).";
   s.options = {{"performance", "Performance", "Leistung"},
                {"quality", "Quality", "Qualit\xC3\xA4t"},
                {"best", "Best", "Beste"}};
@@ -76,9 +78,10 @@ SettingsPage GraphicsPage() {
         {"fsr", "FSR 1 upscaling", "FSR 1 (hochskaliert)"}}});
   page.settings.push_back(
       {"anisotropic_override", "Texture filtering", "Texturfilter",
-       "Keeps floors and walls sharp at a shallow angle. 16x costs next to nothing on a PC.",
+       "Keeps floors and walls sharp at a shallow angle. 16x costs next to nothing (83 vs 84 FPS "
+       "against 4x in the tests).",
        "H\xC3\xA4lt B\xC3\xB6" "den und W\xC3\xA4nde auch schr\xC3\xA4g betrachtet scharf. 16x "
-       "kostet am PC so gut wie nichts.",
+       "kostet so gut wie nichts (in den Tests 83 statt 84 FPS gegen\xC3\xBC" "ber 4x).",
        {{"0", "Off", "Aus"}, {"3", "4x", "4x"}, {"4", "8x", "8x"}, {"5", "16x", "16x"}}});
   page.settings.push_back(
       {"swap_post_effect", "Edge smoothing", "Kantengl\xC3\xA4ttung",
