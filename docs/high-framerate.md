@@ -1,7 +1,7 @@
 # High frame rates (60, 120, 144 FPS)
 
-Research notes for unlocking the frame rate in Swap Force and later Skylanders recomps. Nothing here
-is implemented yet.
+Research notes for unlocking the frame rate in Swap Force and later Skylanders recomps. What is
+implemented is listed under "Where Swap Force stands".
 
 ## Where Swap Force stands
 
@@ -38,6 +38,18 @@ is implemented yet.
   The 3D scene itself is 1024x624 (13 EDRAM tiles x 39 rows), the HUD and final image 1280x720, so
   `resolution_scale` 2 renders the scene at 2048x1248 and scales it up to a 1440p window. Do **not** raise `video_mode_refresh_rate` instead: the game adapts to
   the display mode and stays at 30 FPS.
+- **Long falls (fixed, `fix_stuck_falling`, on by default):** the player's jump component checks
+  every frame whether a falling player is stuck (`sub_82A4A828`): moved less than 20 units since the
+  last frame (`CPlayerSystemData._stuckFallingDistanceThreshold`) for more than 3 s
+  (`_stuckFallingTime`) and the game puts the player back. 20 per frame is 600 units per second at
+  30 FPS but 4800 at 240 FPS, faster than a player falls, so at high frame rates every long fall
+  ended with the player put back (Cemu's Wii U pack calls its fix for this "infinite fall fix").
+  `src/hooks/stuck_falling_hook.cpp` scales the threshold by the game's own frame time
+  (`30 * dt`, at most 1). Measured in the hub, launching the player with the jump component's bounce
+  pad fields to 1500 / 3000 / 5000 units per second: at 30 FPS each fall counts as stuck for
+  0.43-0.50 s; at 240 FPS without the fix 0.84 s, 2.05 s and over 3 s, the last one with the
+  player put back; with the fix 0.26-0.39 s and never put back. `log_stuck_falling` logs these
+  times.
 - How it was found: the main thread waits on an engine semaphore (`sub_823F2358` -> the game's
   `WaitForSingleObject`), signalled after the swap. A dbghelp `StackWalk64` of all game threads in the
   debug build, `VdSwap`'s only caller (`sub_82F5D018`) and the vblank handler led to the swap queue.

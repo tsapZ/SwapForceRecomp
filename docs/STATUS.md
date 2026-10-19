@@ -12,7 +12,7 @@ Updated at the end of every session. Only record what a build actually did.
 | Audio | works (check the Windows output device) |
 | Language | English and German (`language`) |
 | Portal | emulated, driven by the portal menu (opens by itself when the game asks for a Skylander; Guide, Back+Start, hold Back, F6; with the button it fades in during the game's zoom-out), real USB incl. old PS3/Wii portals (fork `tsapZ/skylanders-portal`), `none`. Back+Y / F5 take the item off, L3+R3 / F9 open the player menu, player 2 leaves through Start > "Leave the game" |
-| Frame rate | 30 FPS default; experimental `present_interval = 1` -> 60 FPS, more with `frame_rate_limit` (0 keeps the game at 30). Tutorial, 1440p output, RTV: 237 FPS at scale 1, 106 at scale 2, 46 at scale 3 (ROV scale 2: 67). Game speed at 60 FPS verified by playing the tutorial (#37, closed) |
+| Frame rate | 30 FPS default; experimental `present_interval = 1` -> 60 FPS, more with `frame_rate_limit` (0 keeps the game at 30). Tutorial, 1440p output, RTV: 237 FPS at scale 1, 106 at scale 2, 46 at scale 3 (ROV scale 2: 67). Game speed at 60 FPS verified by playing the tutorial (#37, closed); long falls at high FPS fixed (`fix_stuck_falling`) |
 | Stutter | short one-time hitches when an effect or attack appears for the first time (shader/pipeline creation); stored in the persistent shader cache, so expected once per install |
 | Videos | Bink 2 (KB2f/KB2g) play; green half only in a test-only Bink 1-after-KB2f sequence (#36, closed) |
 
@@ -293,3 +293,11 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   EDRAM surface allocation plus the SDK fork's 4096-tile EDRAM.
 - **Write watch extended:** read watches, guest registers and stack at the hit, memory snapshots,
   `dump`; late threads get the breakpoint too.
+- **Long falls at high frame rates: found and fixed (`fix_stuck_falling`, on).** The game's
+  "stuck while falling" check (`sub_82A4A828`, CPlayerJumpComponent) counts a distance per frame
+  (20 units, tuned for 30 FPS) and puts the player back after 3 s of "stuck". At 240 FPS every
+  fall looked stuck; reproduced in the hub by launching the player high with the jump component's
+  bounce pad fields: the 5000 launch ended with the player put back after 3.00 s. The hook scales
+  the threshold by the game's frame time; with it no put-back at 240 FPS, at 30 FPS nothing
+  changes. Found through the reflection field names (`_stuckFallingDistanceThreshold`,
+  `_stuckFallingTime`, `_stuckFallingTimer`), their offset tables and the classes' RTTI.

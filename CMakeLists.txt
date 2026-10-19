@@ -48,6 +48,7 @@ set(SWAPFORCERECOMP_SOURCES
     src/hooks/frame_rate_hook.cpp
     src/hooks/fxaa_scale_hook.cpp
     src/hooks/scene_size_hook.cpp
+    src/hooks/stuck_falling_hook.cpp
     src/hooks/ultrawide_hook.cpp
     src/localization.cpp
     src/settings_pages.cpp

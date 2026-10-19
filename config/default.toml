@@ -50,6 +50,32 @@ address = 0x8258EBE8
 name = "SceneSizeHook"
 registers = ["r3"]
 
+# 0x82A4A828 is CPlayerJumpComponent's per-frame "stuck while falling" check: a falling player who
+# moved less than CPlayerSystemData._stuckFallingDistanceThreshold (+0x5C) since the last frame
+# runs a timer, and after _stuckFallingTime (+0x60) is put back (sub_82A4A5D0 with 4). Found from
+# the reflection field names and offset tables (0x820AF9C8 / 0x820AFA84) and the classes' RTTI;
+# this is the one function reading both fields and the component's timer (+0x8C). The threshold
+# is per frame, i.e. tuned for 30 FPS. src/hooks/stuck_falling_hook.cpp reads the frame time at
+# the entry (r30 is still the only caller's update context, sub_82A4A950, with dt at +0x14; r3 =
+# component; only reads), scales the threshold in f13 by 30 x dt (at most 1) at 0x82A4A8A0
+# (fmuls f11,f13,f12 multiplies it next; nothing else uses f13 after it; f0 = squared distance and
+# r30 = CPlayerSystemData are only read, for the log), and logs the put-back at 0x82A4A8D8
+# (f1 = timer, f31 = limit; only reads). Same fix as Cemu's Wii U pack.
+[[midasm_hook]]
+address = 0x82A4A828
+name = "StuckFallingCheckHook"
+registers = ["r3", "r30"]
+
+[[midasm_hook]]
+address = 0x82A4A8A0
+name = "StuckFallingThresholdHook"
+registers = ["f0", "f13", "f12", "r30", "r31"]
+
+[[midasm_hook]]
+address = 0x82A4A8D8
+name = "StuckFallingRespawnHook"
+registers = ["f1", "f31"]
+
 # Jump tables the analyzer under-counted, so the generated switch trapped (__builtin_trap, host
 # exception 0xC000001D) on the missing indices. All four tables sit directly after their bctr;
 # entries were read from the image with Ghidra until the first word that is no longer a code
