@@ -17,6 +17,8 @@
 #include <rex/cvar.h>
 #include <rex/logging.h>
 #include <rex/rex_app.h>
+#include <rex/ui/keybinds.h>
+#include <rex/ui/ui_event.h>
 
 #include "dev/input_script.h"
 #include "game/magic_moment_watch.h"
@@ -25,6 +27,8 @@
 #include "portal_rex/portal_menu.h"
 #include "portal_rex/portal_menu_input.h"
 #include "portal_rex/player_menu.h"
+#include "portal_rex/settings_menu.h"
+#include "settings_pages.h"
 #include "portal_rex/portal_rex.h"
 #include "xex_verify.h"
 
@@ -59,6 +63,7 @@ class SwapforcerecompApp : public rex::ReXApp {
     // The menu's textures belong to the immediate drawer, which goes away right after this.
     skylanders::ShutdownPortalMenu();
     skylanders::ShutdownPlayerMenu();
+    skylanders::ShutdownSettingsMenu();
     swapforcerecomp::ShutdownToyImages();
   }
 
@@ -80,11 +85,13 @@ class SwapforcerecompApp : public rex::ReXApp {
 
   void OnPostSetup() override {
     skylanders::InstallPortal(user_data_root() / "figures");
-    swapforcerecomp::InstallInputScript(runtime()->input_system(), runtime()->memory(),
-                                        [this]() -> uint64_t {
-      auto* graphics_system = runtime() ? runtime()->graphics_system() : nullptr;
-      return graphics_system ? graphics_system->guest_frame_count() : 0;
-    });
+    swapforcerecomp::InstallInputScript(
+        runtime()->input_system(), runtime()->memory(),
+        [this]() -> uint64_t {
+          auto* graphics_system = runtime() ? runtime()->graphics_system() : nullptr;
+          return graphics_system ? graphics_system->guest_frame_count() : 0;
+        },
+        [this](std::function<void()> f) { app_context().CallInUIThread(std::move(f)); });
     // The F3 debug overlay's FPS line only shows once something calls this; nothing did, so it
     // silently stayed blank. Sampled from the SDK's dedicated guest-swap counter (which only
     // advances on an actual presented guest frame -- see CommandProcessor::guest_frame_count())
@@ -171,6 +178,17 @@ class SwapforcerecompApp : public rex::ReXApp {
     skylanders::SetPortalMenuConfigPath(settings_path_);
     // L3 + R3 or F9: which controller plays as which player.
     skylanders::RegisterPlayerMenu(drawer, &app_context());
+    // The settings menu takes F4 (and Back + RB); the SDK's full list of every setting moves to
+    // F10 and stays reachable from the menu's last page.
+    SetDefault("bind_settings", "F10");
+    skylanders::RegisterSettingsMenu(
+        drawer, &app_context(), swapforcerecomp::BuildSettingsPages([] {
+          // Through the SDK overlay's own key bind.
+          const auto key = rex::ui::ParseVirtualKey(rex::cvar::GetFlagByName("bind_settings"));
+          rex::ui::KeyEvent event(nullptr, key, 1, false, false, false, false, false);
+          rex::ui::ProcessKeyEvent(event);
+        }),
+        settings_path_);
     skylanders::RegisterPortalOverlay(drawer);
   }
 

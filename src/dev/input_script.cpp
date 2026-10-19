@@ -21,6 +21,8 @@
 #include <rex/input/input_system.h>
 #include <rex/logging.h>
 #include <rex/system/xmemory.h>
+#include <rex/ui/keybinds.h>
+#include <rex/ui/ui_event.h>
 
 #include "portal_rex/portal_menu_input.h"
 
@@ -39,7 +41,18 @@ using rex::X_STATUS;
 constexpr auto kScriptDevice = static_cast<rex::input::DeviceId>(0x53435200);  // "SCR"
 
 struct Event {
-  enum class Kind { kPress, kStick, kLog, kFps, kScan, kPoke, kRenderDoc, kPlayer, kQuit } kind;
+  enum class Kind {
+    kPress,
+    kStick,
+    kLog,
+    kFps,
+    kScan,
+    kPoke,
+    kRenderDoc,
+    kPlayer,
+    kKey,
+    kQuit
+  } kind;
   double start = 0.0;     // seconds since the timeline started
   double duration = 0.0;  // seconds, for presses and stick moves
   uint16_t buttons = 0;
@@ -155,6 +168,9 @@ bool ParseScript(std::istream& in, std::vector<Event>& events) {
     } else if (cmd == "player") {
       ok = bool(words >> e.frames) && e.frames >= 1 && e.frames <= 4;
       e.kind = Event::Kind::kPlayer;
+    } else if (cmd == "key") {
+      ok = bool(words >> e.text) && rex::ui::ParseVirtualKey(e.text) != rex::ui::VirtualKey::kNone;
+      e.kind = Event::Kind::kKey;
     } else if (cmd == "quit") {
       e.kind = Event::Kind::kQuit;
     } else {
@@ -268,18 +284,20 @@ void CaptureGuestFrames(uint32_t frames, const std::function<uint64_t()>& guest_
 class ScriptInputDriver final : public rex::input::InputDriver {
  public:
   ScriptInputDriver(std::vector<Event> events, std::function<uint64_t()> guest_frame_count,
-                    rex::memory::Memory* memory)
+                    rex::memory::Memory* memory,
+                    std::function<void(std::function<void()>)> run_in_ui)
       : InputDriver(nullptr, 0),
         events_(std::move(events)),
         guest_frame_count_(std::move(guest_frame_count)),
         memory_(memory),
+        run_in_ui_(std::move(run_in_ui)),
         start_(Clock::now()) {}
 
   X_STATUS Setup() override {
     // Logs, captures and quit fire at their time even while the game polls no input. The thread
     // works on copies and is detached, so it never outlives what it uses.
     std::thread([events = events_, start = start_, guest_frame_count = guest_frame_count_,
-                 memory = memory_] {
+                 memory = memory_, run_in_ui = run_in_ui_] {
       for (const Event& e : events) {
         if (e.kind == Event::Kind::kPress || e.kind == Event::Kind::kStick) continue;
         std::this_thread::sleep_until(start + std::chrono::duration_cast<Clock::duration>(
@@ -306,6 +324,15 @@ class ScriptInputDriver final : public rex::input::InputDriver {
         } else if (e.kind == Event::Kind::kPlayer) {
           skylanders::menu_input::SetDevicePlayer(kScriptDevice, e.frames - 1);
           REXLOG_INFO("Input script: now playing as player {}", e.frames);
+        } else if (e.kind == Event::Kind::kKey) {
+          // Through the key binds, as a key press in the window would go.
+          if (run_in_ui) {
+            run_in_ui([key = rex::ui::ParseVirtualKey(e.text)] {
+              rex::ui::KeyEvent event(nullptr, key, 1, false, false, false, false, false);
+              rex::ui::ProcessKeyEvent(event);
+            });
+          }
+          REXLOG_INFO("Input script: key {}", e.text);
         } else {
           REXLOG_INFO("Input script: quit");
           std::_Exit(0);
@@ -380,6 +407,7 @@ class ScriptInputDriver final : public rex::input::InputDriver {
   std::vector<Event> events_;
   std::function<uint64_t()> guest_frame_count_;
   rex::memory::Memory* memory_;
+  std::function<void(std::function<void()>)> run_in_ui_;
   Clock::time_point start_;
   uint32_t packet_number_ = 0;
 };
@@ -387,7 +415,8 @@ class ScriptInputDriver final : public rex::input::InputDriver {
 }  // namespace
 
 void InstallInputScript(rex::system::IInputSystem* input_system, rex::memory::Memory* memory,
-                        std::function<uint64_t()> guest_frame_count) {
+                        std::function<uint64_t()> guest_frame_count,
+                        std::function<void(std::function<void()>)> run_in_ui) {
   const std::string path = REXCVAR_GET(input_script);
   if (path.empty()) return;
   std::ifstream file(path);
@@ -401,8 +430,8 @@ void InstallInputScript(rex::system::IInputSystem* input_system, rex::memory::Me
     REXLOG_ERROR("Input script: no input system");
     return;
   }
-  auto driver =
-      std::make_unique<ScriptInputDriver>(std::move(events), std::move(guest_frame_count), memory);
+  auto driver = std::make_unique<ScriptInputDriver>(std::move(events), std::move(guest_frame_count),
+                                                    memory, std::move(run_in_ui));
   driver->Setup();
   // Wrapped like the real controllers, so scripted runs can open and drive the portal menu.
   input->AddDriver(skylanders::WrapForPortalMenu(std::move(driver), true));

@@ -17,6 +17,8 @@
 //   poke <hex addr> <hex>    writes a big-endian u32 to guest memory
 //   renderdoc [n]            captures the next n guest frames with an attached RenderDoc
 //   player <n>               the scripted controller plays as player n (1-4) from now on
+//   key <name>               presses a key for the app's key binds (F4, F6, F9; names as in the
+//                            bind_* settings), e.g. to open an overlay
 //   quit                     ends the game
 // Buttons: a b x y start back guide up down left right lb rb ls rs lt rt, or several pressed
 // together joined with + (tap back+y)
@@ -36,8 +38,10 @@ class IInputSystem;
 namespace swapforcerecomp {
 
 // Installs the scripted input device if --input_script is set. Call once the runtime exists.
-// guest_frame_count returns the number of guest frames presented so far (renderdoc command).
+// guest_frame_count returns the number of guest frames presented so far (renderdoc command);
+// run_in_ui runs a function on the UI thread (key command).
 void InstallInputScript(rex::system::IInputSystem* input_system, rex::memory::Memory* memory,
-                        std::function<uint64_t()> guest_frame_count);
+                        std::function<uint64_t()> guest_frame_count,
+                        std::function<void(std::function<void()>)> run_in_ui);
 
 }  // namespace swapforcerecomp
