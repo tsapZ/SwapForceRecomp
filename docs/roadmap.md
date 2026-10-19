@@ -24,8 +24,9 @@ quality, then the controller-only Skylanders-style menus and a release.
 | When | What | Who |
 |---|---|---|
 | **Now** | Test the new menu parts: Guide while running (menu after the zoom-out), Start > options and "Leave the game" as player 2, Back+Y for the item, L3+R3 player menu with two controllers and a Bluetooth reconnect (#40) | you |
-| **Now** | Try the new settings menu (F4 or Back + RB): presets, frame rate page, changes marked "next start" (#43) | you |
-| Next | USB portal device list in the settings menu (#47); measured presets and the picture quality ideas from the research (#50) | me |
+| **Now** | Try the new settings menu (F4 or Back + RB): presets, frame rate page, changes marked "next start" (#43); new on the graphics page: glow (bloom) and motion blur strength (#50) | you |
+| **Now** | At 200 FPS, jump off a long drop: the game used to put the player back after 3 s of falling, now fixed (`fix_stuck_falling`) | you |
+| Next | USB portal device list in the settings menu (#47) | me |
 | Research | Native 1280x720 3D scene (#41): size found and switchable (`scene_size`, experimental), but the picture is black because the EDRAM is too small; needs the engine's EDRAM layout plus a bigger EDRAM in the SDK | me |
 | Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 % | me |
 | Research | Best default settings (#50): D3D12 vs. Vulkan, what RPCS3 / Cemu / Dolphin do for a clean Skylanders picture, measured presets | me |
@@ -106,7 +107,9 @@ with keyboard; controller input verified in the tutorial).
 - [x] Settings menu in Skylanders style, usable with controller, replacing F4 (#43): six pages,
   presets, changes saved line by line; the SDK's list moved to F10
 - [ ] Native 1280x720 3D scene, the game renders it at 1040x620 (#41)
-- [ ] Best default settings, researched and measured: renderer, presets (#50)
+- [ ] Best default settings, researched and measured: renderer, presets (#50); done so far:
+  measured presets, the game's FXAA at the internal resolution, bloom and motion blur strength,
+  long falls at high frame rates
 - [ ] Installer tested on a clean Windows VM (#27)
 - [ ] Ultrawide: projection hook for 21:9 (#24)
 - [ ] Docs mirrored into the GitHub wiki (#4)
