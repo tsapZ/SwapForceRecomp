@@ -13,7 +13,7 @@ observed in a real build or a real play test, not inferred.
 | 2 In-game | ✅ done | 11/11 | – |
 | 3 Portal | 🟡 almost | 6/7 | a swapper on the real USB portal (#42) |
 | 4 4K and polish | 🟡 in progress | 8/17 | controller portal menu (#40, #46, #47), performance and picture quality (#44, #41, #50), installer (#27), ultrawide (#24), wiki (#4) |
-| 5 Online co-op (stretch) | ⬜ not started | 0/3 | architecture proposal first |
+| 5 Online co-op (stretch) | 🟡 proposal written | 3/3 | `docs/online-coop.md`, building it is a separate decision |
 
 **Where we are:** the first level is played through at over 100 FPS (1440p), the hub runs at about
 80 FPS, with the emulated and the real portal. Gameplay works; the focus now is performance, picture
@@ -123,9 +123,9 @@ installer works on a clean Windows VM.
 
 ## Phase 5 (stretch): online co-op with two real portals ⬜
 
-- [ ] Architecture proposal in `docs/online-coop.md`, not code (#28)
-- [ ] Remote play options researched (#29)
-- [ ] Figure sync and write-back designed (#30)
+- [x] Architecture proposal in `docs/online-coop.md`, not code (#28; waiting for the owner's OK)
+- [x] Remote play options researched (#29): Parsec fits best; neither passes a portal through
+- [x] Figure sync and write-back designed (#30)
 
 **Done when:** the proposal is written and agreed; building it is a separate decision.
 
