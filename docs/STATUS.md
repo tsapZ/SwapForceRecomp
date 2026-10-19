@@ -17,7 +17,7 @@ Updated at the end of every session. Only record what a build actually did.
 | Videos | Bink 2 (KB2f/KB2g) play; green half only in a test-only Bink 1-after-KB2f sequence (#36, closed) |
 
 Open next: first level full playthrough (#17), native 1280x720 3D scene for a sharp picture at
-scale 2 (#41, leads recorded), ultrawide hook (#24), installer (#27), German name cards (#38),
+scale 2 (#41, size hook works, the EDRAM is too small for it), ultrawide hook (#24), installer (#27), German name cards (#38),
 controller portal overlay (#40).
 Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (docs/development.md).
 
@@ -280,3 +280,16 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   Giants portal (R ID 01 3D); Xbox 360 portals are not HID and need another backend.
 - **RenderDoc scripts:** `consts` (draws whose pixel constants hold given floats, with an event
   range) and `cbuf` (a draw's constant blocks and inputs).
+- **Native 1280x720 scene (#41): size found and changeable, picture black.** The 1040x620 is data:
+  `renderer\outdoor_shading_xenon.igx` in `archives\loosefiles.pak` (the game parses the pipelines
+  of all six platforms at start-up; PS4 / Xbox One use 1920x1080, PS3 / Wii U 1024x576). Only the
+  `mainScene` render target has a size, all others follow it. A file overlay of that pak had no
+  effect (the game never opens it through `d:\`), so the write watch traced the 1040: written by the
+  IGX parser (sub_82455FD8 -> sscanf), read only by sub_8258EBE8, which computes every target's
+  size. A midasm hook there (`scene_size`, experimental, off by default) sets 1280x720: every pass
+  follows (64 instead of 86 FPS in the hub at scale 2), but the 3D scene is black; the four G-buffer
+  surfaces need 2880 EDRAM tiles of 2048 (SDK: "Resolve region 0 <= x < 1280 is outside the surface
+  pitch 880"). The default run with the hook built in is unchanged (85-86 FPS). Next: the engine's
+  EDRAM surface allocation plus the SDK fork's 4096-tile EDRAM.
+- **Write watch extended:** read watches, guest registers and stack at the hit, memory snapshots,
+  `dump`; late threads get the breakpoint too.

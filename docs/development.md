@@ -119,7 +119,10 @@ system dialog in the foreground breaks keyboard-driven test runs). One command p
 Buttons: `guide a b x y start back up down left right lb rb ls rs lt rt`, several at once joined
 with `+` (`tap back+y`, `tap ls+rs`); `key F4` presses a key for the key binds (opens an overlay
 or menu); `watch <addr> [<value>]` / `unwatch` log which guest functions (with their call chain)
-write a guest address, through a hardware write breakpoint (`src/dev/write_watch.cpp`). Full syntax in
+write a guest address, through a hardware write breakpoint (`src/dev/write_watch.cpp`), with the
+guest registers and 1 KB of guest stack at the first hit; `watch <addr> <value> <snap> <words>` also
+copies guest memory at the first hit (e.g. the text a parser is reading), `watchread <addr>` traps
+reads too, and `dump <addr> <words>` logs guest memory. Full syntax in
 `src/dev/input_script.h`. For RenderDoc, start the game through `renderdoccmd capture`; the capture
 spans whole guest frames (RenderDoc's own triggers capture host frames, and one guest frame's GPU
 work is spread over several of them).

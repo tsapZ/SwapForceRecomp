@@ -26,7 +26,7 @@ quality, then the controller-only Skylanders-style menus and a release.
 | **Now** | Test the new menu parts: Guide while running (menu after the zoom-out), Start > options and "Leave the game" as player 2, Back+Y for the item, L3+R3 player menu with two controllers and a Bluetooth reconnect (#40) | you |
 | **Now** | Try the new settings menu (F4 or Back + RB): presets, frame rate page, changes marked "next start" (#43) | you |
 | Next | USB portal device list in the settings menu (#47); measured presets and the picture quality ideas from the research (#50) | me |
-| Research | Native 1280x720 3D scene (#41): engine classes found, size is computed at render target creation; needs the computing code | me |
+| Research | Native 1280x720 3D scene (#41): size found and switchable (`scene_size`, experimental), but the picture is black because the EDRAM is too small; needs the engine's EDRAM layout plus a bigger EDRAM in the SDK | me |
 | Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 % | me |
 | Research | Best default settings (#50): D3D12 vs. Vulkan, what RPCS3 / Cemu / Dolphin do for a clean Skylanders picture, measured presets | me |
 | Then | Installer for a first release (#27) | me, test on a clean VM |
