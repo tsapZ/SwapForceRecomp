@@ -80,15 +80,25 @@ controller or the keyboard:
   later), holding it or adding Start opens the menu without the game seeing Back. Without that,
   Back opened the game's own menu on the way (noticed with a Logitech Dual Action, whose button 9
   is Back). The Windows Game Bar also reacts to the Guide button: turn it off under Settings >
-  Gaming > Xbox Game Bar if it gets in the way.
+  Gaming > Xbox Game Bar if it gets in the way. Gameplay buttons (A, B, X, Y, the shoulders, the
+  d-pad) are never held back, so a chord that uses one (`back+y`) adds no lag to it.
+- **With the game:** opened with a button, the menu lifts the figure at once but stays hidden
+  while the game plays its own figure-leaving animation and zooms the camera out to the portal
+  (`CMagicMoment` state 3, about 0.8 s, measured 2026-10-19); 0.6 s into that it fades in, just
+  before the game's "place your Skylander" text (0.9 s after the button in the test, the text at
+  about 1.2 s). Without a zoom-out it comes up once the game is clearly not busy with the figure,
+  at the latest after `portal_menu_open_delay_ms` (2500).
 - **Per player:** the menu opens for the controller that pressed the button (controller in
   connection slot N = player N+1) and only changes that player's figure. The keyboard plays as
   `keyboard_player` (default 1; 2 tries co-op with one controller), F6 opens the menu for that
   player, and the keyboard only steers that player's menu. Opening lifts the figure off the
-  emulated portal, so the game reacts like with a real portal: alone it pauses and asks for a
-  Skylander, in co-op only that player drops out. A second player who hasn't joined yet can open
-  the menu too (the game doesn't poll that controller, so the wrapper checks it on every poll of
-  the others) and joins by placing a figure. Tested with an Xbox 360 controller as player 1 and a
+  emulated portal, so the game reacts like with a real portal and shows its portal screen for that
+  player ("Player 2: place your Skylander", in co-op with "B leave the game"). A second player who
+  hasn't joined yet can open the menu too (the game doesn't poll that controller, so the wrapper
+  checks it on every poll of the others) and joins by placing a figure.
+- **Leaving:** Start > "Leave the game" (player 2 and up) closes the menu with the figure off and
+  presses the B of the game's own portal screen for that player (`menu_input::TapButton`), so the
+  game lets that player go; verified with the test script as player 2 (2026-10-19). Tested with an Xbox 360 controller as player 1 and a
   Dual Action as player 2, and with the test script's `player 2` command.
 - **Opens by itself:** when the game shows its "Player N: place your Skylander on the Portal of
   Power" prompt (player 1 at the start or after losing the figure, player 2 right after pressing
@@ -105,12 +115,22 @@ controller or the keyboard:
   the "Recent" list is per player.
 - **Layout:** "Recent" opens first (each player's own list, kept across sessions, in
   `<figures>/portal_menu_recent_pN.txt`; a swapper combination is one entry and each half only
-  appears in its latest combination). Then one tab per game with the characters that debuted in
-  it, one row per element, one card per character; last the Items tab with one row per game.
+  appears in its latest combination). Then one tab per game with every character that has a
+  version from that game (#49: Drobot is in Spyro's Adventure with Series 1 and in Giants with
+  Series 2 and LightCore), one row per element, one card per character; last the Items tab with
+  one row per game. In a game tab the card stands for that game's version: the one played last,
+  else the first, with its badge under the name (S1, S2, LightCore, Giant, Sidekick, Variant), and
+  A lists that game's versions first. Within an element come characters with an owned version from
+  that game first, then the ones new in that game, then the returning ones.
+- **Options (Start, O on the keyboard):** which games are listed (`portal_menu_hidden_games`, the
+  last one can't be hidden) and "only my figures" (`portal_menu_owned_only`, only versions with a
+  figure file). The menu writes just these lines into the settings file and leaves the rest of it
+  as it is.
 - **Controls:** D-pad / stick or arrows / WASD to move, A / Enter to choose, B / Esc to go back or
   close (the old figure goes back on the portal), LT / RT or Q / E to switch the category tab, LB /
-  RB or 1 / 3 to switch the row (element, or game in the Items tab), X or L for details. A on a
-  character opens its versions (Series 1-4, LightCore, variants, chase variants, Eon's Elite).
+  RB or 1 / 3 to switch the row (element, or game in the Items tab), X or L for details, Start or
+  O for options. A on a character opens its versions (Series 1-4, LightCore, variants, chase
+  variants, Eon's Elite).
 - **Swapper builder:** A on a swapper opens two lists side by side, tops and bottoms, starting
   with the chosen swapper whole. Up / down picks a half, left / right (or LB / RB) switches the
   list, the preview shows the combination and its name (top's first word + bottom's last: Blast
@@ -121,7 +141,9 @@ controller or the keyboard:
   off with Y (P on the keyboard) from any tab, or with A on the item marked "On the portal".
   The item changes only after the player's Skylander is back in the game (the menu puts the
   figure back first, then waits until the game's figure sequence is over, at least 0.7 s, at most
-  10 s): changing both at once made the game ask for a Skylander again.
+  10 s): changing both at once made the game ask for a Skylander again. Without the menu, Back + Y
+  together (`portal_item_off_buttons`) or F5 (`bind_portal_item_off`) take the item off at once,
+  without touching anyone's Skylander, and say so at the top of the screen.
 - **Figures:** all catalog figures of the games in `portal_menu_games` (Swap Force: Spyro's
   Adventure, Giants, Swap Force), plus figures from later games that carry the id of a character
   those games know: the game goes by the id, so Eon's Elite Chop Chop (id 30) and Tidal Wave Gill
@@ -136,10 +158,13 @@ controller or the keyboard:
   language (`Ambossregen` in German). The app reads them at runtime from the owner's game files
   (`src/game/toy_images.cpp`): the game's toy type table in the loaded executable (its values
   are the catalog ids), `toydata.pak` (toy -> collection material per variant, names in English
-  and German) and `toycollectionimages.pak` (material -> 192x192 DXT5 texture). Readers for the
+  and German) and `toycollectionimages.pak` (material -> 192x192 DXT5 texture). Sidekicks name no
+  material in their toy data (`CPetToyData`); their icons go by the character name
+  (`Pet_Terrabite` -> `collection_pet_terrabite_normal`, the Giants sidekicks with "lil":
+  `collection_pet_liltreerex_normal` for Barkley). Only UFO Hat has no icon. Readers for the
   Alchemy formats are in `src/game/alchemy/` (IGA archives with LZMA blocks, IGZ textures, IGX
-  text). Indexing takes about 150 ms in the background the first time the menu opens; pictures are
-  decoded when they first show. Nothing of the game's data goes into the repository. The menu
+  text). Indexing takes about 150 ms in the background right after start-up; pictures are decoded
+  when they first show. Nothing of the game's data goes into the repository. The menu
   library only sees a picture/name provider (`SetFigureImageProvider`, `SetFigureNameProvider`).
 - **Look:** collection tiles (picture on top, name below), the preview figure standing on a drawn
   Portal of Power (dark base, silver rim, glowing top, rising light), self-drawn element symbols (the
@@ -150,7 +175,19 @@ controller or the keyboard:
   (`CreatePortalMenuInputSystem`): the wrapper notices the open button, hides all controller and
   keyboard input from the game while the menu is open, and lets the menu poll each controller.
   The Guide button never reaches the game. Its device assignment is the SDK's slot assignment
-  plus `keyboard_player`.
+  plus `keyboard_player`, and the player menu below can move any device to another player.
+
+## Player menu (L3 + R3 / F9)
+
+`portal_rex/player_menu.cpp`: which controller plays as which player. L3 + R3 together on any
+controller (`player_menu_buttons`, default `ls+rs`) or F9 (`bind_player_menu`) open it; four columns,
+one per player, with the controllers (and the keyboard) that play as that player. Every controller
+moves itself with left / right, all at the same time, the keyboard with the arrow keys; Y (R on the
+keyboard) puts every device back in connection order, A / B / Start / Enter / Esc close it. The
+game sees no input while it is open. Meant for a Bluetooth controller that dropped out and came back
+in another slot, or to swap who is player 1. The assignment lasts for the session; controllers get
+new ids when they reconnect. Moved devices have a gold frame.
+
 ## Developer tools (F8)
 
 `portal_rex/portal_overlay_dialog.cpp`, the former F6 overlay: **Browse** lists dumps found under

@@ -24,6 +24,7 @@
 #include "localization.h"
 #include "portal_rex/portal_menu.h"
 #include "portal_rex/portal_menu_input.h"
+#include "portal_rex/player_menu.h"
 #include "portal_rex/portal_rex.h"
 #include "xex_verify.h"
 
@@ -57,6 +58,7 @@ class SwapforcerecompApp : public rex::ReXApp {
     swapforcerecomp::StopMagicMomentWatch();
     // The menu's textures belong to the immediate drawer, which goes away right after this.
     skylanders::ShutdownPortalMenu();
+    skylanders::ShutdownPlayerMenu();
     swapforcerecomp::ShutdownToyImages();
   }
 
@@ -165,6 +167,10 @@ class SwapforcerecompApp : public rex::ReXApp {
 
   void OnCreateDialogs(rex::ui::ImGuiDrawer* drawer) override {
     skylanders::RegisterPortalMenu(drawer, &app_context(), immediate_drawer());
+    // The portal menu's options (shown games, only my figures) go into the settings file.
+    skylanders::SetPortalMenuConfigPath(settings_path_);
+    // L3 + R3 or F9: which controller plays as which player.
+    skylanders::RegisterPlayerMenu(drawer, &app_context());
     skylanders::RegisterPortalOverlay(drawer);
   }
 
@@ -176,6 +182,7 @@ class SwapforcerecompApp : public rex::ReXApp {
     // entry for it.
     if (paths.game_data_root.empty()) paths.game_data_root = "rom";
     game_data_root_ = paths.game_data_root;
+    settings_path_ = paths.config_path;
   }
 
   void OnPostInitLogging() override {
@@ -257,6 +264,7 @@ class SwapforcerecompApp : public rex::ReXApp {
   }
 
   std::filesystem::path game_data_root_;
+  std::filesystem::path settings_path_;  // swapforcerecomp.toml
   std::optional<std::chrono::steady_clock::time_point> last_frame_stats_time_;
   uint64_t last_guest_frame_count_ = 0;
   double cached_fps_ = 0.0;

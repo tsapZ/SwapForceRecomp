@@ -9,7 +9,9 @@
 //   0x83131BE0  global pointer to the instance (set by vtable[5] sub_82858F70, cleared by
 //               vtable[6] sub_82858FC0; GetInstance is sub_82865A10)
 //   +0x20       _magicMomentState: 5 = Idle (the prompt is up, waiting for a figure),
-//               7 = IdleOutro (the figure arrived), 0 = Inactive
+//               7 = IdleOutro (the figure arrived), 0 = Inactive. Measured after lifting the
+//               figure (2026-10-19): 1 and 2 within 0.1 s, 3 for about 0.8 s while the camera
+//               zooms out to the portal, then 5
 //   +0xE8       _reason: 0 = ToyRemoved, 5 = PlayerDeath, 6 = FirstTime, 7 = MapStart, ...
 //   +0x148      _currentPlayerId: 0 = player 1, 1 = player 2, -1 = none
 // When a second player joins without a figure, the activation check (sub_829C2888) requests the
@@ -43,6 +45,7 @@ constexpr uint32_t kMagicMomentInstance = 0x83131BE0;
 constexpr uint32_t kStateOffset = 0x20;
 constexpr uint32_t kReasonOffset = 0xE8;
 constexpr uint32_t kPlayerOffset = 0x148;
+constexpr uint32_t kStateZoomOut = 3;
 constexpr uint32_t kStateIdle = 5;
 // How long the game must keep waiting before the menu opens, so it comes up with the prompt
 // rather than during a one-frame state flicker.
@@ -51,6 +54,7 @@ constexpr auto kOpenDelay = std::chrono::milliseconds(100);
 std::thread g_thread;
 std::atomic<bool> g_stop{false};
 std::atomic<bool> g_active{false};  // state != Inactive at the last poll
+uint32_t g_last_state = 0;            // watcher thread only; for the debug log
 
 struct Prompt {
   uint32_t player;
@@ -69,6 +73,14 @@ std::optional<Prompt> CurrentPrompt(rex::memory::Memory* memory) {
   const auto state = ReadGuest32(memory, *instance + kStateOffset);
   g_active.store(state && *state != 0 && *state <= 16);
   const auto player = ReadGuest32(memory, *instance + kPlayerOffset);
+  if (state && *state != g_last_state) {
+    // The state sequence of one figure change, e.g. to time the portal menu against it.
+    REXLOG_DEBUG("Magic moment: state {} -> {} (player {})", g_last_state, *state,
+                 player ? int32_t(*player) + 1 : 0);
+    g_last_state = *state;
+    // A menu opened with the button comes up during the zoom-out, just before the prompt.
+    if (*state == kStateZoomOut && player && *player < 4) skylanders::PortalScreenComing(*player);
+  }
   const auto reason = ReadGuest32(memory, *instance + kReasonOffset);
   if (!state || !player || !reason || *state != kStateIdle || *player >= 4) return std::nullopt;
   return Prompt{*player, *reason};
