@@ -76,6 +76,25 @@ address = 0x82A4A8D8
 name = "StuckFallingRespawnHook"
 registers = ["f1", "f31"]
 
+# 0x82BA32C0 is where both paths of sub_82BA31A0 meet after filling CBloomParametersAttr (r28)
+# from the level's CBloomData (or with 1.0). Found with a write watch on the attr's inner scale
+# (+0x14), whose only writer this is. src/hooks/post_effects_hook.cpp scales the inner and outer
+# scales (+0x14, +0x18) by bloom_strength; it only changes the two values the attr is about to
+# hand to the shader (the next call, sub_824368D0, submits it), and does nothing at 1.
+[[midasm_hook]]
+address = 0x82BA32C0
+name = "BloomStrengthHook"
+registers = ["r28"]
+
+# 0x82BA35CC: sub_82BA3390 holds the motion blur exposure time in f0 (CMotionBlurData +0x0C, or 0
+# on a camera cut) and stores it into the motion blur attr (+0x90) in the next two instructions.
+# Found with read watches on CMotionBlurData's fields. The hook scales f0 by motion_blur_strength;
+# 0 is the value the game itself uses for "no blur", and f0 is not used after the store.
+[[midasm_hook]]
+address = 0x82BA35CC
+name = "MotionBlurStrengthHook"
+registers = ["f0"]
+
 # Jump tables the analyzer under-counted, so the generated switch trapped (__builtin_trap, host
 # exception 0xC000001D) on the missing indices. All four tables sit directly after their bctr;
 # entries were read from the image with Ghidra until the first word that is no longer a code

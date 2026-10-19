@@ -39,7 +39,8 @@ See [portal.md](portal.md#player-menu-l3--r3--f9).
   scale 3 + CAS), internal resolution (`resolution_scale`), sharpening (`present_effect`), texture
   filtering (`anisotropic_override`), the game's own edge smoothing kept sharp
   (`fxaa_follow_resolution_scale`, on), extra edge smoothing (`swap_post_effect`, with the warning
-  from #45), fullscreen, window size (`resolution`).
+  from #45), glow (`bloom_strength`: off, weak, as in the game, strong), motion blur
+  (`motion_blur_strength`: off, half, as in the game), fullscreen, window size (`resolution`).
 - **Frame rate:** 60 FPS and more (`present_interval`), frame rate limit (`frame_rate_limit`),
   VSync, render path (`render_target_path_d3d12`), graphics card (`d3d12_adapter`).
 - **Game:** language (English or German, what the disc has), skip the logo movies, skip the

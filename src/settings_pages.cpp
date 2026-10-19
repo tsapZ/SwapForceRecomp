@@ -100,6 +100,23 @@ SettingsPage GraphicsPage() {
        "das Bild zurzeit auch dunkler und blasser (#45). Empfohlen: aus.",
        {{"none", "Off", "Aus"}, {"fxaa", "FXAA", "FXAA"}, {"fxaa_extreme", "FXAA strong",
                                                          "FXAA stark"}}});
+  page.settings.push_back(
+      {"bloom_strength", "Glow (bloom)", "Leuchten (Bloom)",
+       "The soft glow the game puts around bright areas. Off gives a clearer, slightly darker "
+       "picture. Costs nothing either way.",
+       "Der weiche Schein, den das Spiel um helle Stellen legt. Aus ergibt ein klareres, etwas "
+       "dunkleres Bild. Kostet so oder so nichts.",
+       {{"0", "Off", "Aus"},
+        {"0.5", "Weak", "Schwach"},
+        {"1", "As in the game", "Wie im Spiel"},
+        {"1.5", "Strong", "Stark"}}});
+  page.settings.push_back(
+      {"motion_blur_strength", "Motion blur", "Bewegungsunsch\xC3\xA4rfe",
+       "Blurs what moves fast and the picture when the camera turns quickly. Off keeps the "
+       "picture sharp in motion.",
+       "Verwischt, was sich schnell bewegt, und das Bild bei schnellen Kameradrehungen. Aus "
+       "h\xC3\xA4lt das Bild auch in Bewegung scharf.",
+       {{"0", "Off", "Aus"}, {"0.5", "Half", "Halb"}, {"1", "As in the game", "Wie im Spiel"}}});
   Setting fullscreen{"fullscreen", "Fullscreen", "Vollbild",
                      "Start in fullscreen or in a window.",
                      "Im Vollbild oder im Fenster starten."};

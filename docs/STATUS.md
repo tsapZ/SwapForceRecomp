@@ -301,3 +301,14 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   the threshold by the game's frame time; with it no put-back at 240 FPS, at 30 FPS nothing
   changes. Found through the reflection field names (`_stuckFallingDistanceThreshold`,
   `_stuckFallingTime`, `_stuckFallingTimer`), their offset tables and the classes' RTTI.
+- **Bloom and motion blur strength (#50): work.** `bloom_strength` scales the inner and outer bloom
+  amounts the renderer copies from the level's `CBloomData` into `CBloomParametersAttr` each
+  frame (`sub_82BA31A0`); `motion_blur_strength` scales the motion blur exposure time
+  (`CMotionBlurData`, 0.35 in the hub) that `sub_82BA3390` stores into the motion blur attr, so 0
+  is the state the game itself uses on camera cuts and the pass still applies its colour LUT. Both
+  in the settings menu (graphics page). Verified in the hub: bloom 3 gives 6x as many very bright
+  pixels as 1 (1902 vs 320 of 57600 samples), 0 a slightly clearer picture; during a camera pan
+  motion blur 0 is sharp, 1 smears the grass as the game does, 2 more. Switching the passes off
+  with `igRenderPass._active` was tried and dropped: it is only read when the pipeline is built,
+  and the bloom and motion blur passes write targets that later passes read (the motion blur pass
+  also applies the colour LUT).
