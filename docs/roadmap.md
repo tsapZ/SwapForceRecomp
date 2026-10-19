@@ -28,7 +28,7 @@ quality, then the controller-only Skylanders-style menus and a release.
 | **Now** | At 200 FPS, jump off a long drop: the game used to put the player back after 3 s of falling, now fixed (`fix_stuck_falling`) | you |
 | Next | USB portal device list in the settings menu (#47) | me |
 | Research | Native 1280x720 3D scene (#41): size found and switchable (`scene_size`, experimental), but the picture is black because the EDRAM is too small; needs the engine's EDRAM layout plus a bigger EDRAM in the SDK | me |
-| Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 % | me |
+| Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 %; smaller shadow maps tried and dropped (shadows vanish) | me |
 | Research | Best default settings (#50): D3D12 vs. Vulkan, what RPCS3 / Cemu / Dolphin do for a clean Skylanders picture, measured presets | me |
 | Then | Installer for a first release (#27) | me, test on a clean VM |
 | Any time | Keep playing; report anything black, flickering, crashing or too fast | you |

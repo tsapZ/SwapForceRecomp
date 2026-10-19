@@ -17,8 +17,8 @@ Updated at the end of every session. Only record what a build actually did.
 | Videos | Bink 2 (KB2f/KB2g) play; green half only in a test-only Bink 1-after-KB2f sequence (#36, closed) |
 
 Open next: first level full playthrough (#17), native 1280x720 3D scene for a sharp picture at
-scale 2 (#41, size hook works, the EDRAM is too small for it), ultrawide hook (#24), installer (#27), German name cards (#38),
-controller portal overlay (#40).
+scale 2 (#41, size hook works, the EDRAM is too small for it), ultrawide HUD (#24, the 3D view
+works), installer (#27), German name cards (#38), controller portal overlay (#40).
 Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (docs/development.md).
 
 ## 2026-10-16: session log (chronological)
@@ -331,6 +331,16 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   16:9 guest frame fills the window. 2560x1080 window in the hub: without it the picture is
   stretched (the pond an ellipse), with it the proportions are right and more of the hub shows at
   both sides. The HUD is still stretched; 16:9 is unchanged.
+- **Shadow map size (#44): tried, dropped.** The two shadow targets (`cascadeShadowsDepth`
+  512x2048, `heroShadowsDepth` 256x512, both d24s8; igRenderTarget `_formatName` +0x14, from its
+  reflection table at 0x822CEB40) can be resized in the existing size hook. At half size the hub
+  ran 91-92 instead of 86-87 FPS at scale 2, but the characters' shadows disappeared; at double
+  size the picture went black ("Resolve region is empty"). The game sets the shadow passes up
+  for the original size elsewhere; not worth chasing for 6 %.
+- **Ultrawide HUD (#24): not built.** The UI (Juice) cameras are orthographic cameras that the
+  size-change handler `sub_82576AA8` resizes, the same as the full-screen post-processing
+  cameras, so a blanket hook there would break the post passes; the field offsets and the
+  functions are noted in #24.
 - **D3D12 vs Vulkan (#50):** the build now has Vulkan next to D3D12 (`REXGLUE_USE_VULKAN`, which
   the SDK leaves off on Windows) and `gpu_backend` picks it (settings menu, frame rate page).
   Hub, 1440p, scale 2, CAS, 240 limit, same binary: D3D12 86.6 / 85.9 FPS, Vulkan 87.6 / 87.0;
