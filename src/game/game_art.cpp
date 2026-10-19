@@ -160,6 +160,19 @@ class GameArt {
     return nullptr;
   }
 
+  // The icon of the hat behind a collectible tracker ("Hat_UFOHat").
+  std::shared_ptr<const FigureImage> HatIcon(const std::string& tracker) {
+    uint16_t hat = 0;
+    {
+      std::lock_guard lock(mutex_);
+      if (!indexed_) return nullptr;
+      auto it = hat_trackers_.find(Lower(tracker));
+      if (it == hat_trackers_.end()) return nullptr;
+      hat = it->second;
+    }
+    return Image("hat:" + std::to_string(hat));
+  }
+
   std::shared_ptr<const FigureUpgrades> Upgrades(uint16_t id, uint16_t variant) {
     auto character = ToyCharacterName(id);
     if (!character) return nullptr;
@@ -283,6 +296,7 @@ class GameArt {
         auto v = values.find(object.Var("_hatId"));
         if (v == values.end()) continue;
         trackers[Lower(object.refname)] = v->second;
+        hat_trackers_[Lower(object.refname)] = v->second;
         Hat& hat = hats_[v->second];
         const std::string& material = object.Var("_iconJuiceMaterial");
         hat.icon_material = Lower(material.substr(0, material.find('.')));
@@ -541,6 +555,7 @@ class GameArt {
 
   // Written by the worker before indexed_ is set, read-only afterwards.
   std::unordered_map<uint16_t, Hat> hats_;
+  std::unordered_map<std::string, uint16_t> hat_trackers_;     // "hat_ufohat" -> hat number
   std::unordered_map<std::string, std::string> stat_names_en_;  // eCA_* -> English
   std::unordered_map<uint32_t, std::string> stat_names_de_;     // FNV-1a(English) -> German
   std::unordered_map<std::string, std::string> stat_icons_;     // eCA_* -> material, lower case
@@ -562,6 +577,10 @@ void InstallGameArt(rex::memory::Memory* memory, std::filesystem::path archives_
   skylanders::SetFigureUpgradesProvider(
       [](uint16_t id, uint16_t variant) { return g_game_art->Upgrades(id, variant); });
   skylanders::SetHatInfoProvider([](uint16_t hat) { return g_game_art->HatInfoFor(hat); });
+}
+
+std::shared_ptr<const skylanders::FigureImage> GameArtHatIcon(const std::string& tracker) {
+  return g_game_art ? g_game_art->HatIcon(tracker) : nullptr;
 }
 
 void ShutdownGameArt() {

@@ -21,7 +21,9 @@
 //      "MagicItem_AnvilRain_ItemData"). That sits in an archive of the same name
 //      (magicitem_anvilrain_itemdata.pak) as CMagicItemData with _itemDuration in seconds: 45 for
 //      Anvil Rain, 5 for the older adventure packs (their effect's RainTime is 5 s too). Items
-//      that act at once have none (Healing Elixir) or 0 (Hidden Treasure).
+//      that act at once have none (Healing Elixir) or 0 (Hidden Treasure). An item that gives a
+//      hat names it there too (_collectibleTracker "CollectibleTrackers.Hat_UFOHat"); the UFO Hat
+//      has no collection icon of its own, so it shows that hat's icon (game_art.h).
 // Swapper bottoms have no icon of their own; they show their top's. Variants without their own
 // picture (most chase variants) show the base toy's. Sidekicks (CPetToyData) name no material; their
 // icons follow the character name: Pet_Terrabite -> collection_pet_terrabite_normal, and the
@@ -51,6 +53,7 @@
 #include "alchemy/iga_archive.h"
 #include "alchemy/igx_reader.h"
 #include "alchemy/igz_file.h"
+#include "game_art.h"
 #include "guest_memory.h"
 #include "portal/figure_catalog.h"
 #include "portal_rex/portal_menu.h"
@@ -147,6 +150,20 @@ class ToyImages {
     return std::nullopt;
   }
 
+  // The hat tracker of an item without a collection icon of its own ("hat_ufohat").
+  std::optional<std::string> HatTracker(uint16_t id) {
+    {
+      std::lock_guard lock(mutex_);
+      if (!indexed_) return std::nullopt;
+    }
+    auto toy = toys_.find(id);
+    if (toy == toys_.end() || toy->second.hat_tracker.empty()) return std::nullopt;
+    if (!toy->second.material.empty() && materials_.contains(toy->second.material)) {
+      return std::nullopt;
+    }
+    return toy->second.hat_tracker;
+  }
+
   // How long a magic item's effect lasts, in seconds.
   std::optional<int> ItemDuration(uint16_t id) {
     {
@@ -185,6 +202,7 @@ class ToyImages {
     std::string pet_name;  // sidekicks: "terrabite" from _characterName Pet_Terrabite
     std::string character;  // _characterName, or for a swapper half its file: "body_statue"
     std::string item_name;  // magic items: "magicitem_anvilrain_itemdata" from _itemName
+    std::string hat_tracker;  // an item that gives a hat: "hat_ufohat"
   };
 
   void StartLocked() {
@@ -375,7 +393,7 @@ class ToyImages {
       }
     }
     // 4. Magic item durations, from each item's own archive.
-    for (const auto& [id, toy] : toys_) {
+    for (auto& [id, toy] : toys_) {
       if (toy.item_name.empty()) continue;
       auto pak = IgaArchive::Open(archives_ / (toy.item_name + ".pak"));
       if (!pak) continue;
@@ -389,6 +407,8 @@ class ToyImages {
           if (object.type != "CMagicItemData") continue;
           const int seconds = std::atoi(object.Var("_itemDuration").c_str());
           if (seconds > 0) item_durations_[id] = seconds;
+          const std::string tracker = object.Var("_collectibleTracker");
+          if (!tracker.empty()) toy.hat_tracker = Lower(tracker.substr(tracker.find('.') + 1));
           break;
         }
         break;
@@ -414,6 +434,7 @@ class ToyImages {
         material = v && !v->material.empty() ? v->material : toy->second.material;
       }
       if (!material.empty() && materials_.contains(material)) continue;
+      if (toy != toys_.end() && !toy->second.hat_tracker.empty()) continue;  // its hat's icon
       ++count;
       list += (list.empty() ? "" : ", ") + std::string(sky.name) +
               (toy == toys_.end() ? " (unknown toy)" : "");
@@ -488,8 +509,13 @@ void InstallToyImages(rex::memory::Memory* memory, std::filesystem::path archive
   if (!memory || g_toy_images) return;
   g_toy_images = std::make_unique<ToyImages>(memory, std::move(archives_dir));
   g_toy_images->Start();
-  skylanders::SetFigureImageProvider(
-      [](uint16_t id, uint16_t variant) { return g_toy_images->Image(id, variant); });
+  skylanders::SetFigureImageProvider([](uint16_t id, uint16_t variant) {
+    auto image = g_toy_images->Image(id, variant);
+    if (!image) {
+      if (auto tracker = g_toy_images->HatTracker(id)) image = GameArtHatIcon(*tracker);
+    }
+    return image;
+  });
   skylanders::SetFigureNameProvider(
       [](uint16_t id, uint16_t variant) { return g_toy_images->Name(id, variant); });
   skylanders::SetItemDurationProvider([](uint16_t id) { return g_toy_images->ItemDuration(id); });
