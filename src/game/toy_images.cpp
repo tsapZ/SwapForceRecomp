@@ -17,7 +17,9 @@
 //      texture file there carries the same path as its first string. The textures are 192x192
 //      DXT5 icons, the ones the game's collection screen shows.
 // Swapper bottoms have no icon of their own; they show their top's. Variants without their own
-// picture (most chase variants) show the base toy's.
+// picture (most chase variants) show the base toy's. Sidekicks (CPetToyData) name no material; their
+// icons follow the character name: Pet_Terrabite -> collection_pet_terrabite_normal, and the
+// Giants sidekicks get "lil" (Pet_Treerex, Barkley -> collection_pet_liltreerex_normal).
 
 #include "toy_images.h"
 
@@ -43,6 +45,7 @@
 #include "alchemy/igx_reader.h"
 #include "alchemy/igz_file.h"
 #include "guest_memory.h"
+#include "portal/figure_catalog.h"
 #include "portal_rex/portal_menu.h"
 
 namespace swapforcerecomp {
@@ -122,6 +125,12 @@ class ToyImages {
 
   ~ToyImages() { Stop(); }
 
+  // Indexes right away, so the first portal menu already has every picture and name.
+  void Start() {
+    std::lock_guard lock(mutex_);
+    StartLocked();
+  }
+
   void Stop() {
     {
       std::lock_guard lock(mutex_);
@@ -176,7 +185,8 @@ class ToyImages {
     std::string ref;
     std::string material;
     std::vector<Variant> variants;
-    bool part = false;  // a swapper half
+    bool part = false;     // a swapper half
+    std::string pet_name;  // sidekicks: "terrabite" from _characterName Pet_Terrabite
   };
 
   void StartLocked() {
@@ -193,7 +203,26 @@ class ToyImages {
     return nullptr;
   }
 
+  // The toy type table is part of the loaded executable; at start-up it may not be readable yet.
+  bool WaitForToyTable() {
+    for (int i = 0; i < 240; ++i) {
+      const auto name_ptr = ReadGuest32(memory_, kToyTypeNames);
+      const auto name = name_ptr ? ReadGuestString(memory_, *name_ptr) : std::nullopt;
+      if (name && name->rfind(kToyTypePrefix, 0) == 0) return true;
+      std::unique_lock lock(mutex_);
+      if (cv_.wait_for(lock, std::chrono::milliseconds(500), [this] { return stop_; })) {
+        return false;
+      }
+    }
+    return false;
+  }
+
   void Run() {
+    if (!WaitForToyTable()) {
+      std::lock_guard lock(mutex_);
+      failed_ = true;
+      return;
+    }
     const auto start = std::chrono::steady_clock::now();
     const bool ok = BuildIndex();
     {
@@ -207,6 +236,7 @@ class ToyImages {
                   std::chrono::duration_cast<std::chrono::milliseconds>(
                       std::chrono::steady_clock::now() - start)
                       .count());
+      LogWithoutPicture();
     }
     while (ok) {
       uint32_t key;
@@ -282,6 +312,10 @@ class ToyImages {
         toy.ref = name + "." + Lower(object.refname);
         toy.material = MaterialKey(object.Var("_toyCollectionMaterial"));
         toy.part = object.type == "CShapeshifterPartToyData";
+        if (object.type == "CPetToyData") {
+          toy.pet_name = Lower(object.Var("_characterName"));
+          if (toy.pet_name.rfind("pet_", 0) == 0) toy.pet_name.erase(0, 4);
+        }
         std::string list_ref = object.Var("_variants");
         if (list_ref.rfind("this.", 0) == 0) list_ref.erase(0, 5);
         if (auto list = objects.find(list_ref); list != objects.end()) {
@@ -327,7 +361,41 @@ class ToyImages {
         if (auto key = TextureKey(strings[0])) textures_[*key] = i;
       }
     }
+    for (auto& [id, toy] : toys_) {
+      if (!toy.material.empty() || toy.pet_name.empty()) continue;
+      for (const char* prefix : {"collection_pet_", "collection_pet_lil"}) {
+        const std::string material = prefix + toy.pet_name + "_normal";
+        if (materials_.contains(material)) {
+          toy.material = material;
+          break;
+        }
+      }
+    }
     return !toys_.empty() && !textures_.empty();
+  }
+
+  // Lists the figures of the games the portal menu offers that the game has no collection icon
+  // for (they show their element symbol), once, for the log.
+  void LogWithoutPicture() const {
+    const std::string games = rex::cvar::GetFlagByName("portal_menu_games");
+    std::string list;
+    size_t count = 0;
+    for (const auto& sky : skylanders::portal::AllSkylanders()) {
+      if (sky.category == "Unreleased" || games.find(sky.game) == std::string::npos) continue;
+      // A swapper bottom shows its top.
+      const uint16_t id = sky.id >= 1000 && sky.id < 2000 ? uint16_t(sky.id + 1000) : sky.id;
+      auto toy = toys_.find(id);
+      std::string material;
+      if (toy != toys_.end()) {
+        const Variant* v = FindVariant(toy->second, sky.variant);
+        material = v && !v->material.empty() ? v->material : toy->second.material;
+      }
+      if (!material.empty() && materials_.contains(material)) continue;
+      ++count;
+      list += (list.empty() ? "" : ", ") + std::string(sky.name) +
+              (toy == toys_.end() ? " (unknown toy)" : "");
+    }
+    if (count) REXLOG_INFO("Toy images: no picture for {} figures: {}", count, list);
   }
 
   std::shared_ptr<const skylanders::FigureImage> Decode(uint16_t id, uint16_t variant) {
@@ -410,6 +478,7 @@ std::unique_ptr<ToyImages> g_toy_images;
 void InstallToyImages(rex::memory::Memory* memory, std::filesystem::path archives_dir) {
   if (!memory || g_toy_images) return;
   g_toy_images = std::make_unique<ToyImages>(memory, std::move(archives_dir));
+  g_toy_images->Start();
   skylanders::SetFigureImageProvider(
       [](uint16_t id, uint16_t variant) { return g_toy_images->Image(id, variant); });
   skylanders::SetFigureNameProvider(
