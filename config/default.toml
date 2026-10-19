@@ -40,6 +40,16 @@ address = 0x82B8E340
 name = "FxaaFrameSizeHook"
 registers = ["f1", "f2"]
 
+# 0x8258EBE8 computes an igRenderTarget's size (r3 = the target): its own _width/_height (+0x20,
+# +0x24) or its parent's or the back buffer's, times its scales, into +0x58/+0x5C. Found with a
+# write watch on the 360 pipeline's mainScene (1040x620, parsed from outdoor_shading_xenon.igx):
+# this function is the only reader. src/hooks/scene_size_hook.cpp swaps in scene_size for a target
+# that says 1040x620 (off unless scene_size is set; experimental, #41).
+[[midasm_hook]]
+address = 0x8258EBE8
+name = "SceneSizeHook"
+registers = ["r3"]
+
 # Jump tables the analyzer under-counted, so the generated switch trapped (__builtin_trap, host
 # exception 0xC000001D) on the missing indices. All four tables sit directly after their bctr;
 # entries were read from the image with Ghidra until the first word that is no longer a code
