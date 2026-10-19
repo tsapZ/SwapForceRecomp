@@ -12,7 +12,7 @@ observed in a real build or a real play test, not inferred.
 | 1 Recompile and boot | ✅ done | 8/8 | – |
 | 2 In-game | ✅ done | 11/11 | – |
 | 3 Portal | 🟡 almost | 6/7 | a swapper on the real USB portal (#42) |
-| 4 4K and polish | 🟡 in progress | 5/15 | controller portal menu (#40, #46, #47), settings menu (#43), performance and picture quality (#44, #45, #41), installer (#27), ultrawide (#24), wiki (#4) |
+| 4 4K and polish | 🟡 in progress | 5/17 | controller portal menu (#40, #46, #47, #49), settings menu (#43), performance and picture quality (#44, #45, #41, #50), installer (#27), ultrawide (#24), wiki (#4) |
 | 5 Online co-op (stretch) | ⬜ not started | 0/3 | architecture proposal first |
 
 **Where we are:** the first level is played through at over 100 FPS (1440p), the hub runs at about
@@ -29,9 +29,10 @@ quality, then the controller-only Skylanders-style menus and a release.
 | Research | Native 1280x720 3D scene (#41): engine classes found, size is computed at render target creation; needs the computing code | me |
 | Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 % | me |
 | Research | Smoother edges (#45): the SDK's FXAA shifts colours (bytecode only); supersampling costs | me |
+| Research | Best default settings (#50): D3D12 vs. Vulkan, what RPCS3 / Cemu / Dolphin do for a clean Skylanders picture, measured presets | me |
 | Then | Installer for a first release (#27) | me, test on a clean VM |
 | Any time | Keep playing; report anything black, flickering, crashing or too fast | you |
-| Later | Ultrawide (#24), online co-op proposal (Phase 5), GitHub wiki (#4) | me |
+| Later | Ultrawide (#24), online co-op proposal (Phase 5), GitHub wiki (#4), profiles with name, picture and own saves / figures (#51) | me |
 | After Swap Force | Own recompile of the next Skylanders game (Giants), then the launcher hub | both |
 
 ## Phase 0: repository and scaffold ✅
@@ -91,7 +92,9 @@ with keyboard; controller input verified in the tutorial).
 - [ ] Smoother edges: the SDK's FXAA shifts colours, supersampling costs (#45)
 - [ ] Portal menu for controller and keyboard in Skylanders style, per player, replacing F6 (#40):
   works with items, swapper builder, "Taken" marks and keyboard as any player; still to do:
-  open by itself when the game asks for a Skylander
+  open by itself when the game asks for a Skylander; Guide waits for the game's zoom-out; a way for
+  player 2 to leave
+- [ ] Portal menu: each character in every game that released a version, with series badges (#49)
 - [ ] Player assignment at game start, Switch style: each controller presses a button and gets a
   player number (idea, not started)
 - [ ] Ideas for the menu (not started): the game's own font from the game files for more Skylanders
@@ -102,6 +105,7 @@ with keyboard; controller input verified in the tutorial).
 - [ ] USB portal selection and portal compatibility table (#47)
 - [ ] Settings menu in Skylanders style, usable with controller, replacing F4 (#43)
 - [ ] Native 1280x720 3D scene, the game renders it at 1040x620 (#41)
+- [ ] Best default settings, researched and measured: renderer, presets (#50)
 - [ ] Installer tested on a clean Windows VM (#27)
 - [ ] Ultrawide: projection hook for 21:9 (#24)
 - [ ] Docs mirrored into the GitHub wiki (#4)
