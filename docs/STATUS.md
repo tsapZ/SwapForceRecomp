@@ -259,3 +259,9 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
 - **One run hit a GPU device removal** (`DEVICE_RESET`, out of memory for resolve heaps) with
   `--log_level=debug`, before the game showed its first frame; the same build ran normally without
   debug logging, twice. Not looked into further; watch for it.
+- **Settings menu (#43):** F4 (and Back + RB) opens a new settings menu in the portal menu's look
+  with six pages (graphics with presets, frame rate, game, portal, controls, advanced); the SDK's
+  raw list moved to F10 and opens from the last page. Changes are written into the settings file
+  one line at a time and keep the comment on that line. Verified in scripted runs (texture filter
+  16x -> 8x written as `anisotropic_override = 4` with its comment; the settings file was restored
+  afterwards). Input scripts can now press keys for the key binds (`key F4`).

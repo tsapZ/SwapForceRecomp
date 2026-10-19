@@ -12,7 +12,7 @@ observed in a real build or a real play test, not inferred.
 | 1 Recompile and boot | ✅ done | 8/8 | – |
 | 2 In-game | ✅ done | 11/11 | – |
 | 3 Portal | 🟡 almost | 6/7 | a swapper on the real USB portal (#42) |
-| 4 4K and polish | 🟡 in progress | 6/17 | controller portal menu (#40, #46, #47), settings menu (#43), performance and picture quality (#44, #45, #41, #50), installer (#27), ultrawide (#24), wiki (#4) |
+| 4 4K and polish | 🟡 in progress | 7/17 | controller portal menu (#40, #46, #47), performance and picture quality (#44, #45, #41, #50), installer (#27), ultrawide (#24), wiki (#4) |
 | 5 Online co-op (stretch) | ⬜ not started | 0/3 | architecture proposal first |
 
 **Where we are:** the first level is played through at over 100 FPS (1440p), the hub runs at about
@@ -24,7 +24,8 @@ quality, then the controller-only Skylanders-style menus and a release.
 | When | What | Who |
 |---|---|---|
 | **Now** | Test the new menu parts: Guide while running (menu after the zoom-out), Start > options and "Leave the game" as player 2, Back+Y for the item, L3+R3 player menu with two controllers and a Bluetooth reconnect (#40) | you |
-| Next | Settings menu in the same style, replacing F4: presets, scale, 4K downsampling, GPU, portal choice (#43, #47); portraits from your game data (#46) | me |
+| **Now** | Try the new settings menu (F4 or Back + RB): presets, frame rate page, changes marked "next start" (#43) | you |
+| Next | USB portal device list in the settings menu (#47); measured presets and the picture quality ideas from the research (#50) | me |
 | Research | Native 1280x720 3D scene (#41): engine classes found, size is computed at render target creation; needs the computing code | me |
 | Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 % | me |
 | Research | Smoother edges (#45): the SDK's FXAA shifts colours (bytecode only); supersampling costs | me |
@@ -103,7 +104,8 @@ with keyboard; controller input verified in the tutorial).
 - [x] Pictures and names from the owner's game data: collection icons for every figure and item,
   German item names (#46)
 - [ ] USB portal selection and portal compatibility table (#47)
-- [ ] Settings menu in Skylanders style, usable with controller, replacing F4 (#43)
+- [x] Settings menu in Skylanders style, usable with controller, replacing F4 (#43): six pages,
+  presets, changes saved line by line; the SDK's list moved to F10
 - [ ] Native 1280x720 3D scene, the game renders it at 1040x620 (#41)
 - [ ] Best default settings, researched and measured: renderer, presets (#50)
 - [ ] Installer tested on a clean Windows VM (#27)

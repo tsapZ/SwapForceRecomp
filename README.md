@@ -22,7 +22,8 @@ First level played through. Where each part stands, and what comes next:
 | Languages | ✅ English and German |
 | Rest of the game | 🟡 not played through yet |
 | Picture quality | 🟡 3D scene renders at 1040x620 and is scaled up; sharper native scene planned |
-| Settings menu in Skylanders style, installer, ultrawide | ⬜ planned |
+| Settings menu | ✅ in the portal menu's style, for controller and keyboard (F4 / Back + RB): presets, resolution, sharpening, frame rate, portal, controls |
+| Installer tested on a clean PC, ultrawide | ⬜ planned |
 
 ## Building
 

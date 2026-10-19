@@ -12,6 +12,7 @@ This folder is the project wiki. Pages, roughly in reading order:
 | [build.md](build.md) | Codegen fixes (`config/default.toml`), kernel stubs, the fix loop, testing |
 | [reverse-engineering.md](reverse-engineering.md) | Headless Ghidra: identify and name functions |
 | [portal.md](portal.md) | Portal of Power: protocol, figures, swappers, overlay |
+| [menus.md](menus.md) | Menus and keys: portal menu, player menu, settings menu |
 | [releasing.md](releasing.md) | Packaging the installer and publishing a release |
 | [high-framerate.md](high-framerate.md) | Research: unlocking 60/120/144 FPS without breaking game speed |
 
