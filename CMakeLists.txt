@@ -15,6 +15,10 @@ if(NOT REXSDK_DIR AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rexglue-sdk
         "Path to the rexglue-sdk source tree" FORCE)
 endif()
 
+# Vulkan next to D3D12 (the SDK leaves it off on Windows): gpu_backend = "vulkan" picks it; D3D12
+# stays the default. Measured in the hub at 1440p, scale 2: 87 FPS on Vulkan, 86 on D3D12.
+set(REXGLUE_USE_VULKAN ON CACHE BOOL "Enable Vulkan graphics backend")
+
 include(generated/rexglue.cmake)
 
 # Portal of Power support (thirdparty/skylanders-portal, shared with other Skylanders recomps).

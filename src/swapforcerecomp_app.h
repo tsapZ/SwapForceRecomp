@@ -14,6 +14,7 @@
 #include <optional>
 #include <string>
 
+#include <rex/system/gpu_plugin.h>
 #include <rex/cvar.h>
 #include <rex/logging.h>
 #include <rex/rex_app.h>
@@ -39,6 +40,11 @@
 // (ImGuiDrawer::Draw/UpdateMousePosition) already compensates for actual OS display scaling, so
 // this is on top of that -- for e.g. a large 4K monitor running at 100% OS scaling, which the SDK
 // can't distinguish from a small one (both report the same "DPI").
+REXCVAR_DEFINE_STRING(gpu_backend, "any", "GPU",
+                      "Graphics backend: any (D3D12 where available), d3d12 or vulkan (only in "
+                      "builds with Vulkan compiled in)")
+    .allowed({"any", "d3d12", "vulkan"})
+    .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
 REXCVAR_DEFINE_DOUBLE(ui_scale, 1.0, "UI",
                      "Scales the ImGui overlay's font size and widget sizing. Increase for large "
                      "screens where the default looks small.")
@@ -75,6 +81,11 @@ class SwapforcerecompApp : public rex::ReXApp {
     swapforcerecomp::EnableGpuCrashDiagnostics();
     // The Xenos GPU plugin renders the Xbox 360 command stream; without it nothing is drawn.
     if (config.gpu_plugin.empty()) config.gpu_plugin = "xenos";
+    // A specific graphics backend (the plugin otherwise takes D3D12 when it has it). Vulkan only
+    // exists in builds configured with REXGLUE_USE_VULKAN=ON.
+    if (const std::string backend = REXCVAR_GET(gpu_backend); backend != "any" && !config.graphics) {
+      config.graphics = rex::system::LoadGpuPlugin(config.gpu_plugin, backend);
+    }
     // Some of the game's text (e.g. the autosave warning dialog) is already resolved by the time
     // OnPostSetup runs -- apply this as early as possible, before the XEX even loads.
     swapforcerecomp::ApplyLanguageSetting();

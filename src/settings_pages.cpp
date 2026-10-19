@@ -171,6 +171,14 @@ SettingsPage FrameRatePage() {
        "Which graphics card draws the game, for PCs with more than one.",
        "Welche Grafikkarte das Spiel zeichnet, f\xC3\xBCr PCs mit mehreren.",
        {{"-1", "Automatic", "Automatisch"}, {"0", "GPU 1", "GPU 1"}, {"1", "GPU 2", "GPU 2"}}});
+  page.settings.push_back(
+      {"gpu_backend", "Graphics interface", "Grafikschnittstelle",
+       "D3D12 is the tested one (and the only one with the render path above). Vulkan ran the "
+       "hub just as fast (87 vs 86 FPS) and is there to try if D3D12 makes trouble.",
+       "D3D12 ist die getestete (und die einzige mit dem Renderpfad oben). Vulkan lief im Hub "
+       "gleich schnell (87 statt 86 FPS) und ist zum Ausprobieren da, falls D3D12 Probleme macht.",
+       {{"any", "Automatic (D3D12)", "Automatisch (D3D12)"}, {"d3d12", "D3D12", "D3D12"},
+        {"vulkan", "Vulkan", "Vulkan"}}});
   return page;
 }
 

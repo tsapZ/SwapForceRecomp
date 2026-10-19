@@ -42,7 +42,8 @@ See [portal.md](portal.md#player-menu-l3--r3--f9).
   from #45), glow (`bloom_strength`: off, weak, as in the game, strong), motion blur
   (`motion_blur_strength`: off, half, as in the game), fullscreen, window size (`resolution`).
 - **Frame rate:** 60 FPS and more (`present_interval`), frame rate limit (`frame_rate_limit`),
-  VSync, render path (`render_target_path_d3d12`), graphics card (`d3d12_adapter`).
+  VSync, render path (`render_target_path_d3d12`), graphics card (`d3d12_adapter`), graphics
+  interface (`gpu_backend`: automatic = D3D12, D3D12, Vulkan).
 - **Game:** language (English or German, what the disc has), skip the logo movies, skip the
   opening movie.
 - **Portal:** virtual / USB / none (`portal_mode`), the portal menu opening by itself, only my
