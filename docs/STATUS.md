@@ -342,6 +342,10 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   items, how long the effect lasts, read from each item's own data (`_itemDuration`: Anvil Rain
   45 s, the older adventure packs 5 s; 20 items have one). Checked with Barkley, Anvil Rain and
   Darklight Crypt.
+- **Sidekick in co-op (open):** scripted run, player 2 brings Barkley: the menu places him (slot
+  3), the game plays his sidekick intro and then shows his icon on player 1's side of the HUD,
+  but within 50 s he was not to be seen in the hub. Alone, he appears next to the Skylander. Not
+  looked into further; to check with two real controllers.
 - **Ultrawide HUD (#24): not built.** The UI (Juice) cameras are orthographic cameras that the
   size-change handler `sub_82576AA8` resizes, the same as the full-screen post-processing
   cameras, so a blanket hook there would break the post passes; the field offsets and the
