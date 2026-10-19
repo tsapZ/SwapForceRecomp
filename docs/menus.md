@@ -61,8 +61,13 @@ See [portal.md](portal.md#player-menu-l3--r3--f9).
   opening movie.
 - **Portal:** virtual / USB / none (`portal_mode`), the portal menu opening by itself, only my
   figures.
-- **Controls:** what opens the portal menu, keyboard and mouse (`mnk_mode`), which player the
-  keyboard is (`keyboard_player`).
+- **Controls:** an overview, then the menu buttons: portal menu (`portal_menu_open_buttons`),
+  taking the magic item off (`portal_item_off_buttons`), player menu (`player_menu_buttons`),
+  settings menu (`settings_menu_buttons`), each with a few choices that don't clash and "off";
+  keyboard and mouse (`mnk_mode`), which player the keyboard is (`keyboard_player`). The info
+  panel shows the chosen buttons on the game's own Xbox 360 controller picture (its Controls
+  screen's, with the callout lines painted out), a coloured ring per entry; the overview shows
+  every menu's buttons at once. The buttons count for every controller and apply at once.
 - **Advanced:** opens the SDK's list of every setting (F10).
 
 LB / RB or LT / RT switch the page, up / down pick a setting, left / right (or A) change it, B or

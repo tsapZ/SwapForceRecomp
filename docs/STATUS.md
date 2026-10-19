@@ -424,3 +424,27 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
 - **UFO Hat card:** the item has no picture of its own in the game data; it is a hat item
   (`_collectibleTracker` Hat_UFOHat), so its card now shows the game's hat icon (verified in the
   Items tab, Swap Force row).
+- **The game's own words in the menus (#52): done.** The portal menu now says what the game
+  says (its text files: `loosefiles.pak` `data\systemdata_*.mua`, `permanent_xenon.pak`
+  `strings\xenonplatformstrings_*.igx`): German "MAGISCHES PORTAL", "Mini-Skylander" for
+  sidekicks, "Magische Objekte" for magic items, "Verbesserungen" for upgrades, element names
+  "Technologie" and "Gespenster" (the German game's word for Undead); English "Magic Items".
+  Verified on a screenshot of the menu. The game has no words of its own for the menu's ideas
+  ("Recent", "Place").
+- **Languages on the disc:** this PAL disc has English and German only: 212 voice banks and the
+  text files in each (`_en` / `_de`); only the Xbox licence agreement comes in nine more languages.
+  Both are in the `language` setting already. More languages would need another regional disc's
+  files (EU discs come in pairs: EN+DE, FR+NL, IT+ES), so not planned.
+- **Controls page (settings menu): every menu button, on the game's controller picture.** Rows
+  for the portal menu, taking the magic item off, the player menu and the settings menu, each with
+  a few choices that don't clash (and "off"); the info panel shows the choice on the game's own
+  Xbox 360 controller picture (`controller_schemexenon.pak`, the picture of its Controls screen)
+  with a coloured ring per button entry, and an overview row shows all of them at once. The
+  picture's callout lines are painted out when it is loaded (`CleanController` in
+  `game_art.cpp`). Verified on screenshots. The game's own buttons: A jump, X attack 1, B or RB
+  attack 2, Y or LB attack 3, LT / RT interact, Back Skylander stats, Start pause (its Controls
+  screen, Pause > Options > Controls). The buttons count for every controller; buttons per player are
+  not built (for a controller without an Xbox button there are choices without it).
+- **x86-64-v3 build (measured, not switched):** about 8 % more FPS at scale 1 (163.5 vs 151.9),
+  the same at scale 2 (GPU-bound); details and the research on what emulators do for smoothness
+  in docs/performance.md.

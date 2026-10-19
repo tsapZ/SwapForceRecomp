@@ -16,6 +16,7 @@ This folder is the project wiki. Pages, roughly in reading order:
 | [portal-compatibility.md](portal-compatibility.md) | Which real portal works with which game and with this port |
 | [releasing.md](releasing.md) | Packaging the installer and publishing a release |
 | [high-framerate.md](high-framerate.md) | Research: unlocking 60/120/144 FPS without breaking game speed |
+| [performance.md](performance.md) | Where the frame time goes, the x86-64-v3 measurement, what emulators do for smoothness |
 | [online-coop.md](online-coop.md) | Proposal: online co-op with each player's own real portal |
 
 Most of the tooling and several of these pages are adapted from

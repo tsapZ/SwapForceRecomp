@@ -225,6 +225,8 @@ class SwapforcerecompApp : public rex::ReXApp {
           rex::ui::ProcessKeyEvent(event);
         }),
         settings_path_);
+    // The controls page shows the menu buttons on the game's own controller picture.
+    skylanders::SetControllerPicture(swapforcerecomp::GameArtControllerPicture());
     skylanders::RegisterPortalOverlay(drawer);
   }
 

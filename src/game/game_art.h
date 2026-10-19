@@ -14,6 +14,7 @@ class Memory;
 }  // namespace rex::memory
 
 namespace skylanders {
+struct ControllerPicture;
 struct FigureImage;
 }  // namespace skylanders
 
@@ -26,6 +27,10 @@ void InstallGameArt(rex::memory::Memory* memory, std::filesystem::path archives_
 // The icon of the hat a collectible tracker stands for ("Hat_UFOHat", as an item's data names
 // it), or nullptr while loading or for no such hat. UI thread, never blocks.
 std::shared_ptr<const skylanders::FigureImage> GameArtHatIcon(const std::string& tracker);
+
+// The game's Xbox 360 controller as the settings menu's controller picture (an art key the art
+// provider answers) and where its buttons are in it.
+skylanders::ControllerPicture GameArtControllerPicture();
 
 // Stops the background thread; call before the runtime (and its guest memory) goes away.
 void ShutdownGameArt();

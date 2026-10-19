@@ -264,18 +264,60 @@ SettingsPage PortalPage() {
   return page;
 }
 
+// The menus' controller buttons. Each choice is a value of the *_buttons settings; the info
+// panel shows it on the controller picture (Setting::buttons). They count for every controller and
+// apply at once. The choices keep apart from each other and from the game's own use of a button
+// alone (Back: Skylander stats, Start: pause), so no two menus share a chord.
+Setting ButtonSetting(const char* cvar, const char* en, const char* de, const char* help_en,
+                      const char* help_de, std::vector<SettingOption> options) {
+  Setting s{cvar, en, de, help_en, help_de, std::move(options)};
+  s.buttons = true;
+  return s;
+}
+
 SettingsPage ControlsPage() {
   SettingsPage page{"Controls", "Steuerung", {}};
-  page.settings.push_back(
-      {"portal_menu_open_buttons", "Portal menu button", "Portal-Men\xC3\xBC-Taste",
-       "What opens the portal menu on a controller. Turn off the Xbox Game Bar in Windows if the "
-       "Xbox button opens it too.",
-       "Womit sich das Portal-Men\xC3\xBC am Controller \xC3\xB6" "ffnet. Wenn die Xbox-Taste "
-       "auch die Xbox Game Bar \xC3\xB6" "ffnet, die Game Bar in Windows ausschalten.",
-       {{"guide,back+start,hold_back", "Xbox, Back+Start, hold Back",
-         "Xbox, Back+Start, Back halten"},
-        {"guide", "Xbox button only", "Nur Xbox-Taste"},
-        {"back+start,hold_back", "Back+Start, hold Back", "Back+Start, Back halten"}}});
+  Setting overview;
+  overview.en = "Overview";
+  overview.de = "\xC3\x9C" "bersicht";
+  overview.help_en =
+      "Every menu button on the controller. The game's own buttons (jump, attacks) are shown by "
+      "the game: Pause > Options > Controls.";
+  overview.help_de =
+      "Alle Men\xC3\xBC-Tasten am Controller. Die Tasten des Spiels selbst (Sprung, Angriffe) "
+      "zeigt das Spiel: Pause > Optionen > Steuerung.";
+  overview.buttons = true;
+  page.settings.push_back(std::move(overview));
+  page.settings.push_back(ButtonSetting(
+      "portal_menu_open_buttons", "Portal menu", "Portal-Men\xC3\xBC",
+      "What opens the portal menu on a controller (keyboard: F6). Turn off the Xbox Game Bar in "
+      "Windows if the Xbox button opens it too. Applies to every controller.",
+      "Womit sich das Portal-Men\xC3\xBC am Controller \xC3\xB6" "ffnet (Tastatur: F6). Wenn die "
+      "Xbox-Taste auch die Xbox Game Bar \xC3\xB6" "ffnet, die Game Bar in Windows ausschalten. "
+      "Gilt f\xC3\xBCr jeden Controller.",
+      {{"guide,back+start,hold_back", "Xbox, Back+Start, hold Back",
+        "Xbox, Back+Start, Back halten"},
+       {"guide", "Xbox button only", "Nur Xbox-Taste"},
+       {"back+start,hold_back", "Back+Start, hold Back", "Back+Start, Back halten"},
+       {"back+start", "Back+Start only", "Nur Back+Start"}}));
+  page.settings.push_back(ButtonSetting(
+      "portal_item_off_buttons", "Take the magic item off", "Magisches Objekt runter",
+      "Takes the magic item off the portal without opening the menu (keyboard: F5).",
+      "Nimmt das magische Objekt vom Portal, ohne das Men\xC3\xBC zu \xC3\xB6" "ffnen "
+      "(Tastatur: F5).",
+      {{"back+y", "Back+Y", "Back+Y"}, {"back+b", "Back+B", "Back+B"}, {"", "Off", "Aus"}}));
+  page.settings.push_back(ButtonSetting(
+      "player_menu_buttons", "Player menu", "Spieler-Men\xC3\xBC",
+      "Opens the player menu: which controller plays as which player (keyboard: F9).",
+      "\xC3\x96" "ffnet das Spieler-Men\xC3\xBC: welcher Controller welcher Spieler ist "
+      "(Tastatur: F9).",
+      {{"ls+rs", "L3+R3 (press both sticks)", "L3+R3 (beide Sticks dr\xC3\xBC" "cken)"},
+       {"back+lb", "Back+LB", "Back+LB"},
+       {"", "Off", "Aus"}}));
+  page.settings.push_back(ButtonSetting(
+      "settings_menu_buttons", "Settings", "Einstellungen",
+      "Opens this menu (keyboard: F4).", "\xC3\x96" "ffnet dieses Men\xC3\xBC (Tastatur: F4).",
+      {{"back+rb", "Back+RB", "Back+RB"}, {"back+x", "Back+X", "Back+X"}, {"", "Off", "Aus"}}));
   page.settings.push_back(
       {"mnk_mode", "Keyboard and mouse", "Tastatur und Maus",
        "Play with the keyboard as a controller.", "Mit der Tastatur als Controller spielen."});

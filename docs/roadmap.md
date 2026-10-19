@@ -28,7 +28,8 @@ quality, then the controller-only Skylanders-style menus and a release.
 | **Now** | At 200 FPS, jump off a long drop: the game used to put the player back after 3 s of falling, now fixed (`fix_stuck_falling`) | you |
 | Next | USB portal device list in the settings menu (#47) | me |
 | **Now** | Try "Native 3D picture (experimental)" on the graphics page in a level: sharper 3D scene at 1280x720 instead of 1040x620, about a fifth of the frame rate; report anything black or flickering (#41) | you |
-| Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 %; smaller shadow maps tried and dropped (shadows vanish) | me |
+| **Now** | Look at the controls page of the settings menu: every menu button on the game's controller picture; decide whether the faster x86-64-v3 build (+8 % where the CPU limits, needs a CPU from 2013 on) should be the default (docs/performance.md) | you |
+| Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; next: measure frame pacing (PresentMon), a resolution scale threshold for small targets, direct resolves (docs/performance.md) | me |
 | Research | Best default settings (#50): D3D12 vs. Vulkan, what RPCS3 / Cemu / Dolphin do for a clean Skylanders picture, measured presets | me |
 | Then | Installer for a first release (#27) | me, test on a clean VM |
 | Any time | Keep playing; report anything black, flickering, crashing or too fast | you |
@@ -115,6 +116,9 @@ with keyboard; controller input verified in the tutorial).
   written back (docs/hybrid-portal.md); waiting for a test with a real portal
 - [x] Settings menu in Skylanders style, usable with controller, replacing F4 (#43): six pages,
   presets, changes saved line by line; the SDK's list moved to F10
+- [x] Controls page: every menu button with a few choices, shown on the game's own controller
+  picture
+- [x] The menus use the game's own words in its language (#52)
 - [ ] Native 1280x720 3D scene, the game renders it at 1040x620 (#41): works in the hub as an
   experimental option (`scene_size`, D3D12); open until tried in the levels
 - [ ] Best default settings, researched and measured: renderer, presets (#50); done so far:

@@ -25,6 +25,11 @@
 //   symbols: permanent.pak materialinstances\characterattributeicons.igz.
 // Element symbols: permanent.pak materialinstances\elementicons.igz, made from
 //   textures:\ui\ElementalIcons\DN_<Element>.tga.
+// Controller picture: controller_schemexenon.pak (the game's Controls screen on the Xbox 360),
+//   materialinstances\juice_controller_schemexenon_materials.igz, made from
+//   textures:\ui\Controllers\Xbox_Controller.tga (1280x720). The callout lines to the screen's
+//   labels and a second set of face buttons for them are drawn into it; CleanController takes
+//   them out for the settings menu.
 
 #include "game_art.h"
 
@@ -51,6 +56,7 @@
 #include "alchemy/igx_reader.h"
 #include "guest_memory.h"
 #include "portal_rex/portal_menu.h"
+#include "portal_rex/settings_menu.h"
 #include "toy_images.h"
 #include "ui_icon.h"
 
@@ -83,6 +89,121 @@ constexpr std::pair<const char*, const char*> kStatIcons[] = {
 };
 
 bool German() { return Lower(rex::cvar::GetFlagByName("language")) == "german"; }
+
+// Xbox_Controller.tga (see the top): where the controller is in it, and the callout lines over it.
+// The lines are white, 3 to 4 pixels wide, with a soft shadow to the right of and below them.
+constexpr int kControllerWidth = 1280, kControllerHeight = 720;
+constexpr int kControllerX = 324, kControllerY = 213, kControllerW = 503, kControllerH = 323;
+struct CalloutLine {
+  int at, from, to;  // vertical: x and its rows; horizontal: y and its columns
+  int mirror = 0, mirror_from = 0, mirror_to = 0;  // vertical: the symmetry axis to copy across
+};
+constexpr CalloutLine kVerticalLines[] = {
+    {512, 392, 600, 497, 395, 540},  // from Back down through the d-pad
+    {638, 392, 600, 654, 395, 545},  // from Start down through the right stick
+    {440, 195, 245},                 // the triggers
+    {708, 195, 245},
+    {375, 220, 280},                 // the bumpers
+    {776, 212, 270},
+};
+constexpr CalloutLine kHorizontalLines[] = {
+    {387, 300, 364},  // the left stick
+    {335, 782, 860},  // Y and A, to the label column
+    {429, 782, 860},
+};
+
+// Paints the callout lines over (across each line and its shadow, from the pixels on both sides;
+// over the d-pad and the right stick, which are symmetric, from their other half), drops all that
+// isn't joined to the controller (the label column's face buttons, the lines outside it: erode the
+// opaque pixels, flood fill from the middle, dilate back) and cuts the controller out. Checked by
+// eye against the game's picture.
+std::shared_ptr<FigureImage> CleanController(const FigureImage& in) {
+  if (in.width != kControllerWidth || in.height != kControllerHeight ||
+      in.rgba.size() < size_t(in.width) * in.height * 4) {
+    return nullptr;
+  }
+  const int w = in.width, h = in.height;
+  std::vector<uint8_t> px = in.rgba;
+  auto at = [&](int x, int y) { return &px[(size_t(y) * w + x) * 4]; };
+  auto blend = [](const uint8_t* a, const uint8_t* b, float t, uint8_t* out) {
+    for (int c = 0; c < 4; ++c) {
+      out[c] = uint8_t(float(a[c]) + (float(b[c]) - float(a[c])) * t + 0.5f);
+    }
+  };
+  for (const CalloutLine& line : kVerticalLines) {
+    const int x0 = line.at - 6, x1 = line.at + 12;
+    for (int y = line.from; y <= line.to; ++y) {
+      if (line.mirror && y >= line.mirror_from && y <= line.mirror_to) {
+        for (int x = x0 + 1; x < x1; ++x) std::copy_n(at(2 * line.mirror - x, y), 4, at(x, y));
+        continue;
+      }
+      uint8_t a[4], b[4];
+      std::copy_n(at(x0, y), 4, a);
+      std::copy_n(at(x1, y), 4, b);
+      for (int x = x0 + 1; x < x1; ++x) blend(a, b, float(x - x0) / float(x1 - x0), at(x, y));
+    }
+  }
+  for (const CalloutLine& line : kHorizontalLines) {
+    const int y0 = line.at - 4, y1 = line.at + 11;
+    for (int x = line.from; x <= line.to; ++x) {
+      uint8_t a[4], b[4];
+      std::copy_n(at(x, y0), 4, a);
+      std::copy_n(at(x, y1), 4, b);
+      for (int y = y0 + 1; y < y1; ++y) blend(a, b, float(y - y0) / float(y1 - y0), at(x, y));
+    }
+  }
+  // The opaque pixels, eroded by 4 (the lines are thinner), the part joined to the middle, dilated
+  // by 5.
+  std::vector<uint8_t> mask(size_t(w) * h), tmp(size_t(w) * h);
+  for (size_t i = 0; i < mask.size(); ++i) mask[i] = px[i * 4 + 3] > 100;
+  auto box = [&](int r, bool grow) {
+    for (int y = 0; y < h; ++y) {
+      for (int x = 0; x < w; ++x) {
+        bool v = !grow;
+        for (int k = std::max(0, x - r); k <= std::min(w - 1, x + r); ++k) {
+          v = grow ? (v || mask[size_t(y) * w + k]) : (v && mask[size_t(y) * w + k]);
+        }
+        tmp[size_t(y) * w + x] = v;
+      }
+    }
+    for (int y = 0; y < h; ++y) {
+      for (int x = 0; x < w; ++x) {
+        bool v = !grow;
+        for (int k = std::max(0, y - r); k <= std::min(h - 1, y + r); ++k) {
+          v = grow ? (v || tmp[size_t(k) * w + x]) : (v && tmp[size_t(k) * w + x]);
+        }
+        mask[size_t(y) * w + x] = v;
+      }
+    }
+  };
+  box(4, false);
+  std::vector<uint8_t> body(size_t(w) * h);
+  std::vector<std::pair<int, int>> stack = {{575, 420}};
+  while (!stack.empty()) {
+    const auto [x, y] = stack.back();
+    stack.pop_back();
+    if (x < 0 || y < 0 || x >= w || y >= h) continue;
+    const size_t i = size_t(y) * w + x;
+    if (body[i] || !mask[i]) continue;
+    body[i] = 1;
+    stack.insert(stack.end(), {{x + 1, y}, {x - 1, y}, {x, y + 1}, {x, y - 1}});
+  }
+  mask = std::move(body);
+  box(5, true);
+  auto out = std::make_shared<FigureImage>();
+  out->width = kControllerW;
+  out->height = kControllerH;
+  out->rgba.resize(size_t(kControllerW) * kControllerH * 4);
+  for (int y = 0; y < kControllerH; ++y) {
+    for (int x = 0; x < kControllerW; ++x) {
+      const int sx = kControllerX + x, sy = kControllerY + y;
+      uint8_t* o = &out->rgba[(size_t(y) * kControllerW + x) * 4];
+      std::copy_n(at(sx, sy), 4, o);
+      if (!mask[size_t(sy) * w + sx]) o[3] = 0;
+    }
+  }
+  return out;
+}
 
 uint32_t Fnv1a(const std::string& s) {
   uint32_t h = 0x811C9DC5;
@@ -358,6 +479,12 @@ class GameArt {
     if (kind == "element") {
       return FromMaterial("permanent", "materialinstances\\elementicons.igz", "dn_" + what);
     }
+    if (kind == "controller") {
+      auto picture = FromMaterial("controller_schemexenon",
+                                  "materialinstances\\juice_controller_schemexenon_materials.igz",
+                                  "xbox_controller");
+      return picture ? CleanController(*picture) : nullptr;
+    }
     if (kind == "stat") {
       auto icon = stat_icons_.find(what);
       if (icon == stat_icons_.end()) return nullptr;
@@ -577,6 +704,27 @@ void InstallGameArt(rex::memory::Memory* memory, std::filesystem::path archives_
   skylanders::SetFigureUpgradesProvider(
       [](uint16_t id, uint16_t variant) { return g_game_art->Upgrades(id, variant); });
   skylanders::SetHatInfoProvider([](uint16_t hat) { return g_game_art->HatInfoFor(hat); });
+}
+
+skylanders::ControllerPicture GameArtControllerPicture() {
+  // The buttons in Xbox_Controller.tga, measured on the picture, moved into the cut-out.
+  static const skylanders::ControllerSpot kSpots[] = {
+      {"guide", 575, 377, 33}, {"back", 511, 380, 15}, {"start", 638, 380, 15},
+      {"y", 750, 337, 20},     {"x", 712, 379, 20},    {"b", 789, 378, 20},
+      {"a", 750, 422, 20},     {"ls", 403, 386, 42},   {"rs", 652, 470, 40},
+      {"up", 497, 433, 13},    {"down", 497, 489, 13}, {"left", 469, 461, 13},
+      {"right", 525, 461, 13}, {"lb", 402, 262, 22},   {"rb", 748, 258, 22},
+  };
+  skylanders::ControllerPicture picture;
+  picture.art_key = "controller:xbox360";
+  picture.width = kControllerW;
+  picture.height = kControllerH;
+  for (skylanders::ControllerSpot spot : kSpots) {
+    spot.x -= kControllerX;
+    spot.y -= kControllerY;
+    picture.spots.push_back(spot);
+  }
+  return picture;
 }
 
 std::shared_ptr<const skylanders::FigureImage> GameArtHatIcon(const std::string& tracker) {
