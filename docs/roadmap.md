@@ -98,6 +98,8 @@ with keyboard; controller input verified in the tutorial).
 - [x] Player menu (L3 + R3 / F9): which controller plays as which player
 - [ ] Player assignment at game start, Switch style: each controller presses a button and gets a
   player number (the player menu does this by hand; automatic at start not started)
+- [x] Figure details (X): XP to the next level, play time, upgrades and path, hat with the game's
+  name, last placed; the newest save area is used (#48, heroic challenges still open)
 - [ ] Ideas for the menu (not started): the game's own font from the game files for more Skylanders
   feel; more information per variant (#48); in the launcher hub, pictures from each game's own
   files, so an owner with only Spyro's Adventure gets that game's pictures

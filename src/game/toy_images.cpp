@@ -16,6 +16,11 @@
 //      path ("textures:\ui\Collections\ToyInventoryIcons\2011\Collections_ChopChop.tga"), and every
 //      texture file there carries the same path as its first string. The textures are 192x192
 //      DXT5 icons, the ones the game's collection screen shows.
+//   4. Hat names for the details view: the hat enum (kTfbSpyroTag_Hat_*, the number a figure
+//      stores) is also in the executable, 155 pointers to the names at 0x820FF2F0 and the values
+//      at 0x820FF560 (Hat_NONE = 0, Hat_Cowboy = 22; found in Ghidra 2026-10-19 the same way).
+//      permanent.pak's data\collectibletrackers.igx has a CHatCollectibleTracker per hat with its
+//      _hatId, and _en/_de next to it the names ("Cowboyhut", field ::_hatName).
 // Swapper bottoms have no icon of their own; they show their top's. Variants without their own
 // picture (most chase variants) show the base toy's. Sidekicks (CPetToyData) name no material; their
 // icons follow the character name: Pet_Terrabite -> collection_pet_terrabite_normal, and the
@@ -58,6 +63,10 @@ constexpr uint32_t kToyTypeNames = 0x820FD058;
 constexpr uint32_t kToyTypeValues = 0x820FD2D8;
 constexpr uint32_t kToyTypeCount = 159;
 constexpr char kToyTypePrefix[] = "kTfbSpyroTag_ToyType_";
+constexpr uint32_t kHatNames = 0x820FF2F0;
+constexpr uint32_t kHatValues = 0x820FF560;
+constexpr uint32_t kHatCount = 155;
+constexpr char kHatPrefix[] = "kTfbSpyroTag_Hat_";
 
 std::string Lower(std::string s) {
   std::transform(s.begin(), s.end(), s.begin(),
@@ -172,6 +181,18 @@ class ToyImages {
                                             : std::string())
                                      : toy->second.ref;
     if (auto it = names.find(ref); !ref.empty() && it != names.end()) return it->second;
+    return std::nullopt;
+  }
+
+  std::optional<std::string> HatName(uint16_t hat) {
+    {
+      std::lock_guard lock(mutex_);
+      StartLocked();
+      if (!indexed_) return std::nullopt;
+    }
+    const bool german = Lower(rex::cvar::GetFlagByName("language")) == "german";
+    const auto& names = german ? hat_names_de_ : hat_names_en_;
+    if (auto it = names.find(hat); it != names.end()) return it->second;
     return std::nullopt;
   }
 
@@ -371,7 +392,63 @@ class ToyImages {
         }
       }
     }
+    IndexHats();
     return !toys_.empty() && !textures_.empty();
+  }
+
+  // Hat names by the number a figure stores; without them the menu shows the number.
+  void IndexHats() {
+    std::unordered_map<std::string, uint16_t> values;  // "kTfbSpyroTag_Hat_Cowboy" -> 22
+    for (uint32_t i = 0; i < kHatCount; ++i) {
+      const auto name_ptr = ReadGuest32(memory_, kHatNames + 4 * i);
+      const auto value = ReadGuest32(memory_, kHatValues + 4 * i);
+      const auto name = name_ptr ? ReadGuestString(memory_, *name_ptr) : std::nullopt;
+      if (!value || !name || name->rfind(kHatPrefix, 0) != 0) {
+        REXLOG_WARN("Toy images: the hat table isn't where it was expected; no hat names");
+        return;
+      }
+      values.emplace(*name, uint16_t(*value));
+    }
+    auto permanent = IgaArchive::Open(archives_ / "permanent.pak");
+    if (!permanent) return;
+    std::unordered_map<std::string, uint16_t> trackers;  // "hat_cowboyhat" -> 22
+    std::vector<std::pair<bool, std::vector<alchemy::IgxObject>>> languages;
+    for (size_t i = 0; i < permanent->size(); ++i) {
+      const std::string name = Lower(permanent->name(i));
+      const bool base = name == "data\\collectibletrackers.igx";
+      const bool en = name == "data\\collectibletrackers_en.igx";
+      const bool de = name == "data\\collectibletrackers_de.igx";
+      if (!base && !en && !de) continue;
+      auto data = permanent->Read(i);
+      if (!data) continue;
+      auto parsed = alchemy::ParseIgx(
+          std::string_view(reinterpret_cast<const char*>(data->data()), data->size()));
+      if (base) {
+        for (const auto& object : parsed) {
+          if (object.type != "CHatCollectibleTracker") continue;
+          if (auto v = values.find(object.Var("_hatId")); v != values.end()) {
+            trackers[Lower(object.refname)] = v->second;
+          }
+        }
+      } else {
+        languages.emplace_back(de, std::move(parsed));
+      }
+    }
+    for (const auto& [de, parsed] : languages) {
+      for (const auto& object : parsed) {
+        if (object.type != "igLocalizedString" ||
+            object.Var("_field").find("::_hatName") == std::string::npos) {
+          continue;
+        }
+        std::string ref = Lower(object.Var("_object"));  // "collectibletrackers.hat_cowboyhat"
+        ref.erase(0, ref.find('.') + 1);
+        if (auto t = trackers.find(ref); t != trackers.end()) {
+          (de ? hat_names_de_ : hat_names_en_)[t->second] = ToUtf8(object.Var("_string"));
+        }
+      }
+    }
+    REXLOG_INFO("Toy images: {} hats, {} English and {} German names", trackers.size(),
+                hat_names_en_.size(), hat_names_de_.size());
   }
 
   // Lists the figures of the games the portal menu offers that the game has no collection icon
@@ -464,6 +541,7 @@ class ToyImages {
   // Written by the worker before indexed_ is set, read-only afterwards.
   std::unordered_map<uint16_t, Toy> toys_;
   std::unordered_map<std::string, std::string> names_en_, names_de_;  // object ref -> name
+  std::unordered_map<uint16_t, std::string> hat_names_en_, hat_names_de_;
   std::unordered_map<std::string, size_t> materials_;                 // material -> pak index
   std::unordered_map<std::string, size_t> textures_;                  // source path -> pak index
   std::optional<IgaArchive> images_pak_;
@@ -483,11 +561,13 @@ void InstallToyImages(rex::memory::Memory* memory, std::filesystem::path archive
       [](uint16_t id, uint16_t variant) { return g_toy_images->Image(id, variant); });
   skylanders::SetFigureNameProvider(
       [](uint16_t id, uint16_t variant) { return g_toy_images->Name(id, variant); });
+  skylanders::SetHatNameProvider([](uint16_t hat) { return g_toy_images->HatName(hat); });
 }
 
 void ShutdownToyImages() {
   skylanders::SetFigureImageProvider(nullptr);
   skylanders::SetFigureNameProvider(nullptr);
+  skylanders::SetHatNameProvider(nullptr);
   if (g_toy_images) g_toy_images->Stop();
   g_toy_images.reset();
 }

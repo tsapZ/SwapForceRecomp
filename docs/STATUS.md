@@ -301,6 +301,14 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   the threshold by the game's frame time; with it no put-back at 240 FPS, at 30 FPS nothing
   changes. Found through the reflection field names (`_stuckFallingDistanceThreshold`,
   `_stuckFallingTime`, `_stuckFallingTimer`), their offset tables and the classes' RTTI.
+- **Figure details (#48):** the details view (X) shows XP and the rest to the next level, play
+  time, hero points, upgrades and path, the hat by its German or English name, and when and where
+  the figure was last placed. Found on the way: the menu read only the first of a figure's two
+  save areas, so it showed old values whenever the second was newer (a test figure: XP 147 shown,
+  325 real), nothing at all for newly created figures (their first save goes to the second area),
+  and at most level 10 (the Giants and Swap Force parts of the XP live elsewhere). Checked against
+  the owner's dumps and with unit tests on synthetic figures; hat name checked with a test copy
+  wearing hat 22 ("Cowboyhut").
 - **Jump height at high frame rates (measured):** from 60 FPS on, jumps are about 5 % lower
   than at 30 (full jump 131 vs 138 units at 240 FPS, short 127 vs 133); 60 and 240 FPS are
   nearly equal. Most likely the hold phase of the jump lasts up to a frame longer at 30 FPS. Not

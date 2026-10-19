@@ -172,8 +172,16 @@ controller or the keyboard:
 - **Look:** collection tiles (picture on top, name below), the preview figure standing on a drawn
   Portal of Power (dark base, silver rim, glowing top, rising light), self-drawn element symbols (the
   official ones can't be used) as medallions in the element row and band; slightly see-through
-  panel with the game visible around it; German texts with `language = "german"`. The details
-  view will show more of the figure data (#48).
+  panel with the game visible around it; German texts with `language = "german"`.
+- **Details (X or L, #48):** level with XP and what is left to the next level (all three games'
+  parts of the XP, up to level 20), gold, play time, hero points, upgrades bought and the chosen
+  path, the hat with the game's own name for it ("Cowboyhut"), when and on which console the
+  figure was last placed, the nickname and the file. Decoded in the fork's `figure_stats` from the
+  newer of the figure's two save areas (the game writes them in turn; a new figure's first save
+  goes to the second one). Hat names come from the game's hat enum in the executable and
+  `permanent.pak` (`data\collectibletrackers.igx` with `_en`/`_de`), through
+  `SetHatNameProvider`. Heroic challenges are not shown yet: the sources disagree on where they
+  are stored.
 - The whole input system is the SDK's default one with every driver wrapped
   (`CreatePortalMenuInputSystem`): the wrapper notices the open button, hides all controller and
   keyboard input from the game while the menu is open, and lets the menu poll each controller.
