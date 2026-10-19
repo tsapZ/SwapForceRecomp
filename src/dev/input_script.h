@@ -26,6 +26,8 @@
 //   player <n>               the scripted controller plays as player n (1-4) from now on
 //   key <name>               presses a key for the app's key binds (F4, F6, F9; names as in the
 //                            bind_* settings), e.g. to open an overlay
+//   place <slot> <file>      puts a figure file straight onto the emulated portal's slot (0-15),
+//                            past the portal menu, e.g. a second sidekick for the portal check
 //   quit                     ends the game
 // Buttons: a b x y start back guide up down left right lb rb ls rs lt rt, or several pressed
 // together joined with + (tap back+y)

@@ -46,6 +46,11 @@ REXCVAR_DEFINE_STRING(gpu_backend, "any", "GPU",
                       "builds with Vulkan compiled in)")
     .allowed({"any", "d3d12", "vulkan"})
     .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
+REXCVAR_DEFINE_STRING(config_file, "", "Paths",
+                      "Developer option: read and write this settings file instead of "
+                      "swapforcerecomp.toml next to the executable, so test runs leave the real "
+                      "one alone")
+    .lifecycle(rex::cvar::Lifecycle::kInitOnly);
 REXCVAR_DEFINE_DOUBLE(ui_scale, 1.0, "UI",
                      "Scales the ImGui overlay's font size and widget sizing. Increase for large "
                      "screens where the default looks small.")
@@ -224,6 +229,9 @@ class SwapforcerecompApp : public rex::ReXApp {
     // entry for it.
     if (paths.game_data_root.empty()) paths.game_data_root = "rom";
     game_data_root_ = paths.game_data_root;
+    if (!REXCVAR_GET(config_file).empty()) {
+      paths.config_path = std::filesystem::u8path(REXCVAR_GET(config_file));
+    }
     settings_path_ = paths.config_path;
   }
 

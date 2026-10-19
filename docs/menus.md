@@ -10,7 +10,7 @@ input from the game while they are open.
 | Portal menu: put Skylanders and items on the portal | Guide (Xbox), Back + Start, hold Back | F6 | `portal_menu_open_buttons`, `bind_portal_menu` |
 | Take the item off the portal | Back + Y | F5 | `portal_item_off_buttons`, `bind_portal_item_off` |
 | Player menu: which controller is which player | L3 + R3 | F9 | `player_menu_buttons`, `bind_player_menu` |
-| Settings menu | Back + RB | F4 | `settings_menu_buttons`, `bind_settings_menu` |
+| Settings menu (also over the portal or player menu, which then closes like with B) | Back + RB | F4 | `settings_menu_buttons`, `bind_settings_menu` |
 | All settings (developer list of the SDK) | from the settings menu, last page | F10 | `bind_settings` |
 | Debug overlay (FPS) | | F3 | `bind_debug_overlay` |
 | Achievements | | F7 | `bind_achievements` |
@@ -26,6 +26,17 @@ shoulders, the d-pad) never are, so a chord like `back+y` adds no lag to Y.
 
 See [portal.md](portal.md#portal-menu-guide-button--f6).
 
+## Portal check
+
+Opens by itself when the game shows its portal error screen (`CMagicMoment` state 16, `eMMS_Error`:
+"too many Skylanders / items on the portal", a figure it can't read; found 2026-10-19 by putting a
+second sidekick on). It lists everything on the emulated portal: each player's Skylander, the item,
+the sidekick and any other figure, marks what there is too much of (more than one sidekick or
+item, a Skylander no player has, every Skylander for "too many Skylanders"), and A marks a figure
+to take off; Continue takes the marked ones off, and the game sees them leave. B closes it without
+changes; while the error stays, it comes back after 8 s. The menu itself never puts a second
+sidekick or item on, so this is the fail-safe for figures put on some other way.
+
 ## Player menu
 
 See [portal.md](portal.md#player-menu-l3--r3--f9).
@@ -40,7 +51,8 @@ See [portal.md](portal.md#player-menu-l3--r3--f9).
   filtering (`anisotropic_override`), the game's own edge smoothing kept sharp
   (`fxaa_follow_resolution_scale`, on), extra edge smoothing (`swap_post_effect`, with the warning
   from #45), glow (`bloom_strength`: off, weak, as in the game, strong), motion blur
-  (`motion_blur_strength`: off, half, as in the game), fullscreen, window size (`resolution`).
+  (`motion_blur_strength`: off by default, half, as in the game), fullscreen, window size
+  (`resolution`).
 - **Frame rate:** 60 FPS and more (`present_interval`), frame rate limit (`frame_rate_limit`),
   VSync, render path (`render_target_path_d3d12`), graphics card (`d3d12_adapter`), graphics
   interface (`gpu_backend`: automatic = D3D12, D3D12, Vulkan).
@@ -53,10 +65,14 @@ See [portal.md](portal.md#player-menu-l3--r3--f9).
 - **Advanced:** opens the SDK's list of every setting (F10).
 
 LB / RB or LT / RT switch the page, up / down pick a setting, left / right (or A) change it, B or
-Start close. The right side explains the setting and lists its choices. Every change is written
-into `swapforcerecomp.toml` at once, only that line, so comments and everything else in the file
-stay (`settings_file.cpp`). Settings that only apply at start-up (`kInitOnly` / `kRequiresRestart`,
-or marked by the page) say "applies at the next start", and changed ones get a gold dot.
+Start close. The right side explains the setting and lists its choices. A change applies at once
+where the setting allows it, so it can be seen; **Y saves** the changes into `swapforcerecomp.toml`
+(the footer says "Saved"), only their lines, so comments and everything else in the file stay
+(`settings_file.cpp`). Closing with unsaved changes asks: save, don't save (the old values come
+back), or back to the settings. Settings that only apply at start-up (`kInitOnly` /
+`kRequiresRestart`, or marked by the page) say "applies at the next start", and changed ones get a
+gold dot. For test runs `--config_file=<path>` makes the app read and write another settings file,
+so the real one stays untouched.
 
 The SDK list's own "Save to config" button still rewrites the whole file from every setting that
 differs from its default, including command-line ones, and drops the comments; use the settings

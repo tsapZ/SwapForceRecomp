@@ -8,15 +8,20 @@
 // fields read here:
 //   0x83131BE0  global pointer to the instance (set by vtable[5] sub_82858F70, cleared by
 //               vtable[6] sub_82858FC0; GetInstance is sub_82865A10)
-//   +0x20       _magicMomentState: 5 = Idle (the prompt is up, waiting for a figure),
-//               7 = IdleOutro (the figure arrived), 0 = Inactive. Measured after lifting the
+//   +0x20       _magicMomentState (EMagicMomentState, names at 0x820921C4): 5 = Idle (the prompt
+//               is up, waiting for a figure), 7 = IdleOutro (the figure arrived), 16 = Error (the
+//               "too many ... on the portal" screen), 0 = Inactive. Measured after lifting the
 //               figure (2026-10-19): 1 and 2 within 0.1 s, 3 for about 0.8 s while the camera
-//               zooms out to the portal, then 5
-//   +0xE8       _reason: 0 = ToyRemoved, 5 = PlayerDeath, 6 = FirstTime, 7 = MapStart, ...
+//               zooms out to the portal, then 5. A second sidekick on the portal: 2, 3, 5, then 16
+//               with no player (-1) until one goes off
+//   +0xE8       _reason (EMagicMomentReason, names at 0x82092070): 0 = ToyRemoved,
+//               1 = TooManyCharacterToys, 2 = TooManyItemToys, 3 = InvalidToy, 4 = ErrorOnToy,
+//               5 = PlayerDeath, 6 = FirstTime, 7 = MapStart, ...
 //   +0x148      _currentPlayerId: 0 = player 1, 1 = player 2, -1 = none
 // When a second player joins without a figure, the activation check (sub_829C2888) requests the
 // same sequence for player index 1, so player 2's prompt shows up here as well. With several
-// players waiting, sub_829BFA10 moves on to the next player while the state stays at Idle.
+// players waiting, sub_829BFA10 moves on to the next player while the state stays at Idle. The
+// error screen opens the portal check instead, so the player can take off what is too much.
 //
 // Polling instead of a mid-asm hook keeps the generated code untouched and costs three guest
 // reads every 30 ms. It only reads: every address is checked to be committed guest memory before
@@ -47,6 +52,11 @@ constexpr uint32_t kReasonOffset = 0xE8;
 constexpr uint32_t kPlayerOffset = 0x148;
 constexpr uint32_t kStateZoomOut = 3;
 constexpr uint32_t kStateIdle = 5;
+constexpr uint32_t kStateError = 16;
+// The error screen must stay this long before the portal check opens, and if it was closed with
+// the error still up, it comes back after a while.
+constexpr auto kErrorDelay = std::chrono::milliseconds(400);
+constexpr auto kErrorRepeat = std::chrono::seconds(8);
 // How long the game must keep waiting before the menu opens, so it comes up with the prompt
 // rather than during a one-frame state flicker.
 constexpr auto kOpenDelay = std::chrono::milliseconds(100);
@@ -86,11 +96,36 @@ std::optional<Prompt> CurrentPrompt(rex::memory::Memory* memory) {
   return Prompt{*player, *reason};
 }
 
+// The reason of the game's portal error screen while it is up.
+std::optional<uint32_t> CurrentError(rex::memory::Memory* memory) {
+  const auto instance = ReadGuest32(memory, kMagicMomentInstance);
+  if (!instance || !*instance) return std::nullopt;
+  const auto state = ReadGuest32(memory, *instance + kStateOffset);
+  if (!state || *state != kStateError) return std::nullopt;
+  const auto reason = ReadGuest32(memory, *instance + kReasonOffset);
+  if (!reason || *reason > 64) return std::nullopt;
+  return *reason;
+}
+
 void Watch(rex::memory::Memory* memory) {
   std::optional<uint32_t> waiting_for;  // player whose prompt is up
   Clock::time_point since{};
   bool opened = false;
+  std::optional<Clock::time_point> error_since, check_shown;
   while (!g_stop.load()) {
+    if (const auto error = CurrentError(memory)) {
+      const auto now = Clock::now();
+      if (!error_since) error_since = now;
+      if (now - *error_since >= kErrorDelay && (!check_shown || now - *check_shown >= kErrorRepeat)) {
+        REXLOG_INFO("Magic moment: the game shows its portal error (reason {})", *error);
+        skylanders::ShowPortalCheck(*error);
+        check_shown = now;
+      }
+    } else if (error_since) {
+      if (check_shown) skylanders::ClosePortalCheck();
+      error_since.reset();
+      check_shown.reset();
+    }
     const std::optional<Prompt> prompt = CurrentPrompt(memory);
     const std::optional<uint32_t> player =
         prompt ? std::optional<uint32_t>(prompt->player) : std::nullopt;

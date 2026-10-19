@@ -30,6 +30,12 @@ The installer has its own `AppId`, separate from GiantsRecomp, so both can be in
 - Start menu shortcut works; "Uninstall SwapForceRecomp" appears in the Start menu and in Add/Remove
   Programs.
 
+## Defaults for a release
+
+- `skip_intro` (the Activision and Vicarious Visions logo movies) is on for now because it saves
+  time in every test run; the owner wants it **off** by default for the first public release, in
+  the code default and in `installer/settings_template.toml`.
+
 ## Publish
 
 Bump `MyAppVersion` in `installer/SwapForceRecomp.iss` to match the tag. Upload

@@ -185,11 +185,16 @@ controller or the keyboard:
   turn; a new figure's first save goes to the second one). Heroic challenges are not shown yet:
   the sources disagree on where they are stored.
 - **Preview card:** level and XP bar, gold, the hat, the bought upgrades as icons.
-- **Sidekicks:** in Giants and Swap Force a sidekick only tags along behind the player's
-  Skylander (it stores no data), so the menu puts it on the portal next to the Skylander, in its
-  own slot per player like the item: A brings it along ("With you" on its card), A again takes it
-  off, and a player who leaves takes theirs along. Checked in the hub: Barkley arrived with the
-  game's beam of light next to Doom Stone.
+- **Sidekicks:** in Giants and Swap Force a sidekick only tags along behind the Skylanders (it
+  stores no data), so the menu puts it on the portal next to them, in a slot of its own like the
+  item. The game takes one at a time: with a second one it shows "too many Mini Skylanders on the
+  portal" and waits (two players, one sidekick each, 2026-10-19). So there is one, shared by all
+  players like the item: A brings one along (it replaces the one there; "On the portal" on its
+  card), A again takes it off, and a player who leaves takes it along if they brought it. Checked
+  in the hub: Barkley arrived with the game's beam of light next to Doom Stone.
+- **Recent** starts with the item and the sidekick on the portal, so A takes them off from the
+  first page; the cursor starts on the first Skylander after them, so a quick A still places a
+  Skylander.
 - **The game's own art and data** (`src/game/game_art.cpp`, read at runtime from the owner's
   files, none of it in the repository): the element symbols (`permanent.pak`,
   `materialinstances\elementicons.igz`, from `ui\ElementalIcons\DN_<Element>.tga`) in every

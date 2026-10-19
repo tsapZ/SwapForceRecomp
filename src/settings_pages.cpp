@@ -23,16 +23,15 @@ Setting PresetSetting() {
   s.de = "Voreinstellung";
   s.help_en =
       "Sets the internal resolution and sharpening together. Performance: the game's own 720p "
-      "picture, upscaled with FSR, for slower PCs (about 170 FPS in the hub in the tests). "
-      "Quality (recommended): twice the resolution, sharpened; sharp on a 1440p screen, about "
-      "85 FPS in the hub. Best: three times the resolution, sharp in 4K, needs a strong graphics "
-      "card (about 40 FPS in the hub).";
+      "picture, upscaled with FSR; for weaker PCs. Quality (recommended): twice the resolution, "
+      "sharpened; sharp on a 1440p screen. Best: three times the resolution for 4K screens; needs "
+      "a strong graphics card. Each step up roughly halves the frame rate.";
   s.help_de =
       "Stellt Aufl\xC3\xB6sung und Sch\xC3\xA4rfe zusammen ein. Leistung: das 720p-Bild des "
-      "Spiels, mit FSR hochskaliert, f\xC3\xBCr schw\xC3\xA4" "chere PCs (in den Tests rund 170 "
-      "FPS im Hub). Qualit\xC3\xA4t (empfohlen): doppelte Aufl\xC3\xB6sung, gesch\xC3\xA4rft; "
-      "scharf auf einem 1440p-Bildschirm, rund 85 FPS im Hub. Beste: dreifache Aufl\xC3\xB6sung, "
-      "scharf in 4K, braucht eine starke Grafikkarte (um 40 FPS im Hub).";
+      "Spiels, mit FSR hochgerechnet; f\xC3\xBCr schw\xC3\xA4" "chere PCs. Qualit\xC3\xA4t "
+      "(empfohlen): doppelte Aufl\xC3\xB6sung, nachgesch\xC3\xA4rft; scharf auf einem "
+      "1440p-Bildschirm. Beste: dreifache Aufl\xC3\xB6sung f\xC3\xBCr 4K-Bildschirme; braucht eine "
+      "starke Grafikkarte. Jede Stufe h\xC3\xB6her halbiert ungef\xC3\xA4hr die Bildrate.";
   s.options = {{"performance", "Performance", "Leistung"},
                {"quality", "Quality", "Qualit\xC3\xA4t"},
                {"best", "Best", "Beste"}};
@@ -58,75 +57,85 @@ SettingsPage GraphicsPage() {
   page.settings.push_back(PresetSetting());
   page.settings.push_back(
       {"resolution_scale", "Internal resolution", "Interne Aufl\xC3\xB6sung",
-       "How finely the game draws the 3D scene: a multiple of its own 1280x720. 2x is exactly "
-       "1440p, 3x exactly 4K. Every step costs a lot of GPU time.",
-       "Wie fein das Spiel die 3D-Szene zeichnet: ein Vielfaches seiner eigenen 1280x720. 2x ist "
-       "genau 1440p, 3x genau 4K. Jede Stufe kostet viel Grafikleistung.",
+       "How finely the game draws its 3D scenes, as a multiple of its own 1280x720. 2x fits a "
+       "1440p screen, 3x a 4K screen. Higher is sharper but costs a lot: each step roughly halves "
+       "the frame rate.",
+       "Wie fein das Spiel seine 3D-Szenen zeichnet, als Vielfaches seiner eigenen 1280x720. 2x "
+       "passt zu einem 1440p-Bildschirm, 3x zu 4K. H\xC3\xB6her ist sch\xC3\xA4rfer, kostet aber "
+       "viel: Jede Stufe halbiert ungef\xC3\xA4hr die Bildrate.",
        {{"1", "1x (720p)", "1x (720p)"},
         {"2", "2x (1440p)", "2x (1440p)"},
         {"3", "3x (4K)", "3x (4K)"},
         {"4", "4x", "4x"}}});
   page.settings.push_back(
       {"present_effect", "Sharpening", "Sch\xC3\xA4rfe",
-       "How the picture is scaled to the window. Sharpened (CAS) is best when the internal "
-       "resolution matches the screen; FSR upscales a smaller picture; soft is plain bilinear.",
-       "Wie das Bild aufs Fenster skaliert wird. Gesch\xC3\xA4rft (CAS) ist am besten, wenn die "
-       "interne Aufl\xC3\xB6sung zum Bildschirm passt; FSR skaliert ein kleineres Bild hoch; "
-       "weich ist einfaches bilineares Skalieren.",
+       "How the finished picture is scaled to your window. Sharpened (CAS): best when the "
+       "internal resolution fits your screen. FSR 1: enlarges a smaller picture and sharpens it, "
+       "good with 1x. Soft: plain scaling without sharpening. Costs almost nothing.",
+       "Wie das fertige Bild auf dein Fenster skaliert wird. Gesch\xC3\xA4rft (CAS): am besten, "
+       "wenn die interne Aufl\xC3\xB6sung zum Bildschirm passt. FSR 1: vergr\xC3\xB6\xC3\x9F" "ert "
+       "ein kleineres Bild und sch\xC3\xA4rft es nach, gut bei 1x. Weich: einfaches Skalieren "
+       "ohne Sch\xC3\xA4rfen. Kostet fast nichts.",
        {{"bilinear", "Soft", "Weich"},
         {"cas", "Sharpened (CAS)", "Gesch\xC3\xA4rft (CAS)"},
         {"fsr", "FSR 1 upscaling", "FSR 1 (hochskaliert)"}}});
   page.settings.push_back(
       {"anisotropic_override", "Texture filtering", "Texturfilter",
-       "Keeps floors and walls sharp at a shallow angle. 16x costs next to nothing (83 vs 84 FPS "
-       "against 4x in the tests).",
-       "H\xC3\xA4lt B\xC3\xB6" "den und W\xC3\xA4nde auch schr\xC3\xA4g betrachtet scharf. 16x "
-       "kostet so gut wie nichts (in den Tests 83 statt 84 FPS gegen\xC3\xBC" "ber 4x).",
+       "Keeps floors and walls sharp when you look at them at a shallow angle; without it they "
+       "blur in the distance. 16x is recommended: it costs about 1 % of the frame rate.",
+       "H\xC3\xA4lt B\xC3\xB6" "den und W\xC3\xA4nde scharf, wenn man flach darauf schaut; ohne "
+       "Filter verschwimmen sie in der Ferne. Empfohlen ist 16x: Das kostet etwa 1 % Bildrate.",
        {{"0", "Off", "Aus"}, {"3", "4x", "4x"}, {"4", "8x", "8x"}, {"5", "16x", "16x"}}});
   page.settings.push_back(
       {"fxaa_follow_resolution_scale", "Game's edge smoothing, sharp", "Kantengl\xC3\xA4ttung des "
        "Spiels, scharf",
-       "The game smooths edges itself (FXAA). On: it works at the internal resolution, so the "
-       "picture stays sharp at 2x and 3x. Off: as on the console, which blurs at 2x and up. Costs "
-       "nothing.",
-       "Das Spiel gl\xC3\xA4ttet Kanten selbst (FXAA). An: das passiert in der internen "
+       "The game smooths jagged edges itself (FXAA). On: the smoothing works at the internal "
+       "resolution, so the picture stays sharp at 2x and 3x. Off: as on the console, which makes "
+       "the picture blurry from 2x on. Costs nothing; recommended: on.",
+       "Das Spiel gl\xC3\xA4ttet Treppenkanten selbst (FXAA). An: das passiert in der internen "
        "Aufl\xC3\xB6sung, so bleibt das Bild bei 2x und 3x scharf. Aus: wie auf der Konsole, das "
-       "verwischt ab 2x. Kostet nichts."});
+       "macht das Bild ab 2x unscharf. Kostet nichts; empfohlen: an."});
   page.settings.push_back(
       {"swap_post_effect", "Extra edge smoothing", "Zus\xC3\xA4tzliche Kantengl\xC3\xA4ttung",
-       "A second FXAA over the whole picture, on top of the game's own. For now it also makes the "
-       "picture darker and paler (#45). Recommended: off.",
-       "Ein zweites FXAA \xC3\xBC" "ber das ganze Bild, zus\xC3\xA4tzlich zu dem des Spiels. Macht "
-       "das Bild zurzeit auch dunkler und blasser (#45). Empfohlen: aus.",
+       "A second edge smoothing over the whole picture, on top of the game's own. For now it also "
+       "makes the picture darker and paler (a known bug). Recommended: off.",
+       "Eine zweite Kantengl\xC3\xA4ttung \xC3\xBC" "ber das ganze Bild, zus\xC3\xA4tzlich zu der "
+       "des Spiels. Macht das Bild zurzeit auch dunkler und blasser (bekannter Fehler). "
+       "Empfohlen: aus.",
        {{"none", "Off", "Aus"}, {"fxaa", "FXAA", "FXAA"}, {"fxaa_extreme", "FXAA strong",
                                                          "FXAA stark"}}});
   page.settings.push_back(
       {"bloom_strength", "Glow (bloom)", "Leuchten (Bloom)",
-       "The soft glow the game puts around bright areas. Off gives a clearer, slightly darker "
-       "picture. Costs nothing either way.",
-       "Der weiche Schein, den das Spiel um helle Stellen legt. Aus ergibt ein klareres, etwas "
-       "dunkleres Bild. Kostet so oder so nichts.",
+       "The soft glow the game puts around bright areas and lights. Off: a clearer, slightly "
+       "darker picture; strong: more glow. Costs nothing.",
+       "Der weiche Schein, den das Spiel um helle Stellen und Lichter legt. Aus: ein klareres, "
+       "etwas dunkleres Bild; stark: mehr Schein. Kostet nichts.",
        {{"0", "Off", "Aus"},
         {"0.5", "Weak", "Schwach"},
         {"1", "As in the game", "Wie im Spiel"},
         {"1.5", "Strong", "Stark"}}});
   page.settings.push_back(
       {"motion_blur_strength", "Motion blur", "Bewegungsunsch\xC3\xA4rfe",
-       "Blurs what moves fast and the picture when the camera turns quickly. Off keeps the "
-       "picture sharp in motion.",
-       "Verwischt, was sich schnell bewegt, und das Bild bei schnellen Kameradrehungen. Aus "
-       "h\xC3\xA4lt das Bild auch in Bewegung scharf.",
+       "Smears fast movement and the whole picture when the camera turns quickly. Motion blur "
+       "makes 30 FPS look smoother; at higher frame rates it mostly blurs, so it is off by "
+       "default. Costs nothing.",
+       "Verwischt schnelle Bewegungen und das ganze Bild bei schnellen Kameradrehungen. "
+       "Bewegungsunsch\xC3\xA4rfe l\xC3\xA4sst 30 FPS fl\xC3\xBCssiger wirken; bei h\xC3\xB6heren "
+       "Bildraten verwischt sie vor allem, deshalb ist sie standardm\xC3\xA4\xC3\x9Fig aus. "
+       "Kostet nichts.",
        {{"0", "Off", "Aus"}, {"0.5", "Half", "Halb"}, {"1", "As in the game", "Wie im Spiel"}}});
   Setting fullscreen{"fullscreen", "Fullscreen", "Vollbild",
-                     "Start in fullscreen or in a window.",
-                     "Im Vollbild oder im Fenster starten."};
+                     "Starts the game in fullscreen or in a window.",
+                     "Startet das Spiel im Vollbild oder im Fenster."};
   fullscreen.restart = true;
   page.settings.push_back(fullscreen);
   page.settings.push_back(
       {"resolution", "Window size", "Fenstergr\xC3\xB6\xC3\x9F" "e",
-       "The window's size when not in fullscreen, and the picture size the game is told about.",
-       "Die Gr\xC3\xB6\xC3\x9F" "e des Fensters au\xC3\x9F" "erhalb des Vollbilds und die "
-       "Bildgr\xC3\xB6\xC3\x9F" "e, die das Spiel bekommt.",
+       "The window's size outside fullscreen, and the picture size the game works with. Wider "
+       "than 16:9 (ultrawide) shows more to the sides.",
+       "Die Gr\xC3\xB6\xC3\x9F" "e des Fensters au\xC3\x9F" "erhalb des Vollbilds, zugleich die "
+       "Bildgr\xC3\xB6\xC3\x9F" "e, mit der das Spiel arbeitet. Breiter als 16:9 (Ultrawide) zeigt "
+       "an den Seiten mehr.",
        {{"", "Automatic", "Automatisch"},
         {"1280x720", "1280x720", "1280x720"},
         {"1920x1080", "1920x1080", "1920x1080"},
@@ -139,16 +148,18 @@ SettingsPage FrameRatePage() {
   SettingsPage page{"Frame rate", "Bildrate", {}};
   page.settings.push_back(
       {"present_interval", "60 FPS and more", "60 FPS und mehr",
-       "The game was made for 30 FPS. On: as many frames as the limit below allows. The game "
-       "speed was checked in the tutorial at 60 FPS.",
+       "The game was made for 30 FPS. On: as many frames as the limit below allows; the game "
+       "keeps its normal speed. Off: 30 FPS as on the console.",
        "Das Spiel ist f\xC3\xBCr 30 FPS gemacht. An: so viele Bilder, wie die Grenze darunter "
-       "erlaubt. Die Spielgeschwindigkeit wurde im Tutorial mit 60 FPS gepr\xC3\xBC" "ft.",
+       "erlaubt; das Spiel l\xC3\xA4uft dabei normal schnell. Aus: 30 FPS wie auf der Konsole.",
        {{"0", "Off (30 FPS)", "Aus (30 FPS)"}, {"1", "On", "An"}}});
   page.settings.push_back(
       {"frame_rate_limit", "Frame rate limit", "FPS-Grenze",
-       "The most frames per second with 60 FPS and more on. Best at your screen's refresh rate.",
+       "The most frames per second with 60 FPS and more on. Best set to your screen's refresh "
+       "rate. If your PC can't reach it, the game simply runs as fast as it can.",
        "H\xC3\xB6" "chstens so viele Bilder pro Sekunde, wenn 60 FPS und mehr an ist. Am besten "
-       "die Bildwiederholrate deines Bildschirms.",
+       "die Bildwiederholrate deines Bildschirms. Schafft dein PC das nicht, l\xC3\xA4uft das "
+       "Spiel einfach so schnell, wie er kann.",
        {{"30", "30", "30"},
         {"60", "60", "60"},
         {"120", "120", "120"},
@@ -157,14 +168,19 @@ SettingsPage FrameRatePage() {
         {"200", "200", "200"},
         {"240", "240", "240"}}});
   page.settings.push_back({"vsync", "VSync", "VSync",
-                           "Waits for the screen between frames: no tearing.",
-                           "Wartet zwischen den Bildern auf den Bildschirm: kein Zerrei\xC3\x9F" "en."});
+                           "Waits for the screen before showing a frame, so the picture never "
+                           "tears in two when the camera moves. Off reacts a tiny bit faster but "
+                           "may tear.",
+                           "Wartet vor jedem Bild auf den Bildschirm, so rei\xC3\x9Ft das Bild bei "
+                           "Kamerabewegungen nie in zwei Teile. Aus reagiert minimal schneller, "
+                           "kann aber rei\xC3\x9F" "en."});
   page.settings.push_back(
       {"render_target_path_d3d12", "Render path", "Renderpfad",
-       "Fast (RTV) is the one to use. Exact (ROV) emulates the Xbox 360's memory bit for bit and "
-       "is much slower; only for comparing graphics errors.",
-       "Schnell (RTV) ist der richtige. Genau (ROV) bildet den Speicher der Xbox 360 Bit f\xC3\xBCr "
-       "Bit nach und ist viel langsamer; nur zum Vergleichen bei Grafikfehlern.",
+       "Fast (RTV) is the one to use. Exact (ROV) copies the Xbox 360's graphics memory bit for "
+       "bit and is much slower (about a third fewer frames); only for comparing graphics errors.",
+       "Schnell (RTV) ist der richtige. Genau (ROV) bildet den Grafikspeicher der Xbox 360 Bit "
+       "f\xC3\xBCr Bit nach und ist viel langsamer (rund ein Drittel weniger Bilder); nur zum "
+       "Vergleichen bei Grafikfehlern.",
        {{"rtv", "Fast (RTV)", "Schnell (RTV)"}, {"rov", "Exact (ROV)", "Genau (ROV)"}}});
   page.settings.push_back(
       {"d3d12_adapter", "Graphics card", "Grafikkarte",
@@ -173,10 +189,11 @@ SettingsPage FrameRatePage() {
        {{"-1", "Automatic", "Automatisch"}, {"0", "GPU 1", "GPU 1"}, {"1", "GPU 2", "GPU 2"}}});
   page.settings.push_back(
       {"gpu_backend", "Graphics interface", "Grafikschnittstelle",
-       "D3D12 is the tested one (and the only one with the render path above). Vulkan ran the "
-       "hub just as fast (87 vs 86 FPS) and is there to try if D3D12 makes trouble.",
-       "D3D12 ist die getestete (und die einzige mit dem Renderpfad oben). Vulkan lief im Hub "
-       "gleich schnell (87 statt 86 FPS) und ist zum Ausprobieren da, falls D3D12 Probleme macht.",
+       "D3D12 is the tested one and the only one with the render path above. Vulkan runs just as "
+       "fast and is there to try if D3D12 causes trouble (crashes, graphics errors).",
+       "D3D12 ist die getestete und die einzige mit dem Renderpfad oben. Vulkan l\xC3\xA4uft "
+       "genauso schnell und ist zum Ausprobieren da, falls D3D12 Probleme macht (Abst\xC3\xBCrze, "
+       "Grafikfehler).",
        {{"any", "Automatic (D3D12)", "Automatisch (D3D12)"}, {"d3d12", "D3D12", "D3D12"},
         {"vulkan", "Vulkan", "Vulkan"}}});
   return page;
@@ -191,14 +208,15 @@ SettingsPage GamePage() {
   language.restart = true;
   page.settings.push_back(language);
   Setting intro{"skip_intro", "Skip logo movies", "Logo-Videos \xC3\xBC" "berspringen",
-                "The Activision and Vicarious Visions logos at start-up.",
-                "Die Logos von Activision und Vicarious Visions beim Start."};
+                "Skips the Activision and Vicarious Visions logo videos at start-up.",
+                "\xC3\x9C" "berspringt die Logo-Videos von Activision und Vicarious Visions beim "
+                "Start."};
   intro.restart = true;
   page.settings.push_back(intro);
   page.settings.push_back({"skip_opening_movie", "Skip the opening movie",
                            "Er\xC3\xB6" "ffnungsfilm \xC3\xBC" "berspringen",
-                           "The long movie when a new game starts.",
-                           "Der lange Film beim Start eines neuen Spiels."});
+                           "Skips the long movie at the start of a new game.",
+                           "\xC3\x9C" "berspringt den langen Film beim Start eines neuen Spiels."});
   return page;
 }
 
@@ -243,8 +261,8 @@ SettingsPage ControlsPage() {
        "Play with the keyboard as a controller.", "Mit der Tastatur als Controller spielen."});
   page.settings.push_back(
       {"keyboard_player", "Keyboard plays as", "Tastatur spielt als",
-       "Which player the keyboard is. Controllers are moved in the player menu (L3 + R3).",
-       "Welcher Spieler die Tastatur ist. Controller verschiebt das Spieler-Men\xC3\xBC (L3 + R3).",
+       "Which player the keyboard is. Controllers are assigned in the player menu (L3 + R3).",
+       "Welcher Spieler die Tastatur ist. Controller teilst du im Spieler-Men\xC3\xBC zu (L3 + R3).",
        {{"1", "Player 1", "Spieler 1"},
         {"2", "Player 2", "Spieler 2"},
         {"3", "Player 3", "Spieler 3"},
@@ -262,11 +280,12 @@ std::vector<SettingsPage> BuildSettingsPages(std::function<void()> open_all_sett
   all.en = "All settings (developers)";
   all.de = "Alle Einstellungen (Entwickler)";
   all.help_en =
-      "The SDK's full list of settings (F10). Its \"Save to config\" button rewrites the whole "
-      "settings file; changes made here are saved one by one.";
+      "The SDK's full list of every setting (F10). Its \"Save to config\" button rewrites the "
+      "whole settings file and drops its comments; this menu saves only what you change.";
   all.help_de =
       "Die vollst\xC3\xA4ndige Liste aller Einstellungen des SDK (F10). Sein \"Save to config\" "
-      "schreibt die ganze Einstellungsdatei neu; was hier ge\xC3\xA4ndert wird, speichert einzeln.";
+      "schreibt die ganze Einstellungsdatei neu und verwirft ihre Kommentare; dieses Men\xC3\xBC "
+      "speichert nur, was du \xC3\xA4nderst.";
   all.action = std::move(open_all_settings);
   advanced.settings.push_back(std::move(all));
   pages.push_back(std::move(advanced));

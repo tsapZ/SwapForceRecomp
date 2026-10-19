@@ -346,6 +346,25 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   3), the game plays his sidekick intro and then shows his icon on player 1's side of the HUD,
   but within 50 s he was not to be seen in the hub. Alone, he appears next to the Skylander. Not
   looked into further; to check with two real controllers.
+- **Owner's test (evening):** menu, details and sidekicks fine. Found: with one sidekick per
+  player (Gill Runt for player 1, Barkley for player 2) the game showed "too many Mini Skylanders
+  on the portal" and there was no way to take one off but leaving the game; F4 did nothing while
+  the portal menu was open; the settings menu had no save step; the texture filter text spoke of
+  test numbers. Fixed:
+  - **One sidekick, shared** like the item (bringing one replaces the one there), and Recent
+    starts with the item and the sidekick on the portal so A takes them off.
+  - **Portal check:** the game's error screen is `CMagicMoment` state 16 (`eMMS_Error`, no
+    player), its reason 1 = too many Skylanders, 2 = too many items or sidekicks
+    (`EMagicMomentReason`). The check lists everything on the emulated portal, marks what there
+    is too much of and takes off what the player marks. Reproduced with a second sidekick put on
+    past the menu (`place` in input scripts): reason 2, listed, one taken off, the game went on.
+  - **F4 / Back + RB over the portal or player menu** closes that one like B and opens the
+    settings. **Settings are saved with Y**, applied at once to be seen, and closing with unsaved
+    changes asks (save / don't save / back); checked: "don't save" put bloom back, Y wrote it,
+    the real settings file untouched (`--config_file` for test runs).
+  - Texts in the settings menu say what a setting does and what it costs, without test numbers.
+  - **Motion blur off by default** (owner's choice).
+  - The license notice named Skylanders: Giants (left from the template); now Swap Force.
 - **Ultrawide HUD (#24): not built.** The UI (Juice) cameras are orthographic cameras that the
   size-change handler `sub_82576AA8` resizes, the same as the full-screen post-processing
   cameras, so a blanket hook there would break the post passes; the field offsets and the

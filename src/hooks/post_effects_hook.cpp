@@ -32,8 +32,10 @@
 
 REXCVAR_DEFINE_DOUBLE(bloom_strength, 1.0, "Graphics",
                       "Glow around bright areas: 0 = off, 1 = the game's, up to 3");
-REXCVAR_DEFINE_DOUBLE(motion_blur_strength, 1.0, "Graphics",
-                      "Motion blur: 0 = off, 1 = the game's, up to 2");
+// Off by default (owner's choice, 2026-10-19): the blur is tuned for 30 FPS and mostly smears at
+// higher frame rates.
+REXCVAR_DEFINE_DOUBLE(motion_blur_strength, 0.0, "Graphics",
+                      "Motion blur: 0 = off (default), 1 = the game's, up to 2");
 
 namespace {
 

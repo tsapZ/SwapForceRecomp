@@ -102,6 +102,8 @@ with keyboard; controller input verified in the tutorial).
   picture and stats, play time, last placed; the newest save area is used (#48, heroic
   challenges still open); sidekicks and items get a short panel with what they do and how long
   the item lasts in the game
+- [x] One sidekick at a time, shared by the players; the portal check when the game reports too
+  many figures; settings saved with Y and asked about on closing
 - [x] The game's own element symbols in the menu; sidekicks next to the Skylander (#40)
 - [ ] Ideas for the menu (not started): the game's own font from the game files for more Skylanders
   feel; more information per variant (#48); in the launcher hub, pictures from each game's own

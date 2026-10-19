@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <functional>
 #include <memory>
@@ -25,6 +26,7 @@
 #include <rex/ui/ui_event.h>
 
 #include "portal_rex/portal_menu_input.h"
+#include "portal_rex/portal_rex.h"
 #include "write_watch.h"
 
 REXCVAR_DEFINE_STRING(input_script, "", "Input",
@@ -52,6 +54,7 @@ struct Event {
     kRenderDoc,
     kPlayer,
     kKey,
+    kPlace,
     kWatch,
     kUnwatch,
     kDump,
@@ -64,7 +67,7 @@ struct Event {
   bool right_trigger = false;
   double x = 0.0, y = 0.0;
   std::string text;
-  uint32_t frames = 0;  // renderdoc: guest frames to capture; player: the player (1-4)
+  uint32_t frames = 0;  // renderdoc: guest frames to capture; player: the player (1-4); place: slot
   std::vector<uint32_t> words;  // scan: the sequence; poke: address and value
 };
 
@@ -188,6 +191,11 @@ bool ParseScript(std::istream& in, std::vector<Event>& events) {
     } else if (cmd == "key") {
       ok = bool(words >> e.text) && rex::ui::ParseVirtualKey(e.text) != rex::ui::VirtualKey::kNone;
       e.kind = Event::Kind::kKey;
+    } else if (cmd == "place") {
+      ok = bool(words >> e.frames) && e.frames < 16;
+      std::getline(words >> std::ws, e.text);
+      ok = ok && !e.text.empty();
+      e.kind = Event::Kind::kPlace;
     } else if (cmd == "quit") {
       e.kind = Event::Kind::kQuit;
     } else {
@@ -369,6 +377,14 @@ class ScriptInputDriver final : public rex::input::InputDriver {
             });
           }
           REXLOG_INFO("Input script: key {}", e.text);
+        } else if (e.kind == Event::Kind::kPlace) {
+          if (run_in_ui) {
+            run_in_ui([slot = int(e.frames), path = std::filesystem::u8path(e.text)] {
+              const bool placed = skylanders::PlaceFigureFromFile(slot, path);
+              REXLOG_INFO("Input script: {} slot {}", placed ? "placed in" : "could not place in",
+                          slot);
+            });
+          }
         } else {
           REXLOG_INFO("Input script: quit");
           std::_Exit(0);
