@@ -54,6 +54,7 @@ struct Event {
     kKey,
     kWatch,
     kUnwatch,
+    kDump,
     kQuit
   } kind;
   double start = 0.0;     // seconds since the timeline started
@@ -171,13 +172,19 @@ bool ParseScript(std::istream& in, std::vector<Event>& events) {
     } else if (cmd == "player") {
       ok = bool(words >> e.frames) && e.frames >= 1 && e.frames <= 4;
       e.kind = Event::Kind::kPlayer;
-    } else if (cmd == "watch") {
+    } else if (cmd == "watch" || cmd == "watchread") {
+      e.text = cmd;
       std::string word;
       while (words >> word) e.words.push_back(uint32_t(std::stoul(word, nullptr, 16)));
-      ok = e.words.size() == 1 || e.words.size() == 2;
+      ok = e.words.size() == 1 || e.words.size() == 2 || e.words.size() == 4;
       e.kind = Event::Kind::kWatch;
     } else if (cmd == "unwatch") {
       e.kind = Event::Kind::kUnwatch;
+    } else if (cmd == "dump") {
+      std::string address;
+      ok = bool(words >> address >> e.frames) && e.frames > 0 && e.frames <= 4096;
+      if (ok) e.words.push_back(uint32_t(std::stoul(address, nullptr, 16)));
+      e.kind = Event::Kind::kDump;
     } else if (cmd == "key") {
       ok = bool(words >> e.text) && rex::ui::ParseVirtualKey(e.text) != rex::ui::VirtualKey::kNone;
       e.kind = Event::Kind::kKey;
@@ -199,6 +206,8 @@ bool ParseScript(std::istream& in, std::vector<Event>& events) {
 // Logs where the big-endian u32 sequence `words` occurs in committed guest memory (the virtual
 // heaps, the image and one view of physical memory), with the words around each hit. For finding
 // engine objects by known field values while reverse engineering.
+constexpr uint32_t kMaxScanHits = 512;
+
 void ScanGuestMemory(rex::memory::Memory* memory, const std::vector<uint32_t>& words) {
   // 0xA0000000-0xBFFFFFFF is one of the three views of physical memory; the other two alias it.
   static const struct {
@@ -214,7 +223,7 @@ void ScanGuestMemory(rex::memory::Memory* memory, const std::vector<uint32_t>& w
   uint32_t hits = 0;
   for (const auto& range : kRanges) {
     uint64_t address = range.start;
-    while (address < range.end && hits < 32) {
+    while (address < range.end && hits < kMaxScanHits) {
       rex::memory::BaseHeap* heap = memory->LookupHeap(uint32_t(address));
       rex::memory::HeapAllocationInfo info{};
       if (!heap || !heap->QueryRegionInfo(uint32_t(address), &info) || !info.region_size) {
@@ -226,7 +235,7 @@ void ScanGuestMemory(rex::memory::Memory* memory, const std::vector<uint32_t>& w
           (info.protect & rex::memory::kMemoryProtectRead)) {
         const uint8_t* host = memory->TranslateVirtual<const uint8_t*>(info.base_address);
         const uint32_t count = info.region_size / 4;
-        for (uint32_t i = 0; i + words.size() <= count && hits < 32; ++i) {
+        for (uint32_t i = 0; i + words.size() <= count && hits < kMaxScanHits; ++i) {
           bool match = true;
           for (size_t k = 0; k < words.size() && match; ++k) {
             match = read(host + 4 * (i + k)) == words[k];
@@ -336,9 +345,21 @@ class ScriptInputDriver final : public rex::input::InputDriver {
           REXLOG_INFO("Input script: now playing as player {}", e.frames);
         } else if (e.kind == Event::Kind::kWatch) {
           StartWriteWatch(memory, e.words[0],
-                          e.words.size() > 1 ? std::optional<uint32_t>(e.words[1]) : std::nullopt);
+                          e.words.size() > 1 ? std::optional<uint32_t>(e.words[1]) : std::nullopt,
+                          e.text == "watchread", e.words.size() == 4 ? e.words[2] : 0,
+                          e.words.size() == 4 ? e.words[3] : 0);
         } else if (e.kind == Event::Kind::kUnwatch) {
           StopWriteWatch();
+        } else if (e.kind == Event::Kind::kDump) {
+          for (uint32_t i = 0; i < e.frames; i += 8) {
+            std::string line;
+            for (uint32_t k = i; k < e.frames && k < i + 8; ++k) {
+              uint32_t v;
+              std::memcpy(&v, memory->TranslateVirtual<const uint8_t*>(e.words[0] + 4 * k), 4);
+              line += fmt::format(" {:08X}", rex::byte_swap(v));
+            }
+            REXLOG_INFO("Input script: dump {:08X}:{}", e.words[0] + 4 * i, line);
+          }
         } else if (e.kind == Event::Kind::kKey) {
           // Through the key binds, as a key press in the window would go.
           if (run_in_ui) {
