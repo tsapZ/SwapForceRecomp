@@ -5,6 +5,9 @@ swappers. The implementation lives in `thirdparty/skylanders-portal` (paths belo
 its `src/`). Protocol details were measured on Giants; for Swap Force they are **unverified** until
 Phase 3.
 
+Which real portal works with which game (and what each one reports): see
+[portal-compatibility.md](portal-compatibility.md).
+
 ## Backends
 
 `portal_mode` selects one, at startup:

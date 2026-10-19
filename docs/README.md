@@ -13,6 +13,7 @@ This folder is the project wiki. Pages, roughly in reading order:
 | [reverse-engineering.md](reverse-engineering.md) | Headless Ghidra: identify and name functions |
 | [portal.md](portal.md) | Portal of Power: protocol, figures, swappers, overlay |
 | [menus.md](menus.md) | Menus and keys: portal menu, player menu, settings menu |
+| [portal-compatibility.md](portal-compatibility.md) | Which real portal works with which game and with this port |
 | [releasing.md](releasing.md) | Packaging the installer and publishing a release |
 | [high-framerate.md](high-framerate.md) | Research: unlocking 60/120/144 FPS without breaking game speed |
 
