@@ -22,6 +22,8 @@
 
 #include "dev/input_script.h"
 #include "game/magic_moment_watch.h"
+#include "dev/gpu_diagnostics.h"
+#include "game/game_art.h"
 #include "game/toy_images.h"
 #include "localization.h"
 #include "portal_rex/portal_menu.h"
@@ -64,10 +66,13 @@ class SwapforcerecompApp : public rex::ReXApp {
     skylanders::ShutdownPortalMenu();
     skylanders::ShutdownPlayerMenu();
     skylanders::ShutdownSettingsMenu();
+    swapforcerecomp::ShutdownGameArt();
     swapforcerecomp::ShutdownToyImages();
   }
 
   void OnPreSetup(rex::RuntimeConfig& config) override {
+    // Before the GPU plugin creates its device (testing only, gpu_crash_diagnostics).
+    swapforcerecomp::EnableGpuCrashDiagnostics();
     // The Xenos GPU plugin renders the Xbox 360 command stream; without it nothing is drawn.
     if (config.gpu_plugin.empty()) config.gpu_plugin = "xenos";
     // Some of the game's text (e.g. the autosave warning dialog) is already resolved by the time
@@ -105,6 +110,8 @@ class SwapforcerecompApp : public rex::ReXApp {
     skylanders::SetGameBusyProvider([] { return swapforcerecomp::MagicMomentActive(); });
     // Pictures and names for the portal menu from the game's own toy data and collection icons.
     swapforcerecomp::InstallToyImages(runtime()->memory(), game_data_root() / "archives");
+    // Element and stat symbols, hats and upgrades for the menu, also from the game's files.
+    swapforcerecomp::InstallGameArt(runtime()->memory(), game_data_root() / "archives");
     // Default to 16x anisotropic filtering (the SDK defaults to 4x): ground and floor textures seen
     // at a shallow angle stay sharp, for a negligible cost on PC GPUs. Only when the user hasn't set
     // it themselves.

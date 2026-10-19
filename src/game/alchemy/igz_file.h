@@ -35,8 +35,10 @@ class IgzFile {
  public:
   static std::optional<IgzFile> Parse(std::vector<uint8_t> data);
 
-  // The strings of a fixup record ("TSTR", "TMET", "TDEP"), empty if there is none.
-  std::vector<std::string> Strings(const char* tag) const;
+  // The strings of a fixup record ("TSTR", "TMET"), empty if there is none. TDEP has two per entry
+  // (the dependency's name and its file: "JuiceStandard_ChopChop_Up1_10",
+  // "textures:/JuiceStandard_ChopChop_Up1_10.igz").
+  std::vector<std::string> Strings(const char* tag, uint32_t per_entry = 1) const;
 
   // The first igImage2 in the file, decoded; nullopt if there is none or its format isn't DXT1/3/5.
   std::optional<RgbaImage> DecodeFirstImage() const;

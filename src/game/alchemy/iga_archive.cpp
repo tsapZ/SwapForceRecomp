@@ -4,6 +4,7 @@
 #include <cstring>
 #include <fstream>
 
+#include "inflate.h"
 #include "lzma_decoder.h"
 
 namespace swapforcerecomp::alchemy {
@@ -106,7 +107,16 @@ std::optional<std::vector<uint8_t>> IgaArchive::Read(size_t index) const {
       out.insert(out.end(), data_.begin() + ptrdiff_t(at), data_.begin() + ptrdiff_t(at + want));
       continue;
     }
-    if (compression != 2 || at + 2 > data_.size()) return std::nullopt;  // deflate: not needed yet
+    if (at + 2 > data_.size()) return std::nullopt;
+    if (compression == 1) {  // raw deflate after the size (the character archives)
+      const uint32_t packed = data_[at] | (uint32_t(data_[at + 1]) << 8);
+      if (at + 2 + packed > data_.size()) return std::nullopt;
+      auto block = InflateRaw(data_.data() + at + 2, packed, want);
+      if (!block) return std::nullopt;
+      out.insert(out.end(), block->begin(), block->end());
+      continue;
+    }
+    if (compression != 2) return std::nullopt;
     // The size counts the LZMA stream after the 5 property bytes.
     const uint32_t packed = (data_[at] | (uint32_t(data_[at + 1]) << 8)) + 5;
     if (at + 2 + packed > data_.size()) return std::nullopt;

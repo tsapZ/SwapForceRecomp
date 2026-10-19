@@ -139,12 +139,12 @@ std::optional<size_t> IgzFile::Deserialize(uint32_t value) const {
   return pools_[pool] + (value & 0x07FFFFFF);
 }
 
-std::vector<std::string> IgzFile::Strings(const char* tag) const {
+std::vector<std::string> IgzFile::Strings(const char* tag, uint32_t per_entry) const {
   std::vector<std::string> out;
   auto it = fixups_.find(tag);
   if (it == fixups_.end()) return out;
   size_t p = it->second.start;
-  for (uint32_t i = 0; i < it->second.count && p < it->second.end; ++i) {
+  for (uint32_t i = 0; i < it->second.count * per_entry && p < it->second.end; ++i) {
     std::string s;
     while (p < it->second.end && data_[p]) s.push_back(char(data_[p++]));
     ++p;

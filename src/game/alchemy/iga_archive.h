@@ -30,7 +30,7 @@ class IgaArchive {
   size_t size() const { return files_.size(); }
   // The stored path, e.g. "materialinstances\toycollection\collection_chopchop_normal.igz".
   const std::string& name(size_t index) const { return files_[index].name; }
-  // The file's contents; nullopt for a corrupt file or an unsupported compression (deflate).
+  // The file's contents; nullopt for a corrupt file or an unknown compression.
   std::optional<std::vector<uint8_t>> Read(size_t index) const;
 
  private:

@@ -309,6 +309,20 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   and at most level 10 (the Giants and Swap Force parts of the XP live elsewhere). Checked against
   the owner's dumps and with unit tests on synthetic figures; hat name checked with a test copy
   wearing hat 22 ("Cowboyhut").
+- **Portal menu like the game (#40, #48):** the details view shows the upgrade tree with the
+  game's own icons, names and descriptions (German or English), bought ones marked, the hat with
+  its picture and stats, the level with an XP bar; the preview card shows level bar, hat and the
+  bought upgrades; every element medallion and the Recent cards use the game's element symbols.
+  All read at runtime from the owner's game files (`src/game/game_art.cpp`). Sidekicks now go on
+  next to the Skylander instead of replacing it (Barkley appeared next to Doom Stone in the hub).
+  Recent keeps 12 entries. Verified in scripted runs with screenshots (Chop Chop with a test hat,
+  Doom Stone's halves).
+- **GPU device lost three times today** (`DEVICE_RESET (bad GPU command)`, no driver timeout in
+  the system log): once before the first frame with debug logging, once while the pipeline cache
+  loaded (75 s instead of 30 ms, 380 pipelines failed), once 61 s in (creating a resolve tile
+  heap failed first). Not reproducible on demand; every other run today was fine. New
+  `gpu_crash_diagnostics` (off by default) turns on D3D12 DRED before the device is created, so
+  the next one logs the last GPU commands and the faulting address; scripted test runs use it now.
 - **Jump height at high frame rates (measured):** from 60 FPS on, jumps are about 5 % lower
   than at 30 (full jump 131 vs 138 units at 240 FPS, short 127 vs 133); 60 and 240 FPS are
   nearly equal. Most likely the hold phase of the jump lasts up to a frame longer at 30 FPS. Not

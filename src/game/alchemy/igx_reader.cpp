@@ -82,6 +82,12 @@ std::vector<IgxObject> ParseIgx(std::string_view text) {
     } else if (current && tag.rfind("listitem ", 0) == 0) {
       std::string ref;
       if (Attribute(tag, "ref", &ref)) current->items.push_back(StripThis(ref));
+    } else if (current && tag.rfind("dictitem ", 0) == 0) {
+      std::string key, value;
+      if (!Attribute(tag, "key", &key)) continue;
+      if (Attribute(tag, "value", &value) || Attribute(tag, "ref", &value)) {
+        current->dict.emplace_back(std::move(key), StripThis(std::move(value)));
+      }
     }
   }
   return objects;

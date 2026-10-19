@@ -39,8 +39,11 @@ set(SWAPFORCERECOMP_SOURCES
     src/main.cpp
     src/game/kernel_stubs.cpp
     src/game/magic_moment_watch.cpp
+    src/game/game_art.cpp
     src/game/toy_images.cpp
+    src/game/ui_icon.cpp
     src/game/alchemy/iga_archive.cpp
+    src/game/alchemy/inflate.cpp
     src/game/alchemy/igx_reader.cpp
     src/game/alchemy/igz_file.cpp
     src/game/alchemy/lzma_decoder.cpp
@@ -53,6 +56,7 @@ set(SWAPFORCERECOMP_SOURCES
     src/hooks/ultrawide_hook.cpp
     src/localization.cpp
     src/settings_pages.cpp
+    src/dev/gpu_diagnostics.cpp
     src/dev/input_script.cpp
     src/dev/write_watch.cpp
 )
@@ -69,6 +73,8 @@ if(REXSDK_DIR)
     # An installed SDK ships imgui's headers next to its own; an in-tree build must point at them.
     target_include_directories(swapforcerecompiled PRIVATE "${REXSDK_DIR}/thirdparty/imgui")
 endif()
+# stb_image's zlib decoder for the deflate-compressed game archives (src/game/alchemy/inflate.cpp).
+target_include_directories(swapforcerecompiled PRIVATE "${REXSDK_DIR}/thirdparty/stb")
 
 # Seed a fresh build dir with the settings-file template. Never overwrites an existing one: the
 # in-game F4 Settings overlay saves the user's own changes to this exact file.

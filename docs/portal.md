@@ -173,15 +173,37 @@ controller or the keyboard:
   Portal of Power (dark base, silver rim, glowing top, rising light), self-drawn element symbols (the
   official ones can't be used) as medallions in the element row and band; slightly see-through
   panel with the game visible around it; German texts with `language = "german"`.
-- **Details (X or L, #48):** level with XP and what is left to the next level (all three games'
-  parts of the XP, up to level 20), gold, play time, hero points, upgrades bought and the chosen
-  path, the hat with the game's own name for it ("Cowboyhut"), when and on which console the
-  figure was last placed, the nickname and the file. Decoded in the fork's `figure_stats` from the
-  newer of the figure's two save areas (the game writes them in turn; a new figure's first save
-  goes to the second one). Hat names come from the game's hat enum in the executable and
-  `permanent.pak` (`data\collectibletrackers.igx` with `_en`/`_de`), through
-  `SetHatNameProvider`. Heroic challenges are not shown yet: the sources disagree on where they
-  are stored.
+- **Details (X or L, #48):** one figure at a time, a swapper's halves with LB / RB. Left: level
+  with the bar to the next level (all three games' parts of the XP, up to level 20), gold, the
+  hat with its picture and what it adds ("+2 Kritische Trefferwahrscheinlichkeit"), play time,
+  hero points, when and on which console the figure was last placed, the nickname, the file.
+  Right: the upgrades as the game's upgrade screen shows them, with the game's icons, names and
+  descriptions: starting attacks, soul gem, Wow Pow (the figure year's), the basic upgrades and
+  both paths (the chosen one framed); bought ones bright with a check, the others dimmed with
+  their price; the d-pad moves the cursor and the upgrade under it is described. Decoded in the
+  fork's `figure_stats` from the newer of the figure's two save areas (the game writes them in
+  turn; a new figure's first save goes to the second one). Heroic challenges are not shown yet:
+  the sources disagree on where they are stored.
+- **Preview card:** level and XP bar, gold, the hat, the bought upgrades as icons.
+- **Sidekicks:** in Giants and Swap Force a sidekick only tags along behind the player's
+  Skylander (it stores no data), so the menu puts it on the portal next to the Skylander, in its
+  own slot per player like the item: A brings it along ("With you" on its card), A again takes it
+  off, and a player who leaves takes theirs along. Checked in the hub: Barkley arrived with the
+  game's beam of light next to Doom Stone.
+- **The game's own art and data** (`src/game/game_art.cpp`, read at runtime from the owner's
+  files, none of it in the repository): the element symbols (`permanent.pak`,
+  `materialinstances\elementicons.igz`, from `ui\ElementalIcons\DN_<Element>.tga`) in every
+  medallion and on the Recent cards; each character's upgrades from `<character>.pak`
+  (`..._characterdata.igx` with `_en`/`_de`: `CSkillsUpgradeComponentData`, paths, `_cost`,
+  `_previewImage`) and their icons from `<character>_abilityupgrades.pak`; hats from
+  `permanent.pak` (`data\collectibletrackers.igx`: `_hatId`, `_attributes`,
+  `_iconJuiceMaterial` in `collectibleicons.pak`), the hat enum from the executable; stat names
+  from `loosefiles.pak` `data\systemdata.mua` (English) and `systemdata_de.mua` (keyed by FNV-1a
+  of the English text), stat symbols from `characterattributeicons.igz`. Which bit of a figure's
+  upgrade flags an upgrade is was read from the loaded `CSkillUpgrade` objects
+  (`_toyAbilityFlagBit`): counted on from 2 (basic, then the two paths sharing their bits, then
+  the soul gem, the Wow Pow last). The character archives are deflate-compressed; the reader uses
+  stb_image's zlib decoder from the SDK.
 - The whole input system is the SDK's default one with every driver wrapped
   (`CreatePortalMenuInputSystem`): the wrapper notices the open button, hides all controller and
   keyboard input from the game while the menu is open, and lets the menu poll each controller.

@@ -10,7 +10,7 @@
 //     <listitem ref="this.ChopChop_Repose2012_variantIdentifier"/>
 //   </object>
 //
-// Only this subset is understood: objects with vars (value or ref) and list items.
+// Only this subset is understood: objects with vars (value or ref), list items and dict items.
 
 #include <string>
 #include <string_view>
@@ -24,6 +24,8 @@ struct IgxObject {
   std::string type;
   std::unordered_map<std::string, std::string> vars;  // name -> value or ref
   std::vector<std::string> items;                      // list item refs ("this." stripped)
+  // Hash table entries, <dictitem key="eCA_Speed" value="Speed"/> (value or ref), in file order.
+  std::vector<std::pair<std::string, std::string>> dict;
 
   // The var's value, or empty.
   const std::string& Var(const std::string& name) const;
