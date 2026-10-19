@@ -448,3 +448,6 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
 - **x86-64-v3 build (measured, not switched):** about 8 % more FPS at scale 1 (163.5 vs 151.9),
   the same at scale 2 (GPU-bound); details and the research on what emulators do for smoothness
   in docs/performance.md.
+- **Co-op sidekick (re-checked):** player 1 brings Barkley, player 2 joins and brings Mini Jini:
+  the shared sidekick moves over (Barkley off, Mini Jini on another slot), the game shows Mini
+  Jini and reports no "too many" error; both players keep playing (scripted, screenshot).
