@@ -116,7 +116,8 @@ system dialog in the foreground breaks keyboard-driven test runs). One command p
     player 2                 # the scripted controller plays as player 2 from now on
     quit
 
-Buttons: `guide a b x y start back up down left right lb rb ls rs lt rt`. Full syntax in
+Buttons: `guide a b x y start back up down left right lb rb ls rs lt rt`, several at once joined
+with `+` (`tap back+y`, `tap ls+rs`). Full syntax in
 `src/dev/input_script.h`. For RenderDoc, start the game through `renderdoccmd capture`; the capture
 spans whole guest frames (RenderDoc's own triggers capture host frames, and one guest frame's GPU
 work is spread over several of them).

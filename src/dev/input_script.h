@@ -18,7 +18,8 @@
 //   renderdoc [n]            captures the next n guest frames with an attached RenderDoc
 //   player <n>               the scripted controller plays as player n (1-4) from now on
 //   quit                     ends the game
-// Buttons: a b x y start back guide up down left right lb rb ls rs lt rt
+// Buttons: a b x y start back guide up down left right lb rb ls rs lt rt, or several pressed
+// together joined with + (tap back+y)
 
 #pragma once
 

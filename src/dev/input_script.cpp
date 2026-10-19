@@ -51,7 +51,7 @@ struct Event {
   std::vector<uint32_t> words;  // scan: the sequence; poke: address and value
 };
 
-bool ParseButton(const std::string& name, Event& e) {
+bool ParseOneButton(const std::string& name, Event& e) {
   static const struct {
     const char* name;
     uint16_t bit;
@@ -82,11 +82,24 @@ bool ParseButton(const std::string& name, Event& e) {
   }
   for (const auto& b : kButtons) {
     if (name == b.name) {
-      e.buttons = b.bit;
+      e.buttons |= b.bit;
       return true;
     }
   }
   return false;
+}
+
+// A button, or several pressed together joined with '+' ("back+y", "ls+rs").
+bool ParseButton(const std::string& name, Event& e) {
+  size_t start = 0;
+  while (true) {
+    const size_t end = name.find('+', start);
+    if (!ParseOneButton(name.substr(start, end == std::string::npos ? end : end - start), e)) {
+      return false;
+    }
+    if (end == std::string::npos) return true;
+    start = end + 1;
+  }
 }
 
 // Returns false (and logs the line) on a syntax error, so a typo doesn't silently shift the
