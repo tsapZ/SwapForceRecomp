@@ -43,6 +43,8 @@ REXCVAR_DEFINE_BOOL(fix_stuck_falling, true, "Game",
                     "check counts the distance per frame, tuned for 30 FPS)");
 REXCVAR_DEFINE_BOOL(log_stuck_falling, false, "Game",
                     "Log how long each fall counted as stuck (for testing fix_stuck_falling)");
+REXCVAR_DEFINE_BOOL(log_jumps, false, "Game",
+                    "Log each jump's height and time to the top (for testing high frame rates)");
 
 namespace {
 
@@ -62,6 +64,10 @@ struct Run {
   Clock::time_point since{};
   bool stuck = false;
   bool checked = false;  // the threshold check ran since the last entry
+  // log_jumps: the component's state (+0x18) at the last check, and when it went to 2 (rising).
+  uint32_t state = 0;
+  double rise_time = 0;  // game time, summed from dt
+  float top_z = 0;
 };
 
 std::mutex g_runs_mutex;
@@ -97,11 +103,27 @@ void EndRun(Run& r, Clock::time_point now) {
 void StuckFallingCheckHook(PPCRegister& r3, PPCRegister& r30) {
   const float dt = LoadFloat(r30.u32 + 0x14);
   t_scale = dt > 0.0f && dt < 1.0f ? std::min(1.0, double(dt) * 30.0) : 1.0;
-  if (REXCVAR_GET(log_stuck_falling)) {
+  if (REXCVAR_GET(log_stuck_falling) || REXCVAR_GET(log_jumps)) {
     std::lock_guard lock(g_runs_mutex);
     Run& run = RunFor(r3.u32);
     if (!run.checked) EndRun(run, Clock::now());  // the previous check was not a fall
     run.checked = false;
+    if (REXCVAR_GET(log_jumps)) {
+      // State 2 = rising, 3 = falling; +0x98 = the position's z at the last check, +0x54 = the
+      // jump's start z (_jumpStartLocation).
+      const uint32_t state = rex::memory::load_and_swap<uint32_t>(
+          rex::system::kernel_state()->memory()->virtual_membase() + r3.u32 + 0x18);
+      const float z = LoadFloat(r3.u32 + 0x98);
+      if (state == 2) {
+        if (run.state != 2) run.rise_time = 0;
+        run.rise_time += dt;
+        run.top_z = z;
+      } else if (state == 3 && run.state == 2) {
+        REXLOG_INFO("Jump: top {:.1f} above the start after {:.3f} s (dt {:.4f})",
+                    std::max(run.top_z, z) - LoadFloat(r3.u32 + 0x54), run.rise_time, dt);
+      }
+      run.state = state;
+    }
   }
 }
 

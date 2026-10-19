@@ -301,6 +301,10 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   the threshold by the game's frame time; with it no put-back at 240 FPS, at 30 FPS nothing
   changes. Found through the reflection field names (`_stuckFallingDistanceThreshold`,
   `_stuckFallingTime`, `_stuckFallingTimer`), their offset tables and the classes' RTTI.
+- **Jump height at high frame rates (measured):** from 60 FPS on, jumps are about 5 % lower
+  than at 30 (full jump 131 vs 138 units at 240 FPS, short 127 vs 133); 60 and 240 FPS are
+  nearly equal. Most likely the hold phase of the jump lasts up to a frame longer at 30 FPS. Not
+  changed; `log_jumps` logs the heights.
 - **Bloom and motion blur strength (#50): work.** `bloom_strength` scales the inner and outer bloom
   amounts the renderer copies from the level's `CBloomData` into `CBloomParametersAttr` each
   frame (`sub_82BA31A0`); `motion_blur_strength` scales the motion blur exposure time

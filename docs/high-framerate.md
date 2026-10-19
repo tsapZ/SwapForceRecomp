@@ -50,6 +50,18 @@ implemented is listed under "Where Swap Force stands".
   0.43-0.50 s; at 240 FPS without the fix 0.84 s, 2.05 s and over 3 s, the last one with the
   player put back; with the fix 0.26-0.39 s and never put back. `log_stuck_falling` logs these
   times.
+- **Jump height (measured, not changed):** `log_jumps` logs each jump's top above its start
+  (CPlayerJumpComponent: state 2 rising, 3 falling, `_jumpStartLocation`). Hub, scripted:
+  | Frame rate | A held 800 ms | A held 40 ms |
+  |---|---|---|
+  | 30 FPS | 138 | 133 |
+  | 60 FPS | 132 | 127 |
+  | 240 FPS | 131 | 127 |
+  From 60 FPS on, jumps are about 5 % lower than at 30 (the Imaginators FPS pack notes the same,
+  "jump height a little shorter"). 60 and 240 are nearly equal, so it is not an integration error
+  that keeps growing with the frame rate; most likely the jump's hold phase (lower gravity while A
+  is held, until `_minJumpHoldTime` / `_maxJumpHoldTime`) ends on a frame boundary and lasts up to
+  33 ms longer at 30 FPS. Left as it is for now; to watch for in places where a jump is tight.
 - How it was found: the main thread waits on an engine semaphore (`sub_823F2358` -> the game's
   `WaitForSingleObject`), signalled after the swap. A dbghelp `StackWalk64` of all game threads in the
   debug build, `VdSwap`'s only caller (`sub_82F5D018`) and the vblank handler led to the swap queue.
