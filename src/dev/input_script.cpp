@@ -25,6 +25,7 @@
 #include <rex/ui/ui_event.h>
 
 #include "portal_rex/portal_menu_input.h"
+#include "write_watch.h"
 
 REXCVAR_DEFINE_STRING(input_script, "", "Input",
                       "Developer option: play controller input from this script file (see "
@@ -51,6 +52,8 @@ struct Event {
     kRenderDoc,
     kPlayer,
     kKey,
+    kWatch,
+    kUnwatch,
     kQuit
   } kind;
   double start = 0.0;     // seconds since the timeline started
@@ -168,6 +171,13 @@ bool ParseScript(std::istream& in, std::vector<Event>& events) {
     } else if (cmd == "player") {
       ok = bool(words >> e.frames) && e.frames >= 1 && e.frames <= 4;
       e.kind = Event::Kind::kPlayer;
+    } else if (cmd == "watch") {
+      std::string word;
+      while (words >> word) e.words.push_back(uint32_t(std::stoul(word, nullptr, 16)));
+      ok = e.words.size() == 1 || e.words.size() == 2;
+      e.kind = Event::Kind::kWatch;
+    } else if (cmd == "unwatch") {
+      e.kind = Event::Kind::kUnwatch;
     } else if (cmd == "key") {
       ok = bool(words >> e.text) && rex::ui::ParseVirtualKey(e.text) != rex::ui::VirtualKey::kNone;
       e.kind = Event::Kind::kKey;
@@ -324,6 +334,11 @@ class ScriptInputDriver final : public rex::input::InputDriver {
         } else if (e.kind == Event::Kind::kPlayer) {
           skylanders::menu_input::SetDevicePlayer(kScriptDevice, e.frames - 1);
           REXLOG_INFO("Input script: now playing as player {}", e.frames);
+        } else if (e.kind == Event::Kind::kWatch) {
+          StartWriteWatch(memory, e.words[0],
+                          e.words.size() > 1 ? std::optional<uint32_t>(e.words[1]) : std::nullopt);
+        } else if (e.kind == Event::Kind::kUnwatch) {
+          StopWriteWatch();
         } else if (e.kind == Event::Kind::kKey) {
           // Through the key binds, as a key press in the window would go.
           if (run_in_ui) {

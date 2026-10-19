@@ -15,6 +15,9 @@
 //   fps <seconds>            measures the guest frame rate over that time and logs it
 //   scan <hex> [<hex> ...]   logs where this big-endian u32 sequence is in guest memory
 //   poke <hex addr> <hex>    writes a big-endian u32 to guest memory
+//   watch <hex addr> [<hex>] logs which guest functions write this address, only writes of that
+//                            big-endian value if given (src/dev/write_watch.h)
+//   unwatch                  ends the watch and logs the writers
 //   renderdoc [n]            captures the next n guest frames with an attached RenderDoc
 //   player <n>               the scripted controller plays as player n (1-4) from now on
 //   key <name>               presses a key for the app's key binds (F4, F6, F9; names as in the

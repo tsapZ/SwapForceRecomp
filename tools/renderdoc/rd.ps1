@@ -10,11 +10,12 @@ command line, so the capture, the output file and the script arguments go in env
     tools/renderdoc/rd.ps1 dump    <capture.rdc> <out.txt> "<dir> <eid>,<eid> [depth]"   # targets as PNG
     tools/renderdoc/rd.ps1 inspect <capture.rdc> <out.txt> "<dir> <eid>,<eid>" # state + input textures
     tools/renderdoc/rd.ps1 timings <capture.rdc> <out.txt>                    # GPU time per pass and action
+    tools/renderdoc/rd.ps1 consts  <capture.rdc> <out.txt> "<min> <v>,<v>"    # draws whose PS constants hold these floats
     python3 tools/renderdoc/group.py <list out.txt>                           # list grouped by target
 #>
 param(
     [Parameter(Mandatory = $true, Position = 0)]
-    [ValidateSet("list", "srvs", "dump", "inspect", "timings", "overhead")]
+    [ValidateSet("list", "srvs", "dump", "inspect", "timings", "overhead", "consts", "cbuf")]
     [string]$Script,
     [Parameter(Mandatory = $true, Position = 1)] [string]$Capture,
     [Parameter(Mandatory = $true, Position = 2)] [string]$Out,

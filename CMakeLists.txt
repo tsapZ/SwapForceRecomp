@@ -50,6 +50,7 @@ set(SWAPFORCERECOMP_SOURCES
     src/localization.cpp
     src/settings_pages.cpp
     src/dev/input_script.cpp
+    src/dev/write_watch.cpp
 )
 
 if(WIN32)
