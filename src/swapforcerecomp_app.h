@@ -24,6 +24,7 @@
 #include "dev/input_script.h"
 #include "game/magic_moment_watch.h"
 #include "dev/gpu_diagnostics.h"
+#include "hooks/ultrawide_hook.h"
 #include "game/game_art.h"
 #include "game/toy_images.h"
 #include "localization.h"
@@ -79,6 +80,11 @@ class SwapforcerecompApp : public rex::ReXApp {
   void OnPreSetup(rex::RuntimeConfig& config) override {
     // Before the GPU plugin creates its device (testing only, gpu_crash_diagnostics).
     swapforcerecomp::EnableGpuCrashDiagnostics();
+    // A wider window with ultrawide_fov: the picture fills it (the camera sees more to the sides)
+    // instead of the presenter's black bars, unless present_letterbox was set by hand.
+    if (swapforcerecomp::UltrawideActive() && !rex::cvar::HasNonDefaultValue("present_letterbox")) {
+      rex::cvar::SetFlagByName("present_letterbox", "false");
+    }
     // The Xenos GPU plugin renders the Xbox 360 command stream; without it nothing is drawn.
     if (config.gpu_plugin.empty()) config.gpu_plugin = "xenos";
     // A specific graphics backend (the plugin otherwise takes D3D12 when it has it). Vulkan only

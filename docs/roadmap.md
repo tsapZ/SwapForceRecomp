@@ -32,7 +32,7 @@ quality, then the controller-only Skylanders-style menus and a release.
 | Research | Best default settings (#50): D3D12 vs. Vulkan, what RPCS3 / Cemu / Dolphin do for a clean Skylanders picture, measured presets | me |
 | Then | Installer for a first release (#27) | me, test on a clean VM |
 | Any time | Keep playing; report anything black, flickering, crashing or too fast | you |
-| Later | Ultrawide (#24), online co-op proposal (Phase 5), GitHub wiki (#4), profiles with name, picture and own saves / figures (#51) | me |
+| Later | Ultrawide HUD (#24, the 3D view already works), GitHub wiki (#4), profiles with name, picture and own saves / figures (#51); online co-op only after the owner agrees to the proposal | me |
 | After Swap Force | Own recompile of the next Skylanders game (Giants), then the launcher hub | both |
 
 ## Phase 0: repository and scaffold ✅
@@ -115,7 +115,7 @@ with keyboard; controller input verified in the tutorial).
   measured presets, the game's FXAA at the internal resolution, bloom and motion blur strength,
   long falls at high frame rates
 - [ ] Installer tested on a clean Windows VM (#27)
-- [ ] Ultrawide: projection hook for 21:9 (#24)
+- [x] Ultrawide: projection hook for 21:9, 3D camera (#24); the HUD is still stretched
 - [ ] Docs mirrored into the GitHub wiki (#4)
 
 **Done when:** 4K and 21:9 render correctly, the portal can be used with a controller only, and the

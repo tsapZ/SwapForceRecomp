@@ -323,6 +323,14 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   heap failed first). Not reproducible on demand; every other run today was fine. New
   `gpu_crash_diagnostics` (off by default) turns on D3D12 DRED before the device is created, so
   the next one logs the last GPU commands and the faulting address; scripted test runs use it now.
+- **Ultrawide field of view (#24): works for the 3D camera.** The renderer sets up the scene
+  camera every frame (`sub_82B992A8`): `_aspect` (16:9) and `_fov`, then the perspective builder
+  `sub_824906D8` (horizontal FOV 80 deg in radians, aspect, near, far). A midasm hook at that call
+  (0x82B993A4) widens the aspect and the horizontal FOV for a window wider than 16:9
+  (`ultrawide_fov`, on), keeping the vertical FOV; the app turns `present_letterbox` off so the
+  16:9 guest frame fills the window. 2560x1080 window in the hub: without it the picture is
+  stretched (the pond an ellipse), with it the proportions are right and more of the hub shows at
+  both sides. The HUD is still stretched; 16:9 is unchanged.
 - **D3D12 vs Vulkan (#50):** the build now has Vulkan next to D3D12 (`REXGLUE_USE_VULKAN`, which
   the SDK leaves off on Windows) and `gpu_backend` picks it (settings menu, frame rate page).
   Hub, 1440p, scale 2, CAS, 240 limit, same binary: D3D12 86.6 / 85.9 FPS, Vulkan 87.6 / 87.0;

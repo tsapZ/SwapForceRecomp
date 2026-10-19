@@ -15,9 +15,8 @@ gpu_allow_invalid_fetch_constants = true  # works around a GPU quirk, on by defa
 render_target_path_d3d12 = "rtv"           # fast render target emulation; "rov" is bit-exact but much slower
 # present_interval = 1                    # EXPERIMENTAL 60 FPS (game default 2 = 30 FPS); game speed may change
 #                                         # for more than 60: also raise frame_rate_limit (e.g. 120 or 144)
-# Not available yet: the ultrawide hook is still a Giants template (Phase 4).
-# ultrawide_fov = true                      # widen camera FOV to match resolution's aspect ratio
-# ultrawide_hud = true                      # lay out the HUD and menus for the real screen width
+# ultrawide_fov = true                    # on by default: a window wider than 16:9 (resolution, windowed
+#                                         # or a wide monitor) shows more to the sides; the HUD is stretched
 # vulkan_device = -1                      # GPU index for multi-GPU systems, -1 = auto-pick
 
 ["GPU"]

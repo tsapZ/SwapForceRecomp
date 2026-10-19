@@ -95,6 +95,17 @@ address = 0x82BA35CC
 name = "MotionBlurStrengthHook"
 registers = ["f0"]
 
+# 0x82B993A4 is the call in sub_82B992A8 (the renderer's per-frame scene camera set-up) to the
+# perspective builder sub_824906D8(r3 = projection matrix, f1 = horizontal FOV, f2 = vertical FOV,
+# f3 = aspect, f4 = near, f5 = far; radians). Found from the camera's reflection fields (_fov,
+# _aspect, _projectionMatrix) and a read watch on the live camera's _aspect in the hub.
+# src/hooks/ultrawide_hook.cpp widens f3 (and f1, keeping the vertical FOV) for a window wider
+# than 16:9 with ultrawide_fov on; it only changes this call's arguments.
+[[midasm_hook]]
+address = 0x82B993A4
+name = "UltrawideFovHook"
+registers = ["f1", "f2", "f3"]
+
 # Jump tables the analyzer under-counted, so the generated switch trapped (__builtin_trap, host
 # exception 0xC000001D) on the missing indices. All four tables sit directly after their bctr;
 # entries were read from the image with Ghidra until the first word that is no longer a code
