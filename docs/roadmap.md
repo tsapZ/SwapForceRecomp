@@ -12,7 +12,7 @@ observed in a real build or a real play test, not inferred.
 | 1 Recompile and boot | ✅ done | 8/8 | – |
 | 2 In-game | ✅ done | 11/11 | – |
 | 3 Portal | 🟡 almost | 6/7 | a swapper on the real USB portal (#42) |
-| 4 4K and polish | 🟡 in progress | 7/17 | controller portal menu (#40, #46, #47), performance and picture quality (#44, #45, #41, #50), installer (#27), ultrawide (#24), wiki (#4) |
+| 4 4K and polish | 🟡 in progress | 8/17 | controller portal menu (#40, #46, #47), performance and picture quality (#44, #41, #50), installer (#27), ultrawide (#24), wiki (#4) |
 | 5 Online co-op (stretch) | ⬜ not started | 0/3 | architecture proposal first |
 
 **Where we are:** the first level is played through at over 100 FPS (1440p), the hub runs at about
@@ -28,7 +28,6 @@ quality, then the controller-only Skylanders-style menus and a release.
 | Next | USB portal device list in the settings menu (#47); measured presets and the picture quality ideas from the research (#50) | me |
 | Research | Native 1280x720 3D scene (#41): engine classes found, size is computed at render target creation; needs the computing code | me |
 | Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 % | me |
-| Research | Smoother edges (#45): the SDK's FXAA shifts colours (bytecode only); supersampling costs | me |
 | Research | Best default settings (#50): D3D12 vs. Vulkan, what RPCS3 / Cemu / Dolphin do for a clean Skylanders picture, measured presets | me |
 | Then | Installer for a first release (#27) | me, test on a clean VM |
 | Any time | Keep playing; report anything black, flickering, crashing or too fast | you |
@@ -89,7 +88,7 @@ with keyboard; controller input verified in the tutorial).
   237 FPS at scale 1 (#39)
 - [x] Resolution options measured; `present_effect = "cas"` recommended at scale 2 (#23)
 - [ ] Performance: GPU-bound; about 25 % of GPU time is EDRAM emulation (transfers, dumps) (#44)
-- [ ] Smoother edges: the SDK's FXAA shifts colours, supersampling costs (#45)
+- [x] Smoother edges: the game's own FXAA now works at the internal resolution, sharp and smooth at scale 2+ (#45)
 - [ ] Portal menu for controller and keyboard in Skylanders style, per player, replacing F6 (#40):
   works with items, swapper builder, "Taken" marks, keyboard as any player, opens by itself when
   the game asks for a Skylander, waits for the game's zoom-out after Guide, options (shown games,
