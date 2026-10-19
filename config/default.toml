@@ -29,6 +29,17 @@ address = 0x82F5C258
 name = "SwapIntervalHook"
 registers = ["r3"]
 
+# 0x82B8E340 computes the FXAA sample offsets (CFxaaParametersAttr: quality / console / 360 rcp
+# frame) from the frame size in f1 (width) and f2 (height); the game passes 1040x620. Found with a
+# RenderDoc capture (the FXAA pass's constants) and a write watch on the attr fields, which hit
+# only this function. src/hooks/fxaa_scale_hook.cpp multiplies f1/f2 by the draw resolution scale
+# so the game's FXAA samples one host pixel apart at resolution_scale 2 and up; it only changes the
+# two inputs of a function that writes nothing but the attr.
+[[midasm_hook]]
+address = 0x82B8E340
+name = "FxaaFrameSizeHook"
+registers = ["f1", "f2"]
+
 # Jump tables the analyzer under-counted, so the generated switch trapped (__builtin_trap, host
 # exception 0xC000001D) on the missing indices. All four tables sit directly after their bctr;
 # entries were read from the image with Ghidra until the first word that is no longer a code

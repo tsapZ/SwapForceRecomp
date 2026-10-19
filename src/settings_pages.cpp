@@ -84,11 +84,20 @@ SettingsPage GraphicsPage() {
        "kostet so gut wie nichts (in den Tests 83 statt 84 FPS gegen\xC3\xBC" "ber 4x).",
        {{"0", "Off", "Aus"}, {"3", "4x", "4x"}, {"4", "8x", "8x"}, {"5", "16x", "16x"}}});
   page.settings.push_back(
-      {"swap_post_effect", "Edge smoothing", "Kantengl\xC3\xA4ttung",
-       "FXAA smooths edges a little, but for now it also makes the whole picture darker and paler "
-       "(#45). Recommended: off.",
-       "FXAA gl\xC3\xA4ttet Kanten etwas, macht das ganze Bild aber zurzeit dunkler und blasser "
-       "(#45). Empfohlen: aus.",
+      {"fxaa_follow_resolution_scale", "Game's edge smoothing, sharp", "Kantengl\xC3\xA4ttung des "
+       "Spiels, scharf",
+       "The game smooths edges itself (FXAA). On: it works at the internal resolution, so the "
+       "picture stays sharp at 2x and 3x. Off: as on the console, which blurs at 2x and up. Costs "
+       "nothing.",
+       "Das Spiel gl\xC3\xA4ttet Kanten selbst (FXAA). An: das passiert in der internen "
+       "Aufl\xC3\xB6sung, so bleibt das Bild bei 2x und 3x scharf. Aus: wie auf der Konsole, das "
+       "verwischt ab 2x. Kostet nichts."});
+  page.settings.push_back(
+      {"swap_post_effect", "Extra edge smoothing", "Zus\xC3\xA4tzliche Kantengl\xC3\xA4ttung",
+       "A second FXAA over the whole picture, on top of the game's own. For now it also makes the "
+       "picture darker and paler (#45). Recommended: off.",
+       "Ein zweites FXAA \xC3\xBC" "ber das ganze Bild, zus\xC3\xA4tzlich zu dem des Spiels. Macht "
+       "das Bild zurzeit auch dunkler und blasser (#45). Empfohlen: aus.",
        {{"none", "Off", "Aus"}, {"fxaa", "FXAA", "FXAA"}, {"fxaa_extreme", "FXAA strong",
                                                          "FXAA stark"}}});
   Setting fullscreen{"fullscreen", "Fullscreen", "Vollbild",

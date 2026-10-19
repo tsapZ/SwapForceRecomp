@@ -46,6 +46,7 @@ set(SWAPFORCERECOMP_SOURCES
     src/game/alchemy/lzma_decoder.cpp
     src/hooks/intro_skip_hook.cpp
     src/hooks/frame_rate_hook.cpp
+    src/hooks/fxaa_scale_hook.cpp
     src/hooks/ultrawide_hook.cpp
     src/localization.cpp
     src/settings_pages.cpp
