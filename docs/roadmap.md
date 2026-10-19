@@ -100,7 +100,8 @@ with keyboard; controller input verified in the tutorial).
   player number (the player menu does this by hand; automatic at start not started)
 - [x] Figure details (X): XP bar, the upgrade tree with the game's icons and texts, the hat with
   picture and stats, play time, last placed; the newest save area is used (#48, heroic
-  challenges still open)
+  challenges still open); sidekicks and items get a short panel with what they do and how long
+  the item lasts in the game
 - [x] The game's own element symbols in the menu; sidekicks next to the Skylander (#40)
 - [ ] Ideas for the menu (not started): the game's own font from the game files for more Skylanders
   feel; more information per variant (#48); in the launcher hub, pictures from each game's own

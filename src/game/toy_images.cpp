@@ -16,6 +16,12 @@
 //      path ("textures:\ui\Collections\ToyInventoryIcons\2011\Collections_ChopChop.tga"), and every
 //      texture file there carries the same path as its first string. The textures are 192x192
 //      DXT5 icons, the ones the game's collection screen shows.
+//   4. An item's toy data (CMagicItemToyData, and CExpansionLevelToyData / CBattlePieceToyData for
+//      the adventure packs and battle pieces) names its item data (_itemName
+//      "MagicItem_AnvilRain_ItemData"). That sits in an archive of the same name
+//      (magicitem_anvilrain_itemdata.pak) as CMagicItemData with _itemDuration in seconds: 45 for
+//      Anvil Rain, 5 for the older adventure packs (their effect's RainTime is 5 s too). Items
+//      that act at once have none (Healing Elixir) or 0 (Hidden Treasure).
 // Swapper bottoms have no icon of their own; they show their top's. Variants without their own
 // picture (most chase variants) show the base toy's. Sidekicks (CPetToyData) name no material; their
 // icons follow the character name: Pet_Terrabite -> collection_pet_terrabite_normal, and the
@@ -28,6 +34,7 @@
 #include <cctype>
 #include <chrono>
 #include <condition_variable>
+#include <cstdlib>
 #include <deque>
 #include <memory>
 #include <mutex>
@@ -140,6 +147,18 @@ class ToyImages {
     return std::nullopt;
   }
 
+  // How long a magic item's effect lasts, in seconds.
+  std::optional<int> ItemDuration(uint16_t id) {
+    {
+      std::lock_guard lock(mutex_);
+      StartLocked();
+      if (!indexed_) return std::nullopt;
+    }
+    auto it = item_durations_.find(id);
+    if (it == item_durations_.end()) return std::nullopt;
+    return it->second;
+  }
+
   // The character a toy is (its <name>.pak), lower case: "chopchop", "body_statue".
   std::optional<std::string> Character(uint16_t id) {
     {
@@ -165,6 +184,7 @@ class ToyImages {
     bool part = false;     // a swapper half
     std::string pet_name;  // sidekicks: "terrabite" from _characterName Pet_Terrabite
     std::string character;  // _characterName, or for a swapper half its file: "body_statue"
+    std::string item_name;  // magic items: "magicitem_anvilrain_itemdata" from _itemName
   };
 
   void StartLocked() {
@@ -209,8 +229,8 @@ class ToyImages {
       failed_ = !ok;
     }
     if (ok) {
-      REXLOG_INFO("Toy images: {} toys, {} materials, {} textures indexed in {} ms", toys_.size(),
-                  materials_.size(), textures_.size(),
+      REXLOG_INFO("Toy images: {} toys, {} materials, {} textures, {} item durations indexed in {} ms",
+                  toys_.size(), materials_.size(), textures_.size(), item_durations_.size(),
                   std::chrono::duration_cast<std::chrono::milliseconds>(
                       std::chrono::steady_clock::now() - start)
                       .count());
@@ -294,6 +314,7 @@ class ToyImages {
         if (toy.character.empty() && toy.part && EndsWith(name, "_toydata")) {
           toy.character = name.substr(0, name.size() - 8);
         }
+        toy.item_name = Lower(object.Var("_itemName"));
         if (object.type == "CPetToyData") {
           toy.pet_name = Lower(object.Var("_characterName"));
           if (toy.pet_name.rfind("pet_", 0) == 0) toy.pet_name.erase(0, 4);
@@ -351,6 +372,26 @@ class ToyImages {
           toy.material = material;
           break;
         }
+      }
+    }
+    // 4. Magic item durations, from each item's own archive.
+    for (const auto& [id, toy] : toys_) {
+      if (toy.item_name.empty()) continue;
+      auto pak = IgaArchive::Open(archives_ / (toy.item_name + ".pak"));
+      if (!pak) continue;
+      const std::string file = "\\" + toy.item_name + ".igx";
+      for (size_t i = 0; i < pak->size(); ++i) {
+        if (!EndsWith(Lower(pak->name(i)), file)) continue;
+        auto data = pak->Read(i);
+        if (!data) break;
+        for (const auto& object : alchemy::ParseIgx(
+                 std::string_view(reinterpret_cast<const char*>(data->data()), data->size()))) {
+          if (object.type != "CMagicItemData") continue;
+          const int seconds = std::atoi(object.Var("_itemDuration").c_str());
+          if (seconds > 0) item_durations_[id] = seconds;
+          break;
+        }
+        break;
       }
     }
     return !toys_.empty() && !textures_.empty();
@@ -433,6 +474,7 @@ class ToyImages {
   std::unordered_map<std::string, std::string> names_en_, names_de_;  // object ref -> name
   std::unordered_map<std::string, size_t> materials_;                 // material -> pak index
   std::unordered_map<std::string, size_t> textures_;                  // source path -> pak index
+  std::unordered_map<uint16_t, int> item_durations_;                  // toy id -> seconds
   std::optional<IgaArchive> images_pak_;
   // Worker only.
   std::unordered_map<size_t, std::shared_ptr<const skylanders::FigureImage>> by_texture_;
@@ -450,6 +492,7 @@ void InstallToyImages(rex::memory::Memory* memory, std::filesystem::path archive
       [](uint16_t id, uint16_t variant) { return g_toy_images->Image(id, variant); });
   skylanders::SetFigureNameProvider(
       [](uint16_t id, uint16_t variant) { return g_toy_images->Name(id, variant); });
+  skylanders::SetItemDurationProvider([](uint16_t id) { return g_toy_images->ItemDuration(id); });
 }
 
 std::optional<std::string> ToyCharacterName(uint16_t id) {
@@ -459,6 +502,7 @@ std::optional<std::string> ToyCharacterName(uint16_t id) {
 void ShutdownToyImages() {
   skylanders::SetFigureImageProvider(nullptr);
   skylanders::SetFigureNameProvider(nullptr);
+  skylanders::SetItemDurationProvider(nullptr);
   if (g_toy_images) g_toy_images->Stop();
   g_toy_images.reset();
 }

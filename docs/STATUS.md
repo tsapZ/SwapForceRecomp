@@ -337,6 +337,11 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   ran 91-92 instead of 86-87 FPS at scale 2, but the characters' shadows disappeared; at double
   size the picture went black ("Resolve region is empty"). The game sets the shadow passes up
   for the original size elsewhere; not worth chasing for 6 %.
+- **Details for sidekicks and items:** they keep nothing on the figure, so the details view was
+  an empty two-column panel. Now a smaller one says what a sidekick or a magic item does and, for
+  items, how long the effect lasts, read from each item's own data (`_itemDuration`: Anvil Rain
+  45 s, the older adventure packs 5 s; 20 items have one). Checked with Barkley, Anvil Rain and
+  Darklight Crypt.
 - **Ultrawide HUD (#24): not built.** The UI (Juice) cameras are orthographic cameras that the
   size-change handler `sub_82576AA8` resizes, the same as the full-screen post-processing
   cameras, so a blanket hook there would break the post passes; the field offsets and the

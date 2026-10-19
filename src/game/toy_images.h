@@ -2,7 +2,8 @@
 
 // Pictures and names for the portal menu, taken from the game's own data on the owner's PC: the
 // toy collection icons (the ones the game's collection screen shows) for every Skylander, variant
-// and magic item, and the toy names in English and German. See toy_images.cpp.
+// and magic item, the toy names in English and German, and how long each magic item lasts. See
+// toy_images.cpp.
 
 #include <cstdint>
 #include <filesystem>
