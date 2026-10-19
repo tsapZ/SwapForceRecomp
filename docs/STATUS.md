@@ -2,7 +2,7 @@
 
 Updated at the end of every session. Only record what a build actually did.
 
-## Current state (2026-10-18)
+## Current state (2026-10-19)
 
 | Area | State |
 |---|---|
@@ -11,7 +11,7 @@ Updated at the end of every session. Only record what a build actually did.
 | Graphics | correct with the fast `render_target_path_d3d12 = "rtv"` (default in templates again) since `execute_unclipped_draw_vs_on_cpu` is on (app default); `"rov"` still works but is much slower; 4K works. The 3D scene renders at 1024x624, HUD at 1280x720 |
 | Audio | works (check the Windows output device) |
 | Language | English and German (`language`) |
-| Portal | emulated, driven by the portal menu (opens by itself when the game asks for a Skylander; Guide, Back+Start, hold Back, F6), real USB incl. old PS3/Wii portals (fork `tsapZ/skylanders-portal`), `none` |
+| Portal | emulated, driven by the portal menu (opens by itself when the game asks for a Skylander; Guide, Back+Start, hold Back, F6; with the button it fades in during the game's zoom-out), real USB incl. old PS3/Wii portals (fork `tsapZ/skylanders-portal`), `none`. Back+Y / F5 take the item off, L3+R3 / F9 open the player menu, player 2 leaves through Start > "Leave the game" |
 | Frame rate | 30 FPS default; experimental `present_interval = 1` -> 60 FPS, more with `frame_rate_limit` (0 keeps the game at 30). Tutorial, 1440p output, RTV: 237 FPS at scale 1, 106 at scale 2, 46 at scale 3 (ROV scale 2: 67). Game speed at 60 FPS verified by playing the tutorial (#37, closed) |
 | Stutter | short one-time hitches when an effect or attack appears for the first time (shader/pipeline creation); stored in the persistent shader cache, so expected once per install |
 | Videos | Bink 2 (KB2f/KB2g) play; green half only in a test-only Bink 1-after-KB2f sequence (#36, closed) |
@@ -227,3 +227,35 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   toy is `ToyData`), and the icons are stored bottom row first (they come from .tga files).
 - **Installer built:** `SwapForceRecompSetup-0.1.0-alpha.1.exe`; the owner installed it from the
   ISO, the game ran at 60 FPS and asked for a figure. Language choice and desktop shortcut added.
+
+## 2026-10-19: session log (portal menu, player menu)
+
+- **Every game tab lists its versions (#49):** a character shows up in each game that released a
+  version of it, with the badge under the name (S2, LightCore, Sidekick). The Giants tab went from
+  the few new Giants characters to full rows (Spyro S2, Drobot S2, Trigger Happy S2, Wrecking Ball
+  S2 next to Bouncer, Sprocket, Pop Fizz). Verified in a scripted run with screenshots.
+- **Options in the menu (Start):** which games are listed and "only my figures". They are written
+  into the settings file line by line. Found on the way: the F4 overlay's save
+  (`rex::cvar::SaveConfig`) rewrites the whole file from every changed setting, so it drops the
+  comments and would also store command-line settings such as `--input_script` or
+  `--user_data_root` (noted for #43).
+- **Opening with the game:** the `CMagicMoment` states after lifting a figure, measured: 1 and 2
+  within 0.1 s, 3 for about 0.8 s (the camera zooms out to the portal), then 5 (the prompt). The
+  menu opened with Guide now stays hidden through the game's own figure-leaving animation and
+  fades in 0.6 s into state 3: 0.92 s after the button, the game's text came at about 1.2 s. Same
+  sequence for player 2 in co-op.
+- **Player 2 leaving:** lifting player 2's figure does not just drop them out; the game shows its
+  portal screen for player 2 with "B leave the game". The menu covered it. Start > "Leave the game"
+  now closes the menu and presses that B for player 2; the game let player 2 go (scripted run).
+- **Item off without the menu:** Back + Y (`portal_item_off_buttons`) or F5 takes the item off at
+  once, with a short message; verified with the new chord support in input scripts (`tap back+y`).
+- **Player menu (L3 + R3 / F9):** each controller moves itself between players 1-4 with left /
+  right, Y back to connection order. Verified with the script device (moved to player 2 and back);
+  with two real controllers and a Bluetooth reconnect still to test by the owner.
+- **Sidekick pictures:** the 8 sidekicks had no icon, because `CPetToyData` names no collection
+  material; their icons follow the character name (`collection_pet_terrabite_normal`, Giants ones
+  with "lil"). All 8 show now; only UFO Hat has no icon. The toy index now builds right after
+  start-up (it waits until the toy type table is readable), so the first menu already has it.
+- **One run hit a GPU device removal** (`DEVICE_RESET`, out of memory for resolve heaps) with
+  `--log_level=debug`, before the game showed its first frame; the same build ran normally without
+  debug logging, twice. Not looked into further; watch for it.

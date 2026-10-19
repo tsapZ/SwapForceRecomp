@@ -12,7 +12,7 @@ observed in a real build or a real play test, not inferred.
 | 1 Recompile and boot | ✅ done | 8/8 | – |
 | 2 In-game | ✅ done | 11/11 | – |
 | 3 Portal | 🟡 almost | 6/7 | a swapper on the real USB portal (#42) |
-| 4 4K and polish | 🟡 in progress | 5/17 | controller portal menu (#40, #46, #47, #49), settings menu (#43), performance and picture quality (#44, #45, #41, #50), installer (#27), ultrawide (#24), wiki (#4) |
+| 4 4K and polish | 🟡 in progress | 6/17 | controller portal menu (#40, #46, #47), settings menu (#43), performance and picture quality (#44, #45, #41, #50), installer (#27), ultrawide (#24), wiki (#4) |
 | 5 Online co-op (stretch) | ⬜ not started | 0/3 | architecture proposal first |
 
 **Where we are:** the first level is played through at over 100 FPS (1440p), the hub runs at about
@@ -23,8 +23,7 @@ quality, then the controller-only Skylanders-style menus and a release.
 
 | When | What | Who |
 |---|---|---|
-| **Now** | Test the portal menu: Guide, Back+Start or hold Back; Items tab, swapper builder, "Taken" with two players, `keyboard_player = 2` (#40) | you |
-| Next | Open the portal menu by itself when the game asks for a Skylander (player 1 at the start, player 2 on joining) (#40) | me |
+| **Now** | Test the new menu parts: Guide while running (menu after the zoom-out), Start > options and "Leave the game" as player 2, Back+Y for the item, L3+R3 player menu with two controllers and a Bluetooth reconnect (#40) | you |
 | Next | Settings menu in the same style, replacing F4: presets, scale, 4K downsampling, GPU, portal choice (#43, #47); portraits from your game data (#46) | me |
 | Research | Native 1280x720 3D scene (#41): engine classes found, size is computed at render target creation; needs the computing code | me |
 | Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; the real fix is a direct resolve (new SDK shaders), about 10 % | me |
@@ -91,12 +90,13 @@ with keyboard; controller input verified in the tutorial).
 - [ ] Performance: GPU-bound; about 25 % of GPU time is EDRAM emulation (transfers, dumps) (#44)
 - [ ] Smoother edges: the SDK's FXAA shifts colours, supersampling costs (#45)
 - [ ] Portal menu for controller and keyboard in Skylanders style, per player, replacing F6 (#40):
-  works with items, swapper builder, "Taken" marks and keyboard as any player; still to do:
-  open by itself when the game asks for a Skylander; Guide waits for the game's zoom-out; a way for
-  player 2 to leave
-- [ ] Portal menu: each character in every game that released a version, with series badges (#49)
+  works with items, swapper builder, "Taken" marks, keyboard as any player, opens by itself when
+  the game asks for a Skylander, waits for the game's zoom-out after Guide, options (shown games,
+  only my figures), "Leave the game" for player 2, Back+Y takes the item off
+- [x] Portal menu: each character in every game that released a version, with series badges (#49)
+- [x] Player menu (L3 + R3 / F9): which controller plays as which player
 - [ ] Player assignment at game start, Switch style: each controller presses a button and gets a
-  player number (idea, not started)
+  player number (the player menu does this by hand; automatic at start not started)
 - [ ] Ideas for the menu (not started): the game's own font from the game files for more Skylanders
   feel; more information per variant (#48); in the launcher hub, pictures from each game's own
   files, so an owner with only Spyro's Adventure gets that game's pictures
