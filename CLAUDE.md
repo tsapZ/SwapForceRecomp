@@ -41,10 +41,10 @@ compiler.
 Codegen needs `rom/default.xex` (Phase 1). `tools/ghidra_re.ps1 setup` downloads Ghidra, JDK and
 the XEX loader into `logs/toolchain/` (gitignored); run it in Phase 1, not earlier.
 
-## Placeholders from the scaffold
+## Hooks ported from the Giants scaffold
 
-- `src/hooks/ultrawide_hook.cpp`: disabled template (`#if 0`), addresses belong to Giants.
-  `intro_skip_hook.cpp` is ported to Swap Force.
+- `intro_skip_hook.cpp` and `ultrawide_hook.cpp` (3D camera only, the HUD is still stretched) are
+  ported to Swap Force; no Giants addresses are left in `src/hooks/`.
 
 ## Status convention
 
