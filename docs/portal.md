@@ -16,6 +16,7 @@ Which real portal works with which game (and what each one reports): see
 |---|---|---|
 | `software` | `portal::SoftwarePortal` | emulated portal with up to 16 figure slots, driven by the portal menu |
 | `usb` | `portal::UsbPortal` | a real portal via hidapi; commands go out as HID `SET_REPORT`, no driver swap (Zadig) needed |
+| `hybrid` | `SoftwarePortal` + `portal::RealPortalBridge` | the emulated portal for the game, with copies of the figures on a real portal; changes go back onto the real figures ([hybrid-portal.md](hybrid-portal.md)) |
 | `none` | – | no handler; the game shows its own "Can't find the Portal of Power" |
 
 Both backends implement `portal::PortalDevice`. `portal::XamBridge` adds and strips the Xbox 360

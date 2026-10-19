@@ -223,12 +223,18 @@ SettingsPage GamePage() {
 SettingsPage PortalPage() {
   SettingsPage page{"Portal", "Portal", {}};
   Setting mode{"portal_mode", "Portal", "Portal",
-               "Virtual: the portal menu (Xbox button) puts figures on. USB: a real Portal of "
-               "Power, also the ones from Spyro's Adventure and Giants.",
-               "Virtuell: das Portal-Men\xC3\xBC (Xbox-Taste) stellt Figuren auf. USB: ein echtes "
-               "Portal of Power, auch die von Spyro's Adventure und Giants.",
+               "Virtual: the portal menu (Xbox button) puts figures on. Both: the menu and a real "
+               "Portal of Power together, for the figures you have and the ones you don't; real "
+               "figures are backed up in figures\\real before the game writes to them. USB only: "
+               "just the real portal, also the ones from Spyro's Adventure and Giants.",
+               "Virtuell: das Portal-Men\xC3\xBC (Xbox-Taste) stellt Figuren auf. Beides: das "
+               "Men\xC3\xBC und ein echtes Portal of Power zusammen, f\xC3\xBCr die Figuren, die du "
+               "hast, und die, die du nicht hast; echte Figuren werden in figures\\real gesichert, "
+               "bevor das Spiel auf sie schreibt. Nur USB: nur das echte Portal, auch die von "
+               "Spyro's Adventure und Giants.",
                {{"software", "Virtual (menu)", "Virtuell (Men\xC3\xBC)"},
-                {"usb", "Real USB portal", "Echtes USB-Portal"},
+                {"hybrid", "Both (menu + real portal)", "Beides (Men\xC3\xBC + echtes Portal)"},
+                {"usb", "Real USB portal only", "Nur echtes USB-Portal"},
                 {"none", "None", "Keins"}}};
   mode.restart = true;
   page.settings.push_back(mode);

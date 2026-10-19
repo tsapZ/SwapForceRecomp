@@ -364,6 +364,12 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
     the real settings file untouched (`--config_file` for test runs).
   - Texts in the settings menu say what a setting does and what it costs, without test numbers.
   - **Motion blur off by default** (owner's choice).
+  - **Hybrid portal** (`portal_mode = "hybrid"`, settings > Portal > "Both"): the portal menu and
+    a real USB portal together (docs/hybrid-portal.md, 15 cases). Unit-tested with a second
+    SoftwarePortal as the real one (copy, write-back, protected blocks, lifted by the menu,
+    unplugged, backups kept); in the game it runs like `software` without a portal plugged in.
+    Not tried with a real portal yet: none is connected here, and a figure on it would be written
+    to.
   - The license notice named Skylanders: Giants (left from the template); now Swap Force.
 - **Ultrawide HUD (#24): not built.** The UI (Juice) cameras are orthographic cameras that the
   size-change handler `sub_82576AA8` resizes, the same as the full-screen post-processing

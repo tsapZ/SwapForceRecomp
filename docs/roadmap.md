@@ -111,6 +111,8 @@ with keyboard; controller input verified in the tutorial).
 - [x] Pictures and names from the owner's game data: collection icons for every figure and item,
   German item names (#46)
 - [ ] USB portal selection and portal compatibility table (#47)
+- [x] Hybrid portal: the real USB portal and the portal menu together, real figures backed up and
+  written back (docs/hybrid-portal.md); waiting for a test with a real portal
 - [x] Settings menu in Skylanders style, usable with controller, replacing F4 (#43): six pages,
   presets, changes saved line by line; the SDK's list moved to F10
 - [ ] Native 1280x720 3D scene, the game renders it at 1040x620 (#41)
