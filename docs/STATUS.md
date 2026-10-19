@@ -8,7 +8,7 @@ Updated at the end of every session. Only record what a build actually did.
 |---|---|
 | Boot, menus, saves | work; logo movies skipped (`skip_intro`), opening movie optional (`skip_opening_movie`) |
 | Tutorial level | playable with controller or keyboard (`mnk_mode`); cutscenes and dialogue work |
-| Graphics | correct with the fast `render_target_path_d3d12 = "rtv"` (default in templates again) since `execute_unclipped_draw_vs_on_cpu` is on (app default); `"rov"` still works but is much slower; 4K works. The 3D scene renders at 1024x624, HUD at 1280x720 |
+| Graphics | correct with the fast `render_target_path_d3d12 = "rtv"` (default in templates again) since `execute_unclipped_draw_vs_on_cpu` is on (app default); `"rov"` still works but is much slower; 4K works. The 3D scene renders at 1040x620, HUD at 1280x720. The game's own FXAA now works at the internal resolution (`fxaa_follow_resolution_scale`) |
 | Audio | works (check the Windows output device) |
 | Language | English and German (`language`) |
 | Portal | emulated, driven by the portal menu (opens by itself when the game asks for a Skylander; Guide, Back+Start, hold Back, F6; with the button it fades in during the game's zoom-out), real USB incl. old PS3/Wii portals (fork `tsapZ/skylanders-portal`), `none`. Back+Y / F5 take the item off, L3+R3 / F9 open the player menu, player 2 leaves through Start > "Leave the game" |
@@ -265,3 +265,18 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   one line at a time and keep the comment on that line. Verified in scripted runs (texture filter
   16x -> 8x written as `anisotropic_override = 4` with its comment; the settings file was restored
   afterwards). Input scripts can now press keys for the key binds (`key F4`).
+- **Presets measured (#50):** hub, 1440p, uncapped: scale 1 + FSR 169 FPS (sharper than bilinear
+  and not slower), scale 2 + CAS 83, scale 3 + CAS 40; texture filtering 16x vs 4x costs about 1 %.
+- **The game's own FXAA, sharp at any scale:** a RenderDoc capture showed the game runs NVIDIA FXAA
+  3.11 (console / 360 variant) over the scene every frame (event 9310: c0-c5 = RcpFrameOpt,
+  360 RcpFrameOpt2, 8, 0.125, 0.05, ConstDir), with offsets for its own 1040x620 frame, so at
+  resolution_scale 2 it sampled two host pixels apart and blurred. A new write watch
+  (`src/dev/write_watch.cpp`, input script `watch` / `unwatch`: debug registers on every thread, a
+  vectored exception handler, call chains named through PPCFuncMappings) found the writer of the
+  FXAA attr, sub_82B8E340, which takes the frame size in f1/f2. A midasm hook there multiplies them
+  by the draw resolution scale (`src/hooks/fxaa_scale_hook.cpp`). Compared at the same spot at
+  scale 2: clearly sharper (railings, grass, characters) with smooth edges; 87.4 vs 86.8 FPS.
+- **Portal compatibility page (#47):** `docs/portal-compatibility.md`; the owner's PS3 portal is a
+  Giants portal (R ID 01 3D); Xbox 360 portals are not HID and need another backend.
+- **RenderDoc scripts:** `consts` (draws whose pixel constants hold given floats, with an event
+  range) and `cbuf` (a draw's constant blocks and inputs).
