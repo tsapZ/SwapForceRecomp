@@ -451,3 +451,15 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
 - **Co-op sidekick (re-checked):** player 1 brings Barkley, player 2 joins and brings Mini Jini:
   the shared sidekick moves over (Barkley off, Mini Jini on another slot), the game shows Mini
   Jini and reports no "too many" error; both players keep playing (scripted, screenshot).
+- **The GPU device losses are at least partly system-wide.** Windows logged GPU engine timeouts
+  and driver resets (LiveKernelEvent 141, then 117 about 25 s later) on 2026-10-19 at 11:57,
+  18:14, 18:24 and 21:45 and on 2026-10-20 at 09:42, 10:12 and 10:18. The three device losses of
+  2026-10-19 (`DEVICE_RESET (bad GPU command)` after resource creation started failing) each come
+  right after one of them; three of the others fell in gaps with no SwapForceRecomp or SSARecomp
+  process running. So the game is not the only thing hanging the GPU: it loses its device when
+  the driver resets, and then aborts. Running alongside: Parsec host (with its virtual display
+  adapter) and Wallpaper Engine; AMD driver 32.0.21045.11001, no hardware errors (WHEA). For the
+  owner to try: play without Parsec streaming and Wallpaper Engine, Adrenalin tuning at default.
+  Open on our side: survive a device loss instead of aborting.
+- **`stacks` input script command** (from Spyro's Adventure's first boot, src/dev/write_watch.cpp):
+  logs every thread's call chain, recompiled frames by guest function.
