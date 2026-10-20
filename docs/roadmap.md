@@ -23,6 +23,7 @@ quality, then the controller-only Skylanders-style menus and a release.
 
 | When | What | Who |
 |---|---|---|
+| **Now** | The play test round: everything marked "you" below as one checklist, feedback there (#53) | you |
 | **Now** | Test the new menu parts: Guide while running (menu after the zoom-out), Start > options and "Leave the game" as player 2, Back+Y for the item, L3+R3 player menu with two controllers and a Bluetooth reconnect (#40) | you |
 | **Now** | Try the new settings menu (F4 or Back + RB): presets, frame rate page, changes marked "next start" (#43); new on the graphics page: glow (bloom) and motion blur strength (#50) | you |
 | **Now** | At 200 FPS, jump off a long drop: the game used to put the player back after 3 s of falling, now fixed (`fix_stuck_falling`) | you |
