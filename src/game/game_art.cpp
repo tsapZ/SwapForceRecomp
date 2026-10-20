@@ -30,6 +30,9 @@
 //   textures:\ui\Controllers\Xbox_Controller.tga (1280x720). The callout lines to the screen's
 //   labels and a second set of face buttons for them are drawn into it; CleanController takes
 //   them out for the settings menu.
+// Gold symbol ("ui:gold"): the HUD's coin, juicedomain_permanent.pak
+//   textures\juicestandard_coin_icon_10.igz (next to juice_player1hud_materials.igz; found by
+//   the archive's file names, 2026-10-21).
 
 #include "game_art.h"
 
@@ -478,6 +481,13 @@ class GameArt {
     const std::string kind = key.substr(0, colon), what = key.substr(colon + 1);
     if (kind == "element") {
       return FromMaterial("permanent", "materialinstances\\elementicons.igz", "dn_" + what);
+    }
+    if (kind == "ui" && what == "gold") {
+      // The HUD's coin next to the gold amount: a texture file of its own in the HUD's archive.
+      const IgaArchive* pak = Pak("juicedomain_permanent");
+      if (!pak) return nullptr;
+      auto index = FindFile(*pak, "textures\\juicestandard_coin_icon_10.igz");
+      return index ? DecodeUiIcon(*pak, *index) : nullptr;
     }
     if (kind == "controller") {
       auto picture = FromMaterial("controller_schemexenon",
