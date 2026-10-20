@@ -472,3 +472,6 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   (portal fork `SharedFiguresDir`). The first start copies `Documents\swapforcerecomp\figures`
   into it and leaves a note in the old folder, which stays as a backup. Verified on the test copy
   (24 files, the recent lists with them, the menu's "Zuletzt" list intact).
+- **Online co-op and profiles moved to the hub repo** ([Skylanders: Core of Light](https://github.com/tsapZ/SkylandersCoreOfLight),
+  the owner's call): the proposal `docs/online-coop.md` and the issues #28, #29, #30 and #51
+  (there #1-#4), because they apply to every game. Nothing of them was built here.

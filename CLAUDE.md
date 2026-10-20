@@ -3,8 +3,9 @@
 ## Goal
 
 Native Windows port of Skylanders: Swap Force (Xbox 360, `rom/default.xex`) via ReXGlue static
-recompilation: 4K/ultrawide, software + USB portal, settings overlay. Stretch goal: online co-op
-where a remote player uses their own real portal (architecture proposal first, see Phase 5).
+recompilation: 4K/ultrawide, software + USB portal, settings overlay. Online co-op and profiles
+belong to the hub repo, Skylanders: Core of Light (`tsapZ/SkylandersCoreOfLight`), not to this
+game; this game must stay complete without the hub.
 
 Template: GiantsRecomp (Skylanders Giants, same engine generation and toolchain). Reference clone
 with submodules at `../_ref/GiantsRecomp`; read its README.md and docs/*.md before changing build or

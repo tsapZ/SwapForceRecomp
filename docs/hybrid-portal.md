@@ -45,4 +45,5 @@ the copy off.
 - Traps and creation crystals (later games, not Swap Force).
 - The portal developer tools' figure dump (F8) are only offered in `usb` mode; in `hybrid` every
   real figure is backed up anyway.
-- One figure on two PCs at once (see docs/online-coop.md for playing over the network).
+- One figure on two PCs at once (for playing over the network see the online co-op proposal in the hub repo, Skylanders: Core
+  of Light).
