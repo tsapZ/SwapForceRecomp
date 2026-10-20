@@ -122,7 +122,8 @@ with keyboard; controller input verified in the tutorial).
   picture
 - [x] The menus use the game's own words in its language (#52)
 - [ ] Native 1280x720 3D scene, the game renders it at 1040x620 (#41): works in the hub as an
-  experimental option (`scene_size`, D3D12); open until tried in the levels
+  experimental option (`scene_size`, D3D12), drawn at 1264x704 because exactly the screen's
+  1280x720 crashed while loading; open until tried in the levels
 - [ ] Best default settings, researched and measured: renderer, presets (#50); done so far:
   measured presets, the game's FXAA at the internal resolution, bloom and motion blur strength,
   long falls at high frame rates

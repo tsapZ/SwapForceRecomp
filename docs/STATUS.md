@@ -517,3 +517,12 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   60 and 200 FPS, with RTV and ROV, at resolution scale 1 and 2, with and without the native scene,
   and with `execute_unclipped_draw_vs_on_cpu` off, so none of those cause it. The default
   (`skip_intro = true`) never shows it.
+- **The native 3D picture loads reliably now** (#41): the crashes needed the scene to be exactly
+  the screen's 1280x720. At 1264x704 neither crash site came up in 14 runs of the owner's settings
+  (6 loading, 8 loading and walking in the hub), against 5 crashes in 10 runs at 1280x720. So
+  `scene_size = "1280x720"` (the menu's "Nativ (720p)") draws 1264x704, 1.3 % stretched to the screen
+  instead of 23 % from 1040x620 (`scene_size_hook.cpp`). It fits the Cemu graphic pack for the Wii U
+  version, which renders that version's scene at 1280x720 and needs a shader fix for "the skipped
+  upscale step": with a scene of the screen's size the game seems to skip its upscale pass and share
+  the screen's targets, which the emulated EDRAM path doesn't survive. Research on how other ports
+  get 4K: tsapZ/SkylandersCoreOfLight docs/other-ports.md.

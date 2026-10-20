@@ -53,6 +53,16 @@
 // scene_size larger than the game's turns edram_tile_count 4096 on by itself
 // (swapforcerecomp_app.h). Passes larger than 4096 tiles (a scene above about 1440x810) are still
 // tiled and stay broken.
+//
+// The scene must not be exactly the screen's size, 1280x720. At that size the game crashed in
+// about half of the save loads (10 runs with the owner's settings, 2026-10-20), in two places: the
+// per-pass resolve setup (sub_82513358 at 0x82513630) took a pooled texture record of the
+// target's size whose resource pointer (+60) was 0, and the game heap's free (sub_82476C40) met a
+// block header with one byte overwritten. At 1264x704 neither happened in 6 runs of the same test,
+// so it is the size coinciding with the 1280x720 screen targets, not the memory a larger scene
+// takes; presumably the game shares textures of one size between its scene and screen targets.
+// So a configured 1280x720 draws 1264x704 (16 pixels less each way, 1.3 % stretched to the screen
+// instead of 23 % from 1040x620).
 
 #include <atomic>
 #include <cstdint>
@@ -80,6 +90,10 @@ constexpr uint32_t kWidthOffset = 0x20;
 constexpr uint32_t kHeightOffset = 0x24;
 constexpr int32_t kGameWidth = 1040;
 constexpr int32_t kGameHeight = 620;
+// The game's screen (back buffer and HUD) size, which the scene must not match exactly.
+constexpr int32_t kScreenWidth = 1280;
+constexpr int32_t kScreenHeight = 720;
+constexpr int32_t kScreenSizeStep = 16;
 
 struct Size {
   int32_t width = 0, height = 0;
@@ -92,6 +106,12 @@ Size ConfiguredSize() {
   if (!text.empty() && std::sscanf(text.c_str(), "%ux%u", &w, &h) == 2 && w >= 320 && h >= 240 &&
       w <= 7680 && h <= 4320) {
     size = {int32_t(w), int32_t(h)};
+    if (size.width == kScreenWidth && size.height == kScreenHeight) {
+      size = {kScreenWidth - kScreenSizeStep, kScreenHeight - kScreenSizeStep};
+      REXLOG_INFO("Scene size: {}x{} is the screen's size, which crashes the game while loading "
+                  "(#41); drawing {}x{} instead",
+                  kScreenWidth, kScreenHeight, size.width, size.height);
+    }
   } else if (!text.empty()) {
     REXLOG_WARN("Scene size: '{}' is not WIDTHxHEIGHT; keeping the game's size", text);
   }

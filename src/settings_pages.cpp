@@ -70,16 +70,16 @@ SettingsPage GraphicsPage() {
   Setting scene{"scene_size", "Native 3D picture (experimental)",
                 "Natives 3D-Bild (experimentell)",
                 "The Xbox 360 draws the 3D scene at only 1040x620 and stretches it to 720p. Native: "
-                "the scene at a real 1280x720, so everything is sharper at every internal "
-                "resolution. Costs about a fifth of the frame rate. Needs D3D12. Can still crash "
-                "while a save is loading (#41, being worked on); the save stays safe.",
+                "the scene at 1264x704, just under the 1280x720 screen (at exactly the screen's "
+                "size the game crashes while loading), so everything is sharper at every internal "
+                "resolution. Costs about a fifth of the frame rate. Needs D3D12.",
                 "Die Xbox 360 zeichnet die 3D-Szene nur in 1040x620 und streckt sie auf 720p. "
-                "Nativ: die Szene in echten 1280x720, dadurch ist alles bei jeder internen "
-                "Aufl\xC3\xB6sung sch\xC3\xA4rfer. Kostet etwa ein F\xC3\xBC" "nftel der Bildrate. "
-                "Braucht D3D12. Kann noch beim Laden eines Spielstands abst\xC3\xBCrzen (#41, in "
-                "Arbeit); der Spielstand bleibt dabei erhalten.",
+                "Nativ: die Szene in 1264x704, knapp unter den 1280x720 des Bildschirms (genau in "
+                "Bildschirmgr\xC3\xB6\xC3\x9F" "e st\xC3\xBCrzt das Spiel beim Laden ab), dadurch "
+                "ist alles bei jeder internen Aufl\xC3\xB6sung sch\xC3\xA4rfer. Kostet etwa ein "
+                "F\xC3\xBC" "nftel der Bildrate. Braucht D3D12.",
                 {{"", "Off (1040x620)", "Aus (1040x620)"},
-                 {"1280x720", "Native (1280x720)", "Nativ (1280x720)"}}};
+                 {"1280x720", "Native (720p)", "Nativ (720p)"}}};
   scene.restart = true;
   page.settings.push_back(scene);
   page.settings.push_back(
