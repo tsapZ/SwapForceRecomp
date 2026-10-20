@@ -34,7 +34,8 @@ quality, then the controller-only Skylanders-style menus and a release.
 | Then | Installer for a first release (#27) | me, test on a clean VM |
 | Any time | Keep playing; report anything black, flickering, crashing or too fast | you |
 | Later | Ultrawide HUD (#24, the 3D view already works), GitHub wiki (#4), profiles with name, picture and own saves / figures (#51); online co-op only after the owner agrees to the proposal | me |
-| After Swap Force | Own recompile of the next Skylanders game (Giants), then the launcher hub | both |
+| In parallel | The other games as their own projects: SSARecomp (Spyro's Adventure, playable since 2026-10-20) and GiantsRecomp (Giants, first level playable since 2026-10-20), sharing this project's SDK fork branch `skylanders`, the portal fork and the figure folder `Documents\Skylanders\Figures` | me |
+| After all games | The launcher hub | both |
 
 ## Phase 0: repository and scaffold ✅
 
