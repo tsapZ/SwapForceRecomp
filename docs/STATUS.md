@@ -463,3 +463,12 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   Open on our side: survive a device loss instead of aborting.
 - **`stacks` input script command** (from Spyro's Adventure's first boot, src/dev/write_watch.cpp):
   logs every thread's call chain, recompiled frames by guest function.
+- **SDK from our fork for every game:** the submodule now follows `tsapZ/rexglue-sdk` branch
+  `skylanders`, the same commit as before plus the two fixes Spyro's Adventure needed (a ring
+  buffer set up again starts empty; the last frame of an XMA stream is output, which only adds
+  the missing last 512 samples of every sound here). Build and tests pass; a scripted run to the
+  hub (portal menu, Doom Stone placed, 30 guest FPS) showed nothing new in the log.
+- **One figure folder for every game** (the owner's call): `Documents\Skylanders\Figures`
+  (portal fork `SharedFiguresDir`). The first start copies `Documents\swapforcerecomp\figures`
+  into it and leaves a note in the old folder, which stays as a backup. Verified on the test copy
+  (24 files, the recent lists with them, the menu's "Zuletzt" list intact).
