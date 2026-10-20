@@ -14,7 +14,7 @@ Updated at the end of every session. Only record what a build actually did.
 | Portal | emulated, driven by the portal menu (opens by itself when the game asks for a Skylander; Guide, Back+Start, hold Back, F6; with the button it fades in during the game's zoom-out), real USB incl. old PS3/Wii portals (fork `tsapZ/skylanders-portal`), `none`. Back+Y / F5 take the item off, L3+R3 / F9 open the player menu, player 2 leaves through Start > "Leave the game" |
 | Frame rate | 30 FPS default; experimental `present_interval = 1` -> 60 FPS, more with `frame_rate_limit` (0 keeps the game at 30). Tutorial, 1440p output, RTV: 237 FPS at scale 1, 106 at scale 2, 46 at scale 3 (ROV scale 2: 67). Game speed at 60 FPS verified by playing the tutorial (#37, closed); long falls at high FPS fixed (`fix_stuck_falling`) |
 | Stutter | short one-time hitches when an effect or attack appears for the first time (shader/pipeline creation); stored in the persistent shader cache, so expected once per install |
-| Videos | Bink 2 (KB2f/KB2g) play; green half only in a test-only Bink 1-after-KB2f sequence (#36, closed) |
+| Videos | Bink 1 and Bink 2 movies play; the green logo (#36) was stale vertex data in the SDK, fixed |
 
 Open next: first level full playthrough (#17), native 1280x720 3D scene in the levels (#41,
 works in the hub as an experimental option), ultrawide HUD (#24, the 3D view works), installer (#27), German name cards (#38), controller portal overlay (#40).
@@ -526,3 +526,14 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   upscale step": with a scene of the screen's size the game seems to skip its upscale pass and share
   the screen's targets, which the emulated EDRAM path doesn't survive. Research on how other ports
   get 4K: tsapZ/SkylandersCoreOfLight docs/other-ports.md.
+- **The green Vicarious Visions logo is fixed** (#36, SDK fork `fix/vertex-buffer-cpu-writes`). A
+  RenderDoc capture of each logo (new script `tools/renderdoc/vsout.py`: the vertex shader's outputs
+  per vertex) showed both drawn from the same 2048x1024 / 1024x512 YUV textures with the same
+  texture coordinates, 0.6248 x 0.7026: right for the 1280x720 Activision logo, too large for the
+  1040x620 one (0.5076 x 0.6050), hence the green. A scan of guest memory during the second logo
+  found its quad at 0xA556A044 with the right values, so the game had rewritten the vertex buffer in
+  place and the GPU kept the old copy: the SDK skips RequestRange for a vertex fetch constant with
+  the same address and size as before, and its per-frame reset only cleared the in-sync bits. Now the
+  whole residency resets once per frame. Checked: the logo plays full screen; hub 90.9-92.5 FPS with
+  the fix against 89.2-91.2 without (1440p, scale 2). Any game that rewrites a vertex buffer in
+  place gains from it.

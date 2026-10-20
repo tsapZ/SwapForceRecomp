@@ -157,7 +157,9 @@ the textures each draw reads visible to RenderDoc.
 targets; `group.py` folds them into passes), `srvs` (textures read per draw, to find the same draw in
 two captures), `dump` (render targets after given events as PNG) and `inspect` (pipeline state and
 input textures of given draws), `timings` (GPU time per action, grouped by kind and target) and
-`overhead` (GPU time of render target emulation: ownership transfers, EDRAM dumps, resolves). Host render targets with the RTV path are EDRAM-shaped (for example
+`overhead` (GPU time of render target emulation: ownership transfers, EDRAM dumps, resolves) and
+`vsout` (the vertex shader's outputs per vertex of given draws, e.g. which part of a texture a
+full-screen quad samples). Host render targets with the RTV path are EDRAM-shaped (for example
 1040x2528): the surface at an EDRAM base starts at row 0 of the target created for that base. This
 is how the RTV black characters were found (docs/STATUS.md, 2026-10-17).
 
