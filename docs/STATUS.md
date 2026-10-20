@@ -475,3 +475,45 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
 - **Online co-op and profiles moved to the hub repo** ([Skylanders: Core of Light](https://github.com/tsapZ/SkylandersCoreOfLight),
   the owner's call): the proposal `docs/online-coop.md` and the issues #28, #29, #30 and #51
   (there #1-#4), because they apply to every game. Nothing of them was built here.
+
+## 2026-10-20: session log (the owner's test round, evening)
+
+- **A save came out empty after a crash.** The owner turned on the native 3D picture, restarted,
+  and the game crashed while loading save slot 2; the slot then read "0 %" and its file
+  `SWAPFORCE_2.xsg` was 0 bytes. Swap Force saves through `XamContentCreate` with CREATE_ALWAYS
+  (create, write, close: 16 ms in a measured save), and the SDK deleted the old package at once,
+  so the crash in that window left an empty one. Restored from the newest copy (a test copy of
+  2026-10-19; the owner's hub sessions since then were mostly menu tests); both states are kept
+  next to the repo in `dump/save-backup/`.
+- **Saves can't be lost that way any more** (SDK fork `fix/save-commit-on-close`, on `skylanders`):
+  as on the console, a saved game only changes when the game closes it. The old package and its
+  header wait in `<user data>/save-backup/pending/` until then, and move on to
+  `save-backup/previous/` (the version before the last save, kept for a manual restore). A start
+  after a crash in between puts the old one back and logs it. Checked: a simulated interrupted save
+  came back intact; normal saves log "saving ... anew" and "saved".
+- **Crash with Guide, then B, with the real USB portal** (owner's report). With no emulated portal
+  the portal menu only shows a message; B finished it in the middle of the frame and the footer
+  then looked up a figure in the menu's empty library. Fixed in the portal fork (1566231); checked
+  with `portal_mode = none` (the same path): Guide, B, Guide, A, no crash; the old code crashed on
+  the first B.
+- **Crash report in the log** (`src/dev/write_watch.cpp`, `InstallCrashReport`): a real crash now
+  logs the faulting thread's call chain as guest functions and its guest registers ("Crash: ..."),
+  through an unhandled-exception filter, so exceptions the SDK handles never show up.
+- **The native 3D picture crashes now and then while a save loads** (#41, open). Reproduced with
+  the owner's settings in about half of the runs; two places, found with the crash report:
+  - `sub_82513358` (called per render pass from `sub_82514448`) at 0x82513630: for each render
+    target it looks up a pooled surface record and, when that record's size matches the target's,
+    reads the record's resource pointer at +60 and then +8 of it; at 1280x720 the pointer is
+    sometimes 0 (read of guest 0x00000008). At 1040x620 that match never seemed to happen.
+  - `sub_82476C40`, the game heap's free: the block's "previous block" pointer has lost its top
+    byte (0x00DEBA60 for 0xB5DEBA60), so something wrote one byte past the end of a buffer before.
+    Not found yet; the EDRAM planning heap the scene size enlarges is not it (it grows its lists
+    dynamically).
+  The setting's text now says it can crash while loading, and that the save stays safe. Skipping
+  the logo movies doesn't help (tried); the Bink 2 movies (the opening movie) play right with it.
+- **The Vicarious Visions logo is green on the right and bottom** when the logo movies are not
+  skipped (owner's report; #36 reopened): it is the game's second Bink 1 movie (1040x620) after the
+  Activision logo (1280x720) and shows in the top-left 1040x620 of a 1280x720 picture. Seen at 30,
+  60 and 200 FPS, with RTV and ROV, at resolution scale 1 and 2, with and without the native scene,
+  and with `execute_unclipped_draw_vs_on_cpu` off, so none of those cause it. The default
+  (`skip_intro = true`) never shows it.
