@@ -17,6 +17,7 @@ This folder is the project wiki. Pages, roughly in reading order:
 | [releasing.md](releasing.md) | Packaging the installer and publishing a release |
 | [high-framerate.md](high-framerate.md) | Research: unlocking 60/120/144 FPS without breaking game speed |
 | [performance.md](performance.md) | Where the frame time goes, the x86-64-v3 measurement, what emulators do for smoothness |
+| [native-renderer.md](native-renderer.md) | Feasibility of a native renderer instead of the GPU emulation: what was measured, how other ports did it, an estimate |
 | [online co-op](https://github.com/tsapZ/SkylandersCoreOfLight/blob/main/docs/online-coop.md) | Proposal: online co-op with each player's own real portal; moved to the hub repo, Skylanders: Core of Light |
 
 Most of the tooling and several of these pages are adapted from
