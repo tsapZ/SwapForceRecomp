@@ -4,6 +4,16 @@
 #include <cstring>
 
 namespace swapforcerecomp::alchemy {
+
+uint32_t TiledOffset2D(uint32_t x, uint32_t y, uint32_t pitch, uint32_t log2_bytes) {
+  pitch = (pitch + 31) & ~31u;
+  const uint32_t macro = ((x >> 5) + (y >> 5) * (pitch >> 5)) << (log2_bytes + 7);
+  const uint32_t micro = ((x & 7) + ((y & 0xE) << 2)) << log2_bytes;
+  const uint32_t off = macro + ((micro & ~0xFu) << 1) + (micro & 0xF) + ((y & 1) << 4);
+  return ((off & ~0x1FFu) << 3) + ((y & 16) << 7) + ((off & 0x1C0) << 2) +
+         (((((y & 8) >> 2) + (x >> 3)) & 3) << 6) + (off & 0x3F);
+}
+
 namespace {
 
 enum class Dxt { kDxt1, kDxt3, kDxt5 };
@@ -23,16 +33,6 @@ constexpr Format kFormats[] = {
     {0xCBBED02C, Dxt::kDxt3, false}, {0xEABABF45, Dxt::kDxt3, false},
     {0x50A19F21, Dxt::kDxt3, true},
 };
-
-// Xbox 360 2D tiling (XGAddress2DTiledOffset), in blocks.
-uint32_t TiledOffset2D(uint32_t x, uint32_t y, uint32_t pitch, uint32_t log2_bpb) {
-  pitch = (pitch + 31) & ~31u;
-  const uint32_t macro = ((x >> 5) + (y >> 5) * (pitch >> 5)) << (log2_bpb + 7);
-  const uint32_t micro = ((x & 7) + ((y & 0xE) << 2)) << log2_bpb;
-  const uint32_t off = macro + ((micro & ~0xFu) << 1) + (micro & 0xF) + ((y & 1) << 4);
-  return ((off & ~0x1FFu) << 3) + ((y & 16) << 7) + ((off & 0x1C0) << 2) +
-         (((((y & 8) >> 2) + (x >> 3)) & 3) << 6) + (off & 0x3F);
-}
 
 void Rgb565(uint16_t c, uint8_t out[3]) {
   out[0] = uint8_t((((c >> 11) & 31) * 255 + 15) / 31);
@@ -190,6 +190,36 @@ std::vector<size_t> IgzFile::ObjectOffsets() const {
   return out;
 }
 
+std::vector<RawImage> IgzFile::RawImages() const {
+  std::vector<RawImage> out;
+  const std::vector<std::string> types = Strings("TMET");
+  auto exid = fixups_.find("EXID");
+  auto tmhn = fixups_.find("TMHN");
+  if (exid == fixups_.end() || tmhn == fixups_.end()) return out;
+  const size_t shift = version_ >= 9 ? 4 : 0;
+  for (size_t object : ObjectOffsets()) {
+    const uint32_t type = Be32(object);
+    if (type >= types.size() || types[type] != "igImage2") continue;
+    RawImage image;
+    image.object = object;
+    image.width = Be16(object + 0x30 + shift);
+    image.height = Be16(object + 0x32 + shift);
+    const uint32_t format_ref = Be32(object + 0x3C + shift);
+    const uint32_t handle = Be32(object + 0x48 + shift);
+    if (!(format_ref & 0x80000000) || (format_ref & 0x7FFFFFFF) >= exid->second.count ||
+        handle >= tmhn->second.count) {
+      continue;
+    }
+    image.format_hash = Be32(exid->second.start + 8 * (format_ref & 0x7FFFFFFF));
+    image.size = Be32(tmhn->second.start + 8 * handle) & 0x0FFFFFFF;
+    const auto pixels = Deserialize(Be32(tmhn->second.start + 8 * handle + 4));
+    if (!pixels || *pixels + image.size > data_.size()) continue;
+    image.data = *pixels;
+    out.push_back(image);
+  }
+  return out;
+}
+
 std::optional<RgbaImage> IgzFile::DecodeFirstImage() const {
   const std::vector<std::string> types = Strings("TMET");
   auto exid = fixups_.find("EXID");
@@ -198,9 +228,10 @@ std::optional<RgbaImage> IgzFile::DecodeFirstImage() const {
   for (size_t object : ObjectOffsets()) {
     const uint32_t type = Be32(object);
     if (type >= types.size() || types[type] != "igImage2") continue;
-    const int width = Be16(object + 0x30), height = Be16(object + 0x32);
-    const uint32_t format_ref = Be32(object + 0x3C);
-    const uint32_t handle = Be32(object + 0x48);
+    const size_t shift = version_ >= 9 ? 4 : 0;
+    const int width = Be16(object + 0x30 + shift), height = Be16(object + 0x32 + shift);
+    const uint32_t format_ref = Be32(object + 0x3C + shift);
+    const uint32_t handle = Be32(object + 0x48 + shift);
     if (!(format_ref & 0x80000000) || width <= 0 || height <= 0 || width > 4096 || height > 4096) {
       return std::nullopt;
     }
@@ -243,6 +274,44 @@ std::optional<RgbaImage> IgzFile::DecodeFirstImage() const {
     return img;
   }
   return std::nullopt;
+}
+
+std::vector<std::pair<size_t, std::string>> IgzFile::Objects(const std::string& suffix) const {
+  std::vector<std::pair<size_t, std::string>> out;
+  const std::vector<std::string> types = Strings("TMET");
+  for (size_t object : ObjectOffsets()) {
+    const uint32_t type = Be32(object);
+    if (type >= types.size()) continue;
+    const std::string& name = types[type];
+    if (name.size() >= suffix.size() &&
+        name.compare(name.size() - suffix.size(), suffix.size(), suffix) == 0) {
+      out.emplace_back(object, name);
+    }
+  }
+  return out;
+}
+
+std::string IgzFile::StringAt(uint32_t pointer) const {
+  std::string out;
+  const auto at = Deserialize(pointer);
+  if (!pointer || !at) return out;
+  for (size_t p = *at; p < data_.size() && data_[p] && out.size() < 512; ++p) {
+    out.push_back(char(data_[p]));
+  }
+  return out;
+}
+
+std::optional<std::pair<std::string, std::string>> IgzFile::ExternalName(uint32_t handle) const {
+  auto it = fixups_.find("EXNM");
+  if (!(handle & 0x80000000) || it == fixups_.end()) return std::nullopt;
+  const uint32_t index = handle & 0x7FFFFFFF;
+  if (index >= it->second.count) return std::nullopt;
+  // Each entry: the name's and the namespace's index into TSTR, both with the top bit set.
+  const std::vector<std::string> strings = Strings("TSTR");
+  const uint32_t name = Be32(it->second.start + 8 * size_t(index)) & 0x7FFFFFFF;
+  const uint32_t space = Be32(it->second.start + 8 * size_t(index) + 4) & 0x7FFFFFFF;
+  if (name >= strings.size() || space >= strings.size()) return std::nullopt;
+  return std::make_pair(strings[name], strings[space]);
 }
 
 }  // namespace swapforcerecomp::alchemy

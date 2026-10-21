@@ -585,3 +585,12 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   followed by one that is, the shape that crashed SuperChargers and Imaginators at boot ("Call to
   invalid or unregistered function"). Swap Force had not hit one of them yet; registered so it
   can't. A boot into the hub and a level afterwards: no error.
+- **The menus in the game's own fonts (#54)** (src/game/game_fonts.cpp, skylanders-portal
+  b804d9c): fonts\proximanova-title.igz (permanent.pak, 88 glyphs, a 512x1080 page) and
+  fonts\proximanova-body.igz (essentialui.pak, 167 glyphs) are igBitmapFont files, laid out as in
+  SuperChargers / Imaginators where this was worked out (version 9 there, 7 here): each glyph's
+  cell from its igCharMetrics, 16-bit tiled pages with the coverage in the first byte. The portal
+  library draws the menus' titles and text with them (Segoe UI fills in missing glyphs), scaled so
+  their capitals are as tall as Segoe's. The IGZ reader is the later games' version now (a
+  superset: version 9, the object list, raw images). Checked by script in the hub: the portal
+  menu's title in the same letters as the game's "... DAS MAGISCHE PORTAL" behind it.

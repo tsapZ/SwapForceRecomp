@@ -29,6 +29,7 @@
 #include "dev/gpu_diagnostics.h"
 #include "hooks/ultrawide_hook.h"
 #include "game/game_art.h"
+#include "game/game_fonts.h"
 #include "game/toy_images.h"
 #include "localization.h"
 #include "portal_rex/achievements_ui.h"
@@ -212,6 +213,8 @@ class SwapforcerecompApp : public rex::ReXApp {
     }
 #endif
     if (font) ImGui::GetIO().FontDefault = font;
+    // The menus' titles and text in the game's own fonts (its ProximaNova bitmap fonts, #54).
+    skylanders::SetGameFonts(swapforcerecomp::LoadGameFonts(game_data_root_));
     skylanders::AddPortalMenuFonts(atlas);
   }
 
