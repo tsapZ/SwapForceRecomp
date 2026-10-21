@@ -160,5 +160,5 @@ software portal, so they are planned once for all games. Nothing of it was built
 - [x] Controls page: the controller in use (Xbox picture, drawn PlayStation / Nintendo / generic
       pads) and a keyboard view (#55)
 - [x] Achievements: Xbox 360-style pop-up, list with the controller (#59)
-- [ ] Faster figure change (#60): measured, the time is the game's figure intro (PlayIntro, 4 s);
-      ending it the game's way is next
+- [ ] Faster figure change (#60): the game's figure intro (PlayIntro, 4.1 s) can be cut to 1.5 s
+      (F4 > Spiel > Skylander-Vorstellung: Kurz, since 2026-10-21); for the owner to try

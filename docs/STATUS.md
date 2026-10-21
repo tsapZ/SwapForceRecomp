@@ -565,3 +565,15 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   as with a real portal. A pressed A doesn't cut it; writing TransitionOut into the instance as soon
   as PlayIntro starts skips it but leaves the camera on the sky (the intro's own ending sets the
   camera back). Not committed; next is ending PlayIntro the game's way.
+
+## 2026-10-21: session log (morning)
+
+- **Shorter figure intro** (#60, option `figure_intro_seconds`, F4 > Spiel > "Skylander-Vorstellung":
+  "Wie im Spiel" or "Kurz", 1.5 s; default the game's). A write watch on CMagicMoment's state field
+  for 11 (TransitionOut) named the writer: sub_829AA900, called from sub_829BFA10, called from
+  sub_829BFFF8, which checks every frame whether the intro is over (time since it began in f0
+  against its length in f30, fcmpu at 0x829C0114) and ends it the game's way. The hook
+  (src/hooks/figure_intro_hook.cpp) shortens f30 there. Measured: the intro is 4.10 s long (logged
+  for each figure); with "Kurz" Doom Stone's intro ends after 1.5 s and the game goes back to the
+  hub with the camera and the HUD right (screenshots every second), so a figure change is about
+  2.6 s quicker. Writing the state by hand, last night's try, had left the camera on the sky.

@@ -52,6 +52,7 @@ set(SWAPFORCERECOMP_SOURCES
     src/game/alchemy/igz_file.cpp
     src/game/alchemy/lzma_decoder.cpp
     src/hooks/intro_skip_hook.cpp
+    src/hooks/figure_intro_hook.cpp
     src/hooks/frame_rate_hook.cpp
     src/hooks/fxaa_scale_hook.cpp
     src/hooks/post_effects_hook.cpp

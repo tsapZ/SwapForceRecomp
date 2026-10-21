@@ -85,6 +85,18 @@ address = 0x8251460C
 name = "EdramDepthBaseHook"
 registers = ["r9", "r11"]
 
+# 0x829C0114 is fcmpu cr6,f0,f30 in sub_829BFFF8, which checks every frame whether a figure's
+# intro (CMagicMoment state 10, PlayIntro) is over: f0 the time since it began, f30 its length (the
+# magic moment's tuning or the figure's own); when f0 is larger it calls sub_829BFA10, which ends the
+# intro the game's way (sub_829AA900 sets state 11 and gives the camera back). Found with a write
+# watch on the state field for 11: sub_829AA900 <- sub_829BFA10 <- sub_829BFFF8.
+# src/hooks/figure_intro_hook.cpp shortens f30 to figure_intro_seconds (0, the default, leaves it);
+# f30 is saved by the function and not read after this comparison, f0 is only read.
+[[midasm_hook]]
+address = 0x829C0114
+name = "FigureIntroLengthHook"
+registers = ["f0", "f30"]
+
 # 0x82A4A828 is CPlayerJumpComponent's per-frame "stuck while falling" check: a falling player who
 # moved less than CPlayerSystemData._stuckFallingDistanceThreshold (+0x5C) since the last frame
 # runs a timer, and after _stuckFallingTime (+0x60) is put back (sub_82A4A5D0 with 4). Found from
