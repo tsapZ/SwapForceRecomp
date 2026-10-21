@@ -30,6 +30,18 @@
 //   textures:\ui\Controllers\Xbox_Controller.tga (1280x720). The callout lines to the screen's
 //   labels and a second set of face buttons for them are drawn into it; CleanController takes
 //   them out for the settings menu.
+// SWAP skills ("swap:<code>", SetFigureTraitProvider): every swapper bottom has one of eight
+//   (EShapeshifterTurboType: Sneaker, Flyer, Speeder, Digger, Teleporter, Bouncer, Twister,
+//   Climber). Which one is in each bottom's own archive, Legs_<name>.pak
+//   characters\shapeshifters\legs\legs_<name>_characterdata.igx: its turbo handler
+//   (Scripts.TurboClimbHandler for Legs_Pirate, Wash Buckler) or its turbo state machine
+//   (turbodigstatemachine, state_turbo_teleport); the legs' toy ids are the executable's
+//   kTfbSpyroTag_ToyType_Shapeshifter_Legs_* values (1000 Aviator = Boom Jet ... 1015 Pirate =
+//   Wash Buckler). Read from this disc's files once (2026-10-21, after the owner asked for the
+//   symbols: "man sieht diese Symbole nicht im Magischen Portal"); two bottoms per skill, as the
+//   game's accolades say ("Add both Bounce SWAP Force Skylanders"), whose texts also give the
+//   names ("SWAP-Kraft 'Tempo'"). The symbols are the HUD's, permanent.pak
+//   textures\juicestandard_turbo_hud_<code>_<hash>.igz (bou, cli, bur, roc, ste, spe, twi, tel).
 // Gold symbol ("ui:gold"): the HUD's coin, juicedomain_permanent.pak
 //   textures\juicestandard_coin_icon_10.igz (next to juice_player1hud_materials.igz; found by
 //   the archive's file names, 2026-10-21).
@@ -488,6 +500,16 @@ class GameArt {
     if (kind == "element") {
       return FromMaterial("permanent", "materialinstances\\elementicons.igz", "dn_" + what);
     }
+    if (kind == "swap") {
+      // The HUD's SWAP skill symbol; the file name ends in a hash, so it's found by its start.
+      const IgaArchive* pak = Pak("permanent");
+      if (!pak) return nullptr;
+      const std::string prefix = "textures\\juicestandard_turbo_hud_" + what + "_";
+      for (size_t i = 0; i < pak->size(); ++i) {
+        if (Lower(pak->name(i)).rfind(prefix, 0) == 0) return DecodeUiIcon(*pak, i);
+      }
+      return nullptr;
+    }
     if (kind == "ui" && what == "gold") {
       // The HUD's coin next to the gold amount: a texture file of its own in the HUD's archive.
       const IgaArchive* pak = Pak("juicedomain_permanent");
@@ -709,6 +731,44 @@ class GameArt {
 
 std::unique_ptr<GameArt> g_game_art;
 
+// A swapper bottom's SWAP skill by toy id (1000-1015, the variants share the id): the symbol's
+// code and the game's names for it (see the header).
+struct SwapSkill {
+  const char* code;
+  const char* english;
+  const char* german;
+};
+std::optional<skylanders::FigureTrait> SwapSkillOf(uint16_t id) {
+  static const SwapSkill kRocket{"roc", "Rocket", "Rakete"}, kSpin{"twi", "Spin", "Wirbeln"},
+      kDig{"bur", "Dig", "Buddeln"}, kBounce{"bou", "Bounce", "H\xC3\xBC" "pfen"},
+      kSneak{"ste", "Sneak", "Tarnen"}, kTeleport{"tel", "Teleport", "Teleportieren"},
+      kSpeed{"spe", "Speed", "Tempo"}, kClimb{"cli", "Climb", "Klettern"};
+  static const SwapSkill* const kBottoms[16] = {
+      &kRocket,    // 1000 Boom Jet (Legs_Aviator: TurboFlyHandler)
+      &kSpin,      // 1001 Free Ranger (Legs_StormBird: TurboSpinHandler)
+      &kDig,       // 1002 Rubble Rouser (Legs_Miner: turbodigstatemachine)
+      &kSpin,      // 1003 Doom Stone (Legs_Statue: TurboSpinHandler)
+      &kRocket,    // 1004 Blast Zone (Legs_FireKnight: TurboFlyHandler)
+      &kBounce,    // 1005 Fire Kraken (Legs_Fireworks: TurboBounceHandler)
+      &kSneak,     // 1006 Stink Bomb (Legs_Ninja: TurboSneakHandler)
+      &kDig,       // 1007 Grilla Drilla (Legs_Gorilla: turbodigstatemachine)
+      &kTeleport,  // 1008 Hoot Loop (Legs_Fortune: state_turbo_teleport)
+      &kSneak,     // 1009 Trap Shadow (Legs_Panther: TurboSneakHandler)
+      &kSpeed,     // 1010 Magna Charge (Legs_Magnet: TurboSpeedsterHandler)
+      &kClimb,     // 1011 Spy Rise (Legs_Spyder: TurboClimbHandler)
+      &kTeleport,  // 1012 Night Shift (Legs_Vampire: state_legs_vampire_teleport)
+      &kBounce,    // 1013 Rattle Shake (Legs_Cowboy: TurboBounceHandler)
+      &kSpeed,     // 1014 Freeze Blade (Legs_Freeze: TurboSpeedsterHandler)
+      &kClimb,     // 1015 Wash Buckler (Legs_Pirate: TurboClimbHandler)
+  };
+  if (id < 1000 || id >= 1016) return std::nullopt;
+  const SwapSkill& skill = *kBottoms[id - 1000];
+  skylanders::FigureTrait trait;
+  trait.image = std::string("swap:") + skill.code;
+  trait.name = German() ? skill.german : skill.english;
+  return trait;
+}
+
 }  // namespace
 
 void InstallGameArt(rex::memory::Memory* memory, std::filesystem::path archives_dir) {
@@ -720,6 +780,7 @@ void InstallGameArt(rex::memory::Memory* memory, std::filesystem::path archives_
   skylanders::SetFigureUpgradesProvider(
       [](uint16_t id, uint16_t variant) { return g_game_art->Upgrades(id, variant); });
   skylanders::SetHatInfoProvider([](uint16_t hat) { return g_game_art->HatInfoFor(hat); });
+  skylanders::SetFigureTraitProvider([](uint16_t id, uint16_t) { return SwapSkillOf(id); });
 }
 
 skylanders::ControllerPicture GameArtControllerPicture() {
@@ -751,6 +812,7 @@ void ShutdownGameArt() {
   skylanders::SetArtImageProvider(nullptr);
   skylanders::SetFigureUpgradesProvider(nullptr);
   skylanders::SetHatInfoProvider(nullptr);
+  skylanders::SetFigureTraitProvider(nullptr);
   if (g_game_art) g_game_art->Stop();
   g_game_art.reset();
 }
