@@ -150,3 +150,15 @@ software portal, so they are planned once for all games. Nothing of it was built
 | Bink 2 videos stall | One crash from under-counted jump tables, fixed in the config |
 | Swapper halves need extra protocol behaviour | Not needed on the emulated portal; USB still to test |
 | Fast render path unusable | Fixed: an SDK default (`execute_unclipped_draw_vs_on_cpu`) |
+
+## From the play tests (2026-10-21)
+
+- [x] Two players in the player menu, for all games (#56)
+- [x] Hat bonuses with symbol, name and value in all games (#58)
+- [x] The game's gold symbol (#57): Swap Force and Giants; Spyro's Adventure still draws one.
+      Open: a fancier portal under the figure (low priority)
+- [x] Controls page: the controller in use (Xbox picture, drawn PlayStation / Nintendo / generic
+      pads) and a keyboard view (#55)
+- [x] Achievements: Xbox 360-style pop-up, list with the controller (#59)
+- [ ] Faster figure change (#60): measured, the time is the game's figure intro (PlayIntro, 4 s);
+      ending it the game's way is next
