@@ -577,3 +577,11 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   for each figure); with "Kurz" Doom Stone's intro ends after 1.5 s and the game goes back to the
   hub with the camera and the HUD right (screenshots every second), so a figure change is about
   2.6 s quicker. Writing the state by hand, last night's try, had left the camera on the sky.
+- **Input script `save`** (src/dev/input_script.cpp, from the later games): `save <hex addr>
+  <hex bytes> <file>` writes guest memory to a file as it is (unmapped pages as zeros), for
+  snapshots compared offline and for code dumps.
+- **20 function starts the analyzer put one instruction late** (config/default.toml `[functions]`):
+  a code dump with `save` searched for an instruction right after a `blr` that is no known start,
+  followed by one that is, the shape that crashed SuperChargers and Imaginators at boot ("Call to
+  invalid or unregistered function"). Swap Force had not hit one of them yet; registered so it
+  can't. A boot into the hub and a level afterwards: no error.
