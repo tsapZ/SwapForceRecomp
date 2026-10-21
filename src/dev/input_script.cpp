@@ -1,5 +1,6 @@
 #include "input_script.h"
 
+#include <algorithm>
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
@@ -58,6 +59,7 @@ struct Event {
     kWatch,
     kUnwatch,
     kDump,
+    kSave,
     kStacks,
     kQuit
   } kind;
@@ -196,6 +198,16 @@ bool ParseScript(std::istream& in, std::vector<Event>& events) {
     } else if (cmd == "key") {
       ok = bool(words >> e.text) && rex::ui::ParseVirtualKey(e.text) != rex::ui::VirtualKey::kNone;
       e.kind = Event::Kind::kKey;
+    } else if (cmd == "save") {
+      std::string address, size;
+      ok = bool(words >> address >> size);
+      std::getline(words >> std::ws, e.text);
+      ok = ok && !e.text.empty();
+      if (ok) {
+        e.words.push_back(uint32_t(std::stoul(address, nullptr, 16)));
+        e.words.push_back(uint32_t(std::stoul(size, nullptr, 16)));
+      }
+      e.kind = Event::Kind::kSave;
     } else if (cmd == "place") {
       ok = bool(words >> e.frames) && e.frames < 16;
       std::getline(words >> std::ws, e.text);
@@ -365,6 +377,25 @@ class ScriptInputDriver final : public rex::input::InputDriver {
           StopWriteWatch();
         } else if (e.kind == Event::Kind::kStacks) {
           LogThreadStacks(int(e.frames));
+        } else if (e.kind == Event::Kind::kSave) {
+          // Pages that aren't committed (or readable) are written as zeros, so any range works.
+          std::ofstream file(std::filesystem::u8path(e.text), std::ios::binary);
+          const std::vector<char> zeros(0x1000);
+          for (uint64_t page = e.words[0]; page < uint64_t(e.words[0]) + e.words[1];
+               page += 0x1000) {
+            rex::memory::BaseHeap* heap = memory->LookupHeap(uint32_t(page));
+            rex::memory::HeapAllocationInfo info{};
+            const bool readable = heap && heap->QueryRegionInfo(uint32_t(page), &info) &&
+                                  (info.state & rex::memory::kMemoryAllocationCommit) &&
+                                  (info.protect & rex::memory::kMemoryProtectRead);
+            const auto size = std::streamsize(
+                std::min<uint64_t>(0x1000, uint64_t(e.words[0]) + e.words[1] - page));
+            file.write(
+                readable ? memory->TranslateVirtual<const char*>(uint32_t(page)) : zeros.data(),
+                size);
+          }
+          REXLOG_INFO("Input script: saved {:08X}+{:X} to {}{}", e.words[0], e.words[1], e.text,
+                      file ? "" : " (failed)");
         } else if (e.kind == Event::Kind::kDump) {
           for (uint32_t i = 0; i < e.frames; i += 8) {
             std::string line;

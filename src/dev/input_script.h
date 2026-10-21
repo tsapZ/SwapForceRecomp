@@ -16,6 +16,10 @@
 //   scan <hex> [<hex> ...]   logs where this big-endian u32 sequence is in guest memory
 //   poke <hex addr> <hex>    writes a big-endian u32 to guest memory
 //   dump <hex addr> <words>  logs that many big-endian u32 from guest memory, 8 per line
+//   save <hex addr> <hex bytes> <file>
+//                            writes that much guest memory to a file, unchanged (big-endian;
+//                            pages that are not mapped come out as zeros): snapshots at
+//                            different moments, compared offline, find state fields
 //   watch <hex addr> [<hex> [<hex snapshot addr> <hex words>]]
 //                            logs which guest functions write this address, only writes of that
 //                            big-endian value if given, and copies guest memory at the first hit
