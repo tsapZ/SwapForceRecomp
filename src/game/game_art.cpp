@@ -430,7 +430,13 @@ class GameArt {
           for (const std::string& item : list->second->items) {
             auto a = objects.find(item);
             if (a == objects.end()) continue;
-            hat.stats.emplace_back(a->second->Var("_attribute"),
+            // The file leaves out an attribute that has the field's default value: 34 hats'
+            // bonuses have none ("The Outsider": one without, one eCA_BaseElementalBoost), and no
+            // hat names eCA_MaximumHealth, the one hat stat that never shows up. So none is
+            // health (the owner saw Rattle Shake's hat with a nameless "+8", 2026-10-21).
+            std::string attribute = a->second->Var("_attribute");
+            if (attribute.empty()) attribute = "eCA_MaximumHealth";
+            hat.stats.emplace_back(std::move(attribute),
                                    std::strtof(a->second->Var("_value").c_str(), nullptr));
           }
         }
