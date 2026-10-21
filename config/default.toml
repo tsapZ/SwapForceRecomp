@@ -11,6 +11,35 @@
 # function". What the function does is not identified yet; no size given, the analyzer finds the end.
 0x82F60BD8 = {}
 
+# Function starts the analyzer put one instruction late, found in the whole code (a dump of guest
+# memory with the input script's `save`, 2026-10-21): right after a `blr`, an instruction that is no
+# known start, followed by one that is. A function the analyzer reached through a branch to its
+# second instruction while its real start is only in a pointer table; such a function, when called,
+# ends the game with "Call to invalid or unregistered function". The same search found the ones
+# SuperChargersRecomp and ImaginatorsRecomp crashed on at boot, and their entries fixed it. A start
+# that was in fact the second half of the function before only splits it, which the generated code
+# handles as a tail call. No size given, the analyzer finds the end.
+0x824E7154 = {}
+0x8255E8B8 = {}
+0x82C472DC = {}
+0x82C5DDF4 = {}
+0x82C5DE44 = {}
+0x82CC46D0 = {}
+0x82D471E0 = {}
+0x82D47420 = {}
+0x82D49210 = {}
+0x82D51FA0 = {}
+0x82D872F0 = {}
+0x82D917C4 = {}
+0x82DB5B58 = {}
+0x82E090F0 = {}
+0x82E757D4 = {}
+0x82E758B4 = {}
+0x82ED2804 = {}
+0x82FD0CE0 = {}
+0x8302D7A8 = {}
+0x8302D7B8 = {}
+
 # 0x83081EB8 is in BinkOpen (sub_83081CE8), right after it reads the 44-byte Bink header into
 # r1+112 and just before the signature compares (KB2f, KB2g, BIKf..BIKi). Found from the "Not a Bink
 # file." / "Error reading Bink header." string references in that function. src/hooks/
