@@ -158,6 +158,14 @@ SettingsPage GraphicsPage() {
         {"1920x1080", "1920x1080", "1920x1080"},
         {"2560x1440", "2560x1440", "2560x1440"},
         {"3840x2160", "3840x2160", "3840x2160"}}});
+  page.settings.push_back(
+      {"ultrawide_hud", "HUD on ultrawide (experimental)", "HUD bei Ultrawide (experimentell)",
+       "On a window wider than 16:9 (ultrawide): the HUD and the menus in their own "
+       "proportions at the window's edges instead of stretched. The pause menu's dimming "
+       "then leaves a strip at the right.",
+       "Bei einem Fenster breiter als 16:9 (Ultrawide): HUD und Men\xC3\xBCs in ihren "
+       "eigenen Proportionen an den Fensterr\xC3\xA4ndern statt gestreckt. Die Abdunklung im "
+       "Pausenmen\xC3\xBC l\xC3\xA4sst dann rechts einen Streifen frei."});
   return page;
 }
 

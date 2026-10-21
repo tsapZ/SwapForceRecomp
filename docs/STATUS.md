@@ -594,3 +594,11 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   their capitals are as tall as Segoe's. The IGZ reader is the later games' version now (a
   superset: version 9, the object list, raw images). Checked by script in the hub: the portal
   menu's title in the same letters as the game's "... DAS MAGISCHE PORTAL" behind it.
+- **The HUD for ultrawide, experimental** (`ultrawide_hud`, off; F4 > Grafik > "HUD bei
+  Ultrawide", #24): the UI (Juice) lays itself out on its contexts' expected screen width
+  (_expectedScreenWidthMain, +0x24, found from the reflection field names and three contexts in a
+  hub snapshot). Set to the window's width at the UI's height, the HUD and the menus keep their
+  proportions at the window's edges; of the three widths (viewer, setting, expected) only the
+  expected one does it. Off by default: the pause menu's dimming is laid out 1280 wide and leaves a
+  light strip at the right. Checked by script in a 2560x1080 window: the title, the hub's HUD at
+  the left edge, the pause menu.

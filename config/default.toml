@@ -177,6 +177,17 @@ registers = ["f0"]
 # _aspect, _projectionMatrix) and a read watch on the live camera's _aspect in the hub.
 # src/hooks/ultrawide_hook.cpp widens f3 (and f1, keeping the vertical FOV) for a window wider
 # than 16:9 with ultrawide_fov on; it only changes this call's arguments.
+# 0x82642E5C is lfs f0,12(r11) in sub_82642E20, where a UI (Juice) context's main screen viewer
+# size is read for drawing; r11 is the context (its reflection field _expectedScreenWidthMain at
+# +0x24, followed by its height). Found from the field names and the contexts in a hub snapshot;
+# poking that width with the window's aspect kept the HUD's proportions at the window's edges.
+# With ultrawide_hud (off by default) and ultrawide_fov on a wider window,
+# src/hooks/ultrawide_hook.cpp writes it before it is read; otherwise it puts the game's own back.
+[[midasm_hook]]
+address = 0x82642E5C
+name = "UltrawideHudHook"
+registers = ["r11"]
+
 [[midasm_hook]]
 address = 0x82B993A4
 name = "UltrawideFovHook"

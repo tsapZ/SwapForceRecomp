@@ -11,7 +11,23 @@
 // active, unless set by hand) the presenter stretches it across the wider window, so the camera
 // has to see that much more to the sides for the picture to keep its proportions ("Hor+"): the
 // hook at the call (0x82B993A4) widens the aspect and, if the call gives a horizontal FOV, that
-// one too, keeping the vertical FOV. The HUD is drawn into the same 16:9 frame and is stretched.
+// one too, keeping the vertical FOV. The HUD is drawn into the same 16:9 frame and would be
+// stretched.
+//
+// The HUD (ultrawide_hud): the UI (Juice) runs in contexts whose reflection fields (the name list
+// at 0x822F32C8) start _renderer, _viewerWidthMain, _viewerHeightMain, _settingWidthMain,
+// _settingHeightMain, _screenWidthSub, _screenHeightSub, _expectedScreenWidthMain,
+// _expectedScreenHeightMain, ...: in the objects (vtable 0x822F7D90) +0x0C / +0x10, +0x14 /
+// +0x18 and +0x24 / +0x28, all 1280 x 720 (floats). Setting the three widths to the window's width
+// at the UI's height (720 x 2560 / 1080 = 1707) in the hub, by the input script's poke on all
+// three contexts, made the HUD keep its proportions and moved it to the window's left edge on the
+// next frame: Juice lays out for that wide a screen and squeezes it into the 16:9 frame, which the
+// presenter stretches back (2026-10-21). One field at a time: only the expected width does it (the
+// viewer's or the setting's alone leave the HUD stretched), so the hook sets that one, where the
+// context's sizes are read for drawing (sub_82642E20, lfs f0,12(r11) at 0x82642E5C, r11 = the
+// context; the second-screen branch reads +0x1C / +0x20 and is left alone), and puts the game's own
+// back when ultrawide is off. Off by default: the pause menu's dimming is laid out 1280 wide and
+// leaves a light strip at the right, and full-screen fades may do the same.
 //
 // Found 2026-10-19: the camera fields from their reflection tables (_fov, _aspect, ...,
 // _projectionMatrix, _updateProjectionOnSizeChange at 0x822CE280 / offsets 0x822CE330), the live
@@ -20,6 +36,7 @@
 #include <atomic>
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 #include <string>
 
 #include "ultrawide_hook.h"
@@ -27,14 +44,21 @@
 #include <rex/cvar.h>
 #include <rex/graphics/video_mode_util.h>
 #include <rex/logging.h>
+#include <rex/memory.h>
+#include <rex/memory/utils.h>
 #include <rex/ppc/context.h>
+#include <rex/system/kernel_state.h>
 
 REXCVAR_DECLARE(std::string, resolution);
 
 REXCVAR_DEFINE_BOOL(ultrawide_fov, true, "Graphics",
                     "On a window wider than 16:9 (resolution), show more to the sides instead of "
                     "black bars: a wider field of view and the picture stretched across the "
-                    "window. The HUD is stretched with it");
+                    "window");
+REXCVAR_DEFINE_BOOL(ultrawide_hud, false, "Graphics",
+                    "Experimental: with ultrawide_fov on a wider window, the HUD and the menus at "
+                    "the window's edges in their own proportions instead of stretched; the pause "
+                    "menu's dimming then leaves a strip at the right");
 
 namespace {
 
@@ -78,4 +102,48 @@ void UltrawideFovHook(PPCRegister& f1, PPCRegister& f2, PPCRegister& f3) {
     f1.f64 = double(float(2.0 * std::atan(std::tan(f1.f64 * 0.5) * scale)));
   }
   f3.f64 = double(float(wide));
+}
+
+// At 0x82642E5C (lfs f0,12(r11) in sub_82642E20): r11 = a Juice context, its main screen's
+// expected size at +0x24 / +0x28.
+void UltrawideHudHook(PPCRegister& r11) {
+  if (!r11.u32) return;
+  uint8_t* context = rex::system::kernel_state()->memory()->virtual_membase() + r11.u32;
+  auto load = [](const uint8_t* p) {
+    const uint32_t bits = rex::memory::load_and_swap<uint32_t>(p);
+    float v;
+    std::memcpy(&v, &bits, 4);
+    return v;
+  };
+  auto store = [](uint8_t* p, float v) {
+    uint32_t bits;
+    std::memcpy(&bits, &v, 4);
+    rex::memory::store_and_swap<uint32_t>(p, bits);
+  };
+  constexpr uint32_t kWidths[] = {0x24};  // _expectedScreenWidthMain, then its height
+  // The width written here, so that any other value counts as the game's own.
+  static std::atomic<uint32_t> written_bits{0};
+  const bool wide = REXCVAR_GET(ultrawide_hud) && swapforcerecomp::UltrawideActive();
+  for (uint32_t field : kWidths) {
+    const float width = load(context + field), height = load(context + field + 4);
+    if (height <= 0) continue;
+    uint32_t width_bits;
+    std::memcpy(&width_bits, &width, 4);
+    const bool ours = width_bits == written_bits.load();
+    float want = width;
+    if (wide && !ours) {
+      want = float(double(height) * WindowAspect());
+    } else if (!wide && ours) {
+      want = float(double(height) * 16.0 / 9.0);  // the game's own: 16:9 at its height
+    }
+    if (want == width) continue;
+    store(context + field, want);
+    if (wide) {
+      uint32_t bits;
+      std::memcpy(&bits, &want, 4);
+      written_bits = bits;
+      static std::atomic<bool> logged{false};
+      if (!logged.exchange(true)) REXLOG_INFO("Ultrawide: UI {} x {} -> {} wide", width, height, want);
+    }
+  }
 }
