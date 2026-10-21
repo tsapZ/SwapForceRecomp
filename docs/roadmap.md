@@ -12,7 +12,7 @@ observed in a real build or a real play test, not inferred.
 | 1 Recompile and boot | ✅ done | 8/8 | – |
 | 2 In-game | ✅ done | 11/11 | – |
 | 3 Portal | 🟡 almost | 6/7 | a swapper on the real USB portal (#42) |
-| 4 4K and polish | 🟡 in progress | 8/17 | controller portal menu (#40, #46, #47), performance and picture quality (#44, #41, #50), installer (#27), ultrawide (#24), wiki (#4) |
+| 4 4K and polish | 🟡 in progress | 16/26 | controller portal menu (#40, #46, #47), performance and picture quality (#44, #41, #50), installer (#27), wiki (#4) |
 | 5 Online co-op (stretch) | ➡️ moved | – | to the hub repo [Skylanders: Core of Light](https://github.com/tsapZ/SkylandersCoreOfLight) (its #1-#3), with the profiles idea (#51, there #4): both are for every game |
 
 **Where we are:** the first level is played through at over 100 FPS (1440p), the hub runs at about
@@ -34,7 +34,7 @@ quality, then the controller-only Skylanders-style menus and a release.
 | Research | Best default settings (#50): D3D12 vs. Vulkan, what RPCS3 / Cemu / Dolphin do for a clean Skylanders picture, measured presets | me |
 | Then | Installer for a first release (#27) | me, test on a clean VM |
 | Any time | Keep playing; report anything black, flickering, crashing or too fast | you |
-| Later | Ultrawide HUD (#24, the 3D view already works), GitHub wiki (#4); profiles and online co-op are planned in the hub repo | me |
+| Later | GitHub wiki (#4); profiles and online co-op are planned in the hub repo | me |
 | In parallel | The other games as their own projects: SSARecomp (Spyro's Adventure, playable since 2026-10-20) and GiantsRecomp (Giants, first level playable since 2026-10-20), sharing this project's SDK fork branch `skylanders`, the portal fork and the figure folder `Documents\Skylanders\Figures` | me |
 | After all games | The hub, [Skylanders: Core of Light](https://github.com/tsapZ/SkylandersCoreOfLight) (own repo: launcher, figure library, profiles, online co-op) | both |
 
@@ -128,7 +128,8 @@ with keyboard; controller input verified in the tutorial).
   measured presets, the game's FXAA at the internal resolution, bloom and motion blur strength,
   long falls at high frame rates
 - [ ] Installer tested on a clean Windows VM (#27)
-- [x] Ultrawide: projection hook for 21:9, 3D camera (#24); the HUD is still stretched
+- [x] Ultrawide: projection hook for 21:9, 3D camera, the HUD at the window's edges, movies with
+  side bars (#24, closed 2026-10-22)
 - [ ] Docs mirrored into the GitHub wiki (#4)
 
 **Done when:** 4K and 21:9 render correctly, the portal can be used with a controller only, and the

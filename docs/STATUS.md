@@ -608,3 +608,8 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   Start: BinkOpen's header hook; end: a hook at the start of BinkClose (sub_83084128, called only
   from the game's movie close). Checked by script in a 2560x1080 window with skip_intro off: the
   logos 16:9 in the middle, the screen after them fills the window again.
+
+## 2026-10-22: session log (night)
+
+- **Portal library** (cbc71c6, 0eb2564): the later games' cards say "Fahrzeug", "Sensei", "Falle" and "Serie 2" in the German menu; a plain hat symbol where a game has no hat picture.
+- **Issues closed** that were done: #24 ultrawide (in all six games now), #48 the figure details (#40 and #41 stay open until the owner's play test, as the roadmap says).
