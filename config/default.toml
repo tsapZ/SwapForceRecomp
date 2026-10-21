@@ -49,6 +49,16 @@ address = 0x83081EB8
 name = "BinkHeaderLoaded"
 registers = ["r1"]
 
+# 0x83084128 is the start of BinkClose (the Bink 2 SDK's, the same code in all four later games):
+# found as the one Bink call in the game's movie close (sub_825A7620), which clears the movie's
+# handle right after it; that close is its only caller. With ultrawide active,
+# src/hooks/ultrawide_hook.cpp turns the presenter's side bars it put up for the movie (at
+# BinkOpen, see BinkHeaderLoaded) off again; it reads and changes no guest state.
+[[midasm_hook]]
+address = 0x83084128
+name = "BinkCloseHook"
+registers = []
+
 # 0x82F5C258 queues a D3D swap (called from the game's present path); r3 is the swap word, bits 8-11
 # are the presentation interval (2 = 30 FPS). Found by stack-walking the waiting main thread to the
 # D3D swap queue and reading the vblank handler sub_82F5C128. src/hooks/frame_rate_hook.cpp can

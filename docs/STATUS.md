@@ -602,3 +602,9 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
   expected one does it. Off by default: the pause menu's dimming is laid out 1280 wide and leaves a
   light strip at the right. Checked by script in a 2560x1080 window: the title, the hub's HUD at
   the left edge, the pause menu.
+- **Movies on ultrawide** (2026-10-21): the logo movies and the opening movie are 16:9 Bink
+  movies; while one plays the presenter shows it with black bars at the sides instead of
+  stretched (present_use_actual_aspect off and present_letterbox on for that time, not saved).
+  Start: BinkOpen's header hook; end: a hook at the start of BinkClose (sub_83084128, called only
+  from the game's movie close). Checked by script in a 2560x1080 window with skip_intro off: the
+  logos 16:9 in the middle, the screen after them fills the window again.
