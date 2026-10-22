@@ -3,6 +3,8 @@
 #define MyAppExeName "swapforcerecompiled.exe"
 
 [Setup]
+; Each game its own AppId: Windows keeps one uninstall entry per AppId and Inno Setup finds a
+; previous install by it, so a shared one made the games' setups take each other's folder.
 AppId={{C3E00C3F-6CE0-4100-BD9B-13F9B4A8CCBA}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
