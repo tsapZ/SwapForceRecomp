@@ -199,6 +199,8 @@ class SwapforcerecompApp : public rex::ReXApp {
     swapforcerecomp::InstallGameArt(runtime()->memory(), game_data_root() / "archives");
     // 16x texture filtering unless the owner set his own (skylanders-portal settings_schema.h).
     skylanders::ApplyGraphicsDefaults();
+    // An HD texture pack in Documents\Skylanders\Textures\Swap Force, if there is one.
+    skylanders::UseTexturePack(user_data_root(), "Swap Force");
     // Estimate the EDRAM extent of draws without clipping by running their vertex shader on the
     // CPU (Xenia's default; the SDK defaults to off). Without it, with the faster RTV render target
     // path, a full-screen pass into the k_32_FLOAT target at EDRAM base 507 counts as using the
