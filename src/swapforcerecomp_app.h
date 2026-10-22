@@ -37,6 +37,7 @@
 #include "portal_rex/portal_menu_input.h"
 #include "portal_rex/player_menu.h"
 #include "portal_rex/settings_menu.h"
+#include "portal_rex/settings_schema.h"
 #include "settings_pages.h"
 #include "portal_rex/portal_rex.h"
 #include "xex_verify.h"
@@ -142,6 +143,10 @@ class SwapforcerecompApp : public rex::ReXApp {
     SetDefaultIfUnset("present_effect", "cas");
     // Swap Force recognizes figures of its own and the two earlier games only.
     SetDefault("portal_menu_games", "Spyro's Adventure;Giants;Swap Force");
+    // For the launcher (Core of Light): the settings menu's pages with their values as a file,
+    // then quit, before a window opens (--settings_schema, settings_schema.h).
+    skylanders::WriteSettingsSchemaIfRequested(
+        config, [] { return swapforcerecomp::BuildSettingsPages([] {}); }, settings_path_);
   }
 
   void OnPostSetup() override {
@@ -283,6 +288,8 @@ class SwapforcerecompApp : public rex::ReXApp {
   }
 
   void OnPostInitLogging() override {
+    // The launcher only wants the settings pages (settings_schema.h), which need no disc.
+    if (skylanders::SettingsSchemaRequested()) return;
     // ReXApp reports a missing --game_data_root itself when it builds the runtime.
     if (game_data_root_.empty()) return;
     const auto xex = game_data_root_ / "default.xex";
