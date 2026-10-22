@@ -613,3 +613,9 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
 
 - **Portal library** (cbc71c6, 0eb2564): the later games' cards say "Fahrzeug", "Sensei", "Falle" and "Serie 2" in the German menu; a plain hat symbol where a game has no hat picture.
 - **Issues closed** that were done: #24 ultrawide (in all six games now), #48 the figure details (#40 and #41 stay open until the owner's play test, as the roadmap says).
+
+## 2026-10-22: later the same night
+
+- **Settings file read even with a repeated key** (SDK fork 96273bb): a key set twice in a table makes the whole TOML file invalid, and the game then ignored every setting in it without a visible error (the error went to a log that didn't exist yet). The SDK now reads such a file with the repeats left out and logs which key was repeated.
+- **`--settings_schema=<file>`** (skylanders-portal 25dec20): the game writes its F4 menu's pages with their values and quits before a window opens; the Core of Light launcher shows them as the game's settings and writes into this game's settings file.
+- **Figure pictures for the launcher** (skylanders-portal e87feb3): while the game runs, every figure picture it reads from the disc goes into `Documents\Skylanders\Pictures\<game>` once, for the launcher's figure library.
