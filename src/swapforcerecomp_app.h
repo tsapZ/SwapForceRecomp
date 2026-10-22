@@ -185,13 +185,8 @@ class SwapforcerecompApp : public rex::ReXApp {
     swapforcerecomp::InstallToyImages(runtime()->memory(), game_data_root() / "archives");
     // Element and stat symbols, hats and upgrades for the menu, also from the game's files.
     swapforcerecomp::InstallGameArt(runtime()->memory(), game_data_root() / "archives");
-    // Default to 16x anisotropic filtering (the SDK defaults to 4x): ground and floor textures seen
-    // at a shallow angle stay sharp, for a negligible cost on PC GPUs. Only when the user hasn't set
-    // it themselves.
-    if (!rex::cvar::HasNonDefaultValue("anisotropic_override") &&
-        !rex::cvar::SetFlagByName("anisotropic_override", "5")) {
-      REXLOG_WARN("Could not set anisotropic_override to 16x");
-    }
+    // 16x texture filtering unless the owner set his own (skylanders-portal settings_schema.h).
+    skylanders::ApplyGraphicsDefaults();
     // Estimate the EDRAM extent of draws without clipping by running their vertex shader on the
     // CPU (Xenia's default; the SDK defaults to off). Without it, with the faster RTV render target
     // path, a full-screen pass into the k_32_FLOAT target at EDRAM base 507 counts as using the

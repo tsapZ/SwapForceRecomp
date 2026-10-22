@@ -621,3 +621,7 @@ Testing rule: copied `--user_data_root`; scripted runs use `--input_script` (doc
 - **Figure pictures for the launcher** (skylanders-portal e87feb3): while the game runs, every figure picture it reads from the disc goes into `Documents\Skylanders\Pictures\<game>` once, for the launcher's figure library; later the same night (skylanders-portal 7f6a34a) also the hats it knows (hats.txt, their pictures) and the upgrade trees of the figures in the figure folder; and
 (skylanders-portal ca65339) the game's achievement list with the title's own pictures, for the
 launcher's achievements screen.
+- **Nothing skipped by default** (the owner's choice, 2026-10-22): `skip_intro` is off, the logo
+  movies play as on the console (the option skips them); the settings templates say so too. The
+  16x texture filter now comes from skylanders-portal (`ApplyGraphicsDefaults`), so the Core of
+  Light launcher shows 16x as the game uses it.
