@@ -38,6 +38,7 @@
 #include "portal_rex/player_menu.h"
 #include "portal_rex/settings_menu.h"
 #include "portal_rex/settings_schema.h"
+#include "portal_rex/title_music.h"
 #include "settings_pages.h"
 #include "portal_rex/portal_rex.h"
 #include "xex_verify.h"
@@ -101,6 +102,12 @@ class SwapforcerecompApp : public rex::ReXApp {
     swapforcerecomp::ShutdownToyImages();
   }
 
+  // The title screen's music: one stereo track of the interactive music's launch bank, the only
+  // file the game streams there (found with a run logging its file reads, 2026-10-22).
+  static skylanders::TitleMusicSource TitleMusic() {
+    return {{"archives/INTER_Streamed_Launch_bank.pak", "INTER_Results_Screen"}};
+  }
+
   void OnPreSetup(rex::RuntimeConfig& config) override {
     // Before the GPU plugin creates its device (testing only, gpu_crash_diagnostics).
     swapforcerecomp::EnableGpuCrashDiagnostics();
@@ -147,6 +154,8 @@ class SwapforcerecompApp : public rex::ReXApp {
     // then quit, before a window opens (--settings_schema, settings_schema.h).
     skylanders::WriteSettingsSchemaIfRequested(
         config, [] { return swapforcerecomp::BuildSettingsPages([] {}); }, settings_path_);
+    // For the launcher: the title music from the disc as a file, then quit (--export_title_music).
+    skylanders::ExportTitleMusicIfRequested(game_data_root(), TitleMusic());
   }
 
   void OnPostSetup() override {
@@ -156,6 +165,9 @@ class SwapforcerecompApp : public rex::ReXApp {
     // The figure pictures this game reads from the disc, also as files for the Core of Light
     // launcher's figure library (Documents\Skylanders\Pictures\Swap Force).
     skylanders::StartFigurePictureCache(skylanders::SharedPicturesDir(user_data_root(), "Swap Force"));
+    // And the title music, once (title_music.h).
+    skylanders::StartTitleMusicExport(game_data_root(), TitleMusic(),
+                                      skylanders::SharedPicturesDir(user_data_root(), "Swap Force"));
     // A real crash logs where in the game it happened (guest call chain and registers).
     swapforcerecomp::InstallCrashReport(runtime()->memory());
     // The achievements list (F7, F4 > Spiel > Erfolge); the kernel's list exists from launch on.
