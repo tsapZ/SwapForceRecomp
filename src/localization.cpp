@@ -9,13 +9,17 @@
 #include <rex/cvar.h>
 #include <rex/logging.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 // Defined in the SDK (xam_user.cpp); both XGetLanguage and ExGetXConfigSetting read this.
 REXCVAR_DECLARE(uint32_t, user_language);
 
-REXCVAR_DEFINE_STRING(language, "english", "Game",
-                      "Game text/voice language: english, french, german, spanish, italian. A "
-                      "raw Xbox 360 language ID (a number) also works, for languages the disc "
-                      "supports that aren't confirmed here yet.");
+REXCVAR_DEFINE_STRING(language, "auto", "Game",
+                      "Game text/voice language: auto (German when Windows shows German, else "
+                      "English: the disc has those two), english, german. A raw Xbox 360 "
+                      "language ID (a number) also works, for experiments.");
 
 namespace swapforcerecomp {
 
@@ -25,6 +29,15 @@ std::string Lower(std::string s) {
   std::transform(s.begin(), s.end(), s.begin(),
                  [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
   return s;
+}
+
+// The Windows display language, as far as this disc has it (English and German): German for a
+// German Windows, English for any other, as "auto" in the other ports picks it.
+std::string SystemLanguage() {
+#ifdef _WIN32
+  if (PRIMARYLANGID(GetUserDefaultUILanguage()) == LANG_GERMAN) return "german";
+#endif
+  return "english";
 }
 
 }  // namespace
@@ -46,7 +59,11 @@ void ApplyLanguageSetting() {
       {"english", 1}, {"german", 3}, {"french", 4}, {"spanish", 5}, {"italian", 6},
   };
 
-  const std::string setting = Lower(REXCVAR_GET(language));
+  std::string setting = Lower(REXCVAR_GET(language));
+  if (setting == "auto") {
+    setting = SystemLanguage();
+    REXLOG_INFO("Language: auto, from the Windows display language");
+  }
   if (auto it = kNames.find(setting); it != kNames.end()) {
     REXCVAR_SET(user_language, it->second);
     REXLOG_INFO("Language: {} (id {})", setting, it->second);
