@@ -29,7 +29,8 @@ quality, then the controller-only Skylanders-style menus and a release.
 | **Now** | At 200 FPS, jump off a long drop: the game used to put the player back after 3 s of falling, now fixed (`fix_stuck_falling`) | you |
 | Next | USB portal device list in the settings menu (#47) | me |
 | **Now** | Try "Native 3D picture (experimental)" on the graphics page in a level: sharper 3D scene at 1280x720 instead of 1040x620, about a fifth of the frame rate; report anything black or flickering (#41) | you |
-| **Now** | Look at the controls page of the settings menu: every menu button on the game's controller picture; decide whether the faster x86-64-v3 build (+8 % where the CPU limits, needs a CPU from 2013 on) should be the default (docs/performance.md) | you |
+| **Now** | Look at the controls page of the settings menu: every menu button on the game's controller picture | you |
+| Decided | x86-64-v3 stays off (2026-10-22, left to me in #53): +8 % only where the CPU limits (scale 1); at the owner's scale 2 the GPU limits and it gains nothing, while it needs a CPU from 2013 on and a full rebuild of every game (docs/performance.md) | me |
 | Research | Performance (#44): GPU-bound, ~25 % EDRAM emulation; next: measure frame pacing (PresentMon), a resolution scale threshold for small targets, direct resolves (docs/performance.md) | me |
 | Research | Best default settings (#50): D3D12 vs. Vulkan, what RPCS3 / Cemu / Dolphin do for a clean Skylanders picture, measured presets | me |
 | Then | Installer for a first release (#27) | me, test on a clean VM |

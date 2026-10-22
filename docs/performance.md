@@ -81,7 +81,11 @@ Research of 2026-10-20 (source code and official docs; "unverified" where only a
 4. **Pre-built pipelines:** create the pipelines the shader storage already knows in the
    background at start-up. A pipeline list built from the game's shaders is derived from game
    data, so it can't be shipped in the repository; it has to come from the owner's own runs.
-5. **x86-64-v3** as a second exe or the default (above): +8 % where the CPU limits.
+5. **x86-64-v3** as a second exe or the default (above): +8 % where the CPU limits. Decided
+   2026-10-22 (the owner left it to me): not the default, since at resolution scale 2, the
+   owner's setting, the GPU limits and v3 gains nothing; it would need a CPU from 2013 on and a
+   full rebuild of all six games. Worth it again only if the CPU becomes the limit (scale 1 on a
+   fast GPU, or the native renderer).
 6. **Long term:** resolves that stay on the GPU by hooking the game's own Direct3D resolve and
    render target calls, as UnleashedRecomp does for its whole renderer. Large and game-specific;
    it would take most of the EDRAM cost away.
