@@ -15,6 +15,10 @@ The game uses that folder by itself when it exists; the log says `HD textures fr
 `Texture replacement: N DDS files`. With no folder nothing changes. `texture_replace_dir = "<folder>"`
 in the settings file points it elsewhere.
 
+F4 > Grafik > **HD-Texturen** (`hd_textures`, on by default) switches between the pack and the
+game's own textures; it takes effect when the game starts again (the log then says `HD textures off`).
+The row is in all six games.
+
 ## Making a pack
 
 1. **Collect the textures.** Start the game with `--texture_dump_dir=<folder>` and play the places

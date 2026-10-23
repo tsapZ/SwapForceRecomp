@@ -49,7 +49,7 @@ See [portal.md](portal.md#player-menu-l3--r3--f9).
 
 - **Graphics:** preset (Performance: scale 1 + FSR; Quality: scale 2 + CAS, recommended; Best:
   scale 3 + CAS), internal resolution (`resolution_scale`), sharpening (`present_effect`), texture
-  filtering (`anisotropic_override`), the game's own edge smoothing kept sharp
+  filtering (`anisotropic_override`), HD textures on or off (`hd_textures`, with a pack installed), the game's own edge smoothing kept sharp
   (`fxaa_follow_resolution_scale`, on), extra edge smoothing (`swap_post_effect`, with the warning
   from #45), glow (`bloom_strength`: off, weak, as in the game, strong), motion blur
   (`motion_blur_strength`: off by default, half, as in the game), native 3D picture
