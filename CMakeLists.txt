@@ -56,6 +56,7 @@ set(SWAPFORCERECOMP_SOURCES
     src/hooks/figure_intro_hook.cpp
     src/hooks/frame_rate_hook.cpp
     src/hooks/fxaa_scale_hook.cpp
+    src/hooks/newsworthy_hook.cpp
     src/hooks/post_effects_hook.cpp
     src/hooks/scene_size_hook.cpp
     src/hooks/stuck_falling_hook.cpp

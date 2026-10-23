@@ -650,3 +650,17 @@ launcher's achievements screen.
   Silent install from the owner's ISO, start (German title screen), silent uninstall: checked.
 - **Language "auto"** (German when Windows shows German, else English) as in the other ports,
   now the default.
+
+## 2026-10-23: session log (day)
+
+- **"Newsworthy" offline** (achievement 48, the one of the 39 that needed the Message of the Day
+  from Activision's servers): `src/hooks/newsworthy_hook.cpp` (`motd_offline`, on) sends the
+  signpost's CMessageOfTheDayAvailableMessage itself while the player is in Woodburrow and no
+  message was downloaded, the way the game sends it after a download, and leaves out the MOTD
+  screen there is nothing for. The game awards the achievement itself when the signpost is used.
+  Checked: in Woodburrow (town state 1) the log says the signpost is enabled, and the game runs on
+  as before. The signpost is only there from town state 4 on; using it is not tested yet (no save
+  that far here).
+- **HD textures:** F4 > Grafik > HD-Texturen switches a pack off and on (skylanders-portal
+  8ab11ee). Every texture of the disc can be read with the SDK's dump names, so a pack needs no
+  playing (#62).
