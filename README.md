@@ -36,7 +36,7 @@ Then:
 
 1. Download from the [Releases](https://github.com/tsapZ/SwapForceRecomp/releases) page: just this game's
    installer, or [Core of Light](https://github.com/tsapZ/SkylandersCoreOfLight/releases), the
-   launcher with all six games.
+   launcher that downloads and sets up all six games.
 2. Start it and choose your ISO. It checks that it is the right disc and sets the game up.
 3. Play. When the game asks for a Skylander, the portal menu opens by itself: pick one.
 
@@ -134,10 +134,11 @@ Details: [docs/development.md](docs/development.md) and [docs/build.md](docs/bui
 - **[ReXGlue SDK](https://github.com/rexglue/rexglue-sdk)** by Tom Clay is the recompiler and
   runtime everything here is built on. It comes from the [Xenia](https://xenia.jp) emulator (Ben
   Vanik and contributors) and is inspired by [XenonRecomp](https://github.com/hedge-dev/XenonRecomp)
-  by hedge-dev. Used through TheBiemGamer's fork as a submodule; keeps its own license.
+  by hedge-dev. Used as a submodule, in TheBiemGamer's fork with our fixes on top; keeps
+  its own license.
 - **[skylanders-portal](https://github.com/TheBiemGamer/skylanders-portal)** by TheBiemGamer
-  provides the portal protocol, software and USB portal, overlay and figure catalog. Submodule;
-  keeps its own license.
+  provides the portal protocol, software and USB portal, overlay and figure catalog. Submodule,
+  in a fork with the shared portal and settings menus on top; keeps its own license.
 - **[extract-xiso](https://github.com/XboxDev/extract-xiso)** is included (prebuilt, unmodified) in
   `installer/` to unpack an Xbox 360 ISO. It keeps its own license
   (`installer/extract-xiso.LICENSE.txt`).
