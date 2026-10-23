@@ -664,3 +664,8 @@ launcher's achievements screen.
 - **HD textures:** F4 > Grafik > HD-Texturen switches a pack off and on (skylanders-portal
   8ab11ee). Every texture of the disc can be read with the SDK's dump names, so a pack needs no
   playing (#62).
+- **Swapper builder redone** (skylanders-portal 12905c0): two picture grids, tops above bottoms,
+  one column per element, Y for a character's versions; on a swapper in "Recent" LB changes only
+  the top and RB only the bottom (the owner's idea). Checked with a scripted run: Doom Stone from
+  Recent, LB, top to Fire Kraken, bottom to Gold & Bronze Doom Stone with Y, A placed "Fire
+  Stone".

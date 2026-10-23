@@ -135,10 +135,16 @@ controller or the keyboard:
   RB or 1 / 3 to switch the row (element, or game in the Items tab), X or L for details, Start or
   O for options. A on a character opens its versions (Series 1-4, LightCore, variants, chase
   variants, Eon's Elite).
-- **Swapper builder:** A on a swapper opens two lists side by side, tops and bottoms, starting
-  with the chosen swapper whole. Up / down picks a half, left / right (or LB / RB) switches the
-  list, the preview shows the combination and its name (top's first word + bottom's last: Blast
-  Zone + Fire Kraken = "Blast Kraken"), A puts both halves on.
+- **Swapper builder:** A on a swapper opens two picture grids, the tops above the bottoms, one
+  column per element (two swappers each), starting with the chosen swapper whole. The stick moves
+  through both grids (up out of the bottoms goes to the tops and back, each keeps its choice), LB /
+  RB jump to the tops / bottoms, Y switches a tile between the character's versions (Legendary,
+  Dark, chase; one dot per version, the version's word on the picture), the other grid is dimmed.
+  The preview shows the combination and its name (top's first word + bottom's last: Blast Zone +
+  Fire Kraken = "Blast Kraken"), A puts both halves on.
+- **Swap one half from Recent:** on a swapper in "Recent" (usually first, the one just lifted), LB
+  opens the builder on its top and RB on its bottom, the other half already chosen; the half that
+  stays keeps that entry's own figure file.
 - **Items:** magic items and adventure packs of the games in `portal_menu_games`. There is one
   item spot, shared by all players: A puts an item on without taking the player's Skylander off
   (it stays on the portal in its own slot) and replaces the item that was on; any player takes it
