@@ -12,6 +12,7 @@ input from the game while they are open.
 | Player menu: which controller is which player | L3 + R3, or F4 > Portal > "Spieler-Menü öffnen" | F9 | `player_menu_buttons`, `bind_player_menu` |
 | Settings menu (also over the portal or player menu, which then closes like with B) | Back + RB | F4 | `settings_menu_buttons`, `bind_settings_menu` |
 | Achievements | F4 > Spiel > Erfolge | F7 | `bind_achievements` |
+| Report a problem: keeps the picture of the moment and the kind of problem (and a few typed words) in `logs\problem-<date>.txt` / `.png`; Core of Light's report takes them along | F4 > Game > "Report a problem" | | |
 | Quit or restart the game (both ask first, "Nein" chosen) | F4 > Spiel > "Spiel beenden" / "Spiel neu starten" | Alt+F4 | |
 | All settings (developer list of the SDK) | from the settings menu, last page | F10 | `bind_settings` |
 | Debug overlay (FPS) | | F3 | `bind_debug_overlay` |
