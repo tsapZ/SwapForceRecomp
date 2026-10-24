@@ -25,7 +25,8 @@ RE tooling. The phase plan lives in `../PROJEKT.md` (outside the repo, never com
   adapt the plan.
 - Git identity is repo-local (`git config user.name/user.email`), never global.
 - Scripted or experimental game runs use a copied `--user_data_root`, never the user's real
-  `Documents\swapforcerecomp` (saves and figure dumps). See docs/development.md.
+  `Documents\Skylanders\Swap Force` or the old `Documents\swapforcerecomp` (saves), nor
+  `Documents\Skylanders\Figures` (figure dumps). See docs/development.md.
 
 ## Build
 

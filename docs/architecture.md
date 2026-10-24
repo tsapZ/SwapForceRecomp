@@ -56,7 +56,7 @@ tables without bounds checks), the fix goes into `config/default.toml`, never in
 |---|---|
 | `OnPreSetup` | adjusts the runtime configuration |
 | `OnPostInitLogging` | runs `VerifyXex` against the expected SHA-256 and refuses wrong dumps |
-| `OnConfigurePaths` | sets up the user data folder (default `Documents\swapforcerecomp`) |
+| `OnConfigurePaths` | sets up the user data folder (default `Documents\Skylanders\Swap Force`, the old `Documents\swapforcerecomp` copied there once) |
 | `OnPostSetup` | `skylanders::InstallPortal(...)`: creates the portal backend |
 | `OnConfigureFonts`, `OnConfigureStyle` | ImGui look for the overlays |
 | `OnCreateDialogs` | `skylanders::RegisterPortalOverlay(...)`: binds F6 |
