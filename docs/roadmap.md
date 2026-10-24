@@ -157,8 +157,9 @@ software portal, so they are planned once for all games. Nothing of it was built
 
 - [x] Two players in the player menu, for all games (#56)
 - [x] Hat bonuses with symbol, name and value in all games (#58)
-- [x] The game's gold symbol (#57): Swap Force and Giants; Spyro's Adventure still draws one.
-      Open: a fancier portal under the figure (low priority)
+- [x] The game's gold symbol (#57), now in all six games, and a portal under the figure more like
+      the game's (glow round its side, sparks, rings of light; 0.1.0-beta.9)
+- [x] Keyboard keys changeable in F4 > Tastatur (#63, 0.1.0-beta.9)
 - [x] Controls page: the controller in use (Xbox picture, drawn PlayStation / Nintendo / generic
       pads) and a keyboard view (#55)
 - [x] Achievements: Xbox 360-style pop-up, list with the controller (#59)
