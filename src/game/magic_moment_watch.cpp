@@ -52,6 +52,10 @@ constexpr uint32_t kReasonOffset = 0xE8;
 constexpr uint32_t kPlayerOffset = 0x148;
 constexpr uint32_t kStateZoomOut = 3;
 constexpr uint32_t kStateIdle = 5;
+// eMMS_Dead (the state names at 0x820921C4: ... 12 SpawnInLevel, 13 Dead, 14 PvPDead, ...): a
+// player's Skylander died and the game waits for that player's next one (the owner, 2026-10-25:
+// the menu should open then too, as in SuperChargers and Imaginators).
+constexpr uint32_t kStateDead = 13;
 constexpr uint32_t kStateError = 16;
 // The error screen must stay this long before the portal check opens, and if it was closed with
 // the error still up, it comes back after a while.
@@ -90,9 +94,12 @@ std::optional<Prompt> CurrentPrompt(rex::memory::Memory* memory) {
     g_last_state = *state;
     // A menu opened with the button comes up during the zoom-out, just before the prompt.
     if (*state == kStateZoomOut && player && *player < 4) skylanders::PortalScreenComing(*player);
+    // A Skylander out of health: marked in the menu until it has rested (a new level).
+    if (*state == kStateDead && player && *player < 4) skylanders::PlayerSkylanderTired(*player);
   }
   const auto reason = ReadGuest32(memory, *instance + kReasonOffset);
-  if (!state || !player || !reason || *state != kStateIdle || *player >= 4) return std::nullopt;
+  if (!state || !player || !reason || *player >= 4) return std::nullopt;
+  if (*state != kStateIdle && *state != kStateDead) return std::nullopt;
   return Prompt{*player, *reason};
 }
 
