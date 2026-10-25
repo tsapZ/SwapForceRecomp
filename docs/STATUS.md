@@ -719,3 +719,18 @@ launcher's achievements screen.
   follows it again once the keys or the pad move it.
 - **A chosen 4x texture filter stays 4x** (Core of Light #21, a colleague's report and fix;
   skylanders-portal 23be5f2): 4x is the SDK's own default, so it counted as unset and became 16x.
+
+## 2026-10-25: night (after 0.2.0-beta.1)
+
+- **Portal overview** (SwapForceRecomp #70; skylanders-portal f2c4940): Back + Y / F5 list what is
+  on the portal and take single figures off (the magic item too) without lifting the Skylander;
+  it replaces the old "item off" button.
+- **F4 > Controller** (SwapForceRecomp #71, #73; skylanders-portal 6e96c16): what each controller
+  button does in the game (`pad_map_*`) and the vibration strength per player (`pad_rumble_p1/2`,
+  10 % steps, a short buzz at each change). The page shows and saves; not yet tried with a real
+  controller.
+- **Nightmare from the start** (SwapForceRecomp #74, `nightmare_from_start`, off by default, F4 >
+  Spiel): the difficulty screen's check (sub_82C12BC0) allows level 3 only when sub_829CC788 reads
+  the profile value "nightmare_difficulty_unlocked" as 1; the hook answers yes without reading, and
+  nothing is written. Checked on a copied save: without the setting Albtraum shows the lock and "Schaffe
+  das Spiel ...", with it the Kaos picture and its text, and A on it starts a new game.
