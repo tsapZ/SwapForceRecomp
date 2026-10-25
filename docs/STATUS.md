@@ -734,3 +734,11 @@ launcher's achievements screen.
   the profile value "nightmare_difficulty_unlocked" as 1; the hook answers yes without reading, and
   nothing is written. Checked on a copied save: without the setting Albtraum shows the lock and "Schaffe
   das Spiel ...", with it the Kaos picture and its text, and A on it starts a new game.
+
+## 2026-10-25: 0.2.0-beta.2
+
+- The setup's version for what came since 0.2.0-beta.1: Nightmare from the start as an option (#74). Also in every game: the portal overview (Back + Y / F5: what is on the portal, taken off one by one without lifting the
+  Skylander) and F4 > Controller (button jobs, vibration strength per player; not yet tried with a
+  real controller), skylanders-portal f2c4940 / 6e96c16; an A press right after the menu opened by
+  itself no longer picks a figure (SwapForceRecomp #72); one bad command-line option no longer drops
+  the others (rexglue-sdk 605000d).
