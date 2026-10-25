@@ -160,6 +160,15 @@ software portal, so they are planned once for all games. Nothing of it was built
 - [x] The game's gold symbol (#57), now in all six games, and a portal under the figure more like
       the game's (glow round its side, sparks, rings of light; 0.1.0-beta.9)
 - [x] Keyboard keys changeable in F4 > Tastatur (#63, 0.1.0-beta.9)
+- [x] Mouse wheel in the menus (#65, 0.2.0-beta.1)
+- [x] Portal overview: Back + Y / F5, single figures off without lifting the Skylander (#70,
+      0.2.0-beta.2); holding Guide for it not yet
+- [ ] F4 > Controller: button jobs (#71) and vibration strength per player (#73), in 0.2.0-beta.2;
+      for the owner to try with a real controller
+- [x] An A press right after the portal menu opened by itself is ignored (#72, 0.2.0-beta.2)
+- [ ] Nightmare from the start (#74): Swap Force and Imaginators in 0.2.0-beta.2 (F4 > Spiel),
+      SuperChargers has it open anyway; Giants and Trap Team still to do (their lock is in the
+      title level's scripts)
 - [x] Controls page: the controller in use (Xbox picture, drawn PlayStation / Nintendo / generic
       pads) and a keyboard view (#55)
 - [x] Achievements: Xbox 360-style pop-up, list with the controller (#59)
