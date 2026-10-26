@@ -30,7 +30,12 @@ Measured numbers are from the hub, 2560x1440 window, RTV render path, `present_i
   Windows timer resolution to 1 ms at start-up (`SDL_timer.c`), so the steps are about 1 ms.
 - **First-time hitches** come from creating shaders and pipelines; the SDK has
   `async_shader_compilation` (on) and keeps them in its shader storage, so each happens once per
-  install.
+  install. The pipelines the storage knows are created again at start-up, before the first frame
+  ("Created 490 graphics pipelines ... from the storage in 38 milliseconds" in this game's log,
+  321 ms on a cold start).
+- **Big files read whole** go in one read, not through `istreambuf_iterator` (byte by byte with
+  MSVC: 85 against 18 ms for a 16 MB archive, measured 2026-10-26): the HD textures' DDS files
+  (rexglue-sdk ce9dbb6) and Spyro's Adventure's picture archives (SSARecomp c5d71e0).
 
 ## What emulators and other recompilations do
 
@@ -78,9 +83,9 @@ Research of 2026-10-20 (source code and official docs; "unverified" where only a
    scalable dimension): blur and bloom targets at 1x; more FPS at scale 2 and 3. SDK work.
 3. **Direct resolves** for the cases without format conversion (#44, the Xenia TODO): skips the
    EDRAM dump; estimated about 10 % before, not measured. SDK work.
-4. **Pre-built pipelines:** create the pipelines the shader storage already knows in the
-   background at start-up. A pipeline list built from the game's shaders is derived from game
-   data, so it can't be shipped in the repository; it has to come from the owner's own runs.
+4. **Pre-built pipelines:** already there (the SDK creates the storage's pipelines at
+   start-up, see above). What's left is a first run's hitches: a pipeline list built from the
+   game's shaders is derived from game data, so it can't be shipped in the repository.
 5. **x86-64-v3** as a second exe or the default (above): +8 % where the CPU limits. Decided
    2026-10-22 (the owner left it to me): not the default, since at resolution scale 2, the
    owner's setting, the GPU limits and v3 gains nothing; it would need a CPU from 2013 on and a
