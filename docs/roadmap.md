@@ -166,9 +166,9 @@ software portal, so they are planned once for all games. Nothing of it was built
 - [ ] F4 > Controller: button jobs (#71) and vibration strength per player (#73), in 0.2.0-beta.2;
       for the owner to try with a real controller
 - [x] An A press right after the portal menu opened by itself is ignored (#72, 0.2.0-beta.2)
-- [ ] Nightmare from the start (#74): Swap Force and Imaginators in 0.2.0-beta.2 (F4 > Spiel),
-      SuperChargers has it open anyway; Giants and Trap Team still to do (their lock is in the
-      title level's scripts)
+- [x] Nightmare from the start (#74): Swap Force and Imaginators in 0.2.0-beta.2 (F4 > Game),
+      SuperChargers has it open anyway; Giants and Trap Team since 2026-10-26 (their lock is in
+      the title level's scripts: a hook on the one script check / parameter)
 - [x] Controls page: the controller in use (Xbox picture, drawn PlayStation / Nintendo / generic
       pads) and a keyboard view (#55)
 - [x] Achievements: Xbox 360-style pop-up, list with the controller (#59)
