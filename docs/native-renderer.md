@@ -14,7 +14,7 @@ Research behind it: tsapZ/SkylandersCoreOfLight docs/other-ports.md and docs/ai-
 |---|---|---|
 | Recompiled functions | 81,508 | generated code |
 | Shaders used so far | 320 (403 pipelines) | the owner's shader storage after the tutorial, the first level and the hub |
-| One hub frame | about 75 render passes, about 1,200 draws | RenderDoc capture, `tools/renderdoc/list.py` + `group.py` |
+| One hub frame | about 75 render passes, about 1,200 draws | RenderDoc capture, `thirdparty/skylanders-portal/tools/renderdoc/list.py` + `group.py` |
 | Frame layout | deferred: shadow maps (one pass alone ~670 draws), G-buffer of 3 colour targets + depth (~290 draws), lighting, water, bloom / depth of field / motion blur, FXAA, HUD | same capture |
 | Xbox 360 D3D library | about 800 functions at 0x82F50000-0x82F80000 (found from the callers of the kernel's `Vd*` imports, 0x82F59BC0-0x82F70D00), about 130 of them called from the game | `d3dsurface.py` (scratch) over the generated code; the C runtime (memcpy, memset, XMemCpy) sits right below it at 0x82F40000 |
 | GPU packets written outside D3D | none found (the hits were status-code compares in the game's exception handler) | same |

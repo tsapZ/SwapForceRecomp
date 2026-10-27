@@ -172,7 +172,7 @@ controller or the keyboard:
   material in their toy data (`CPetToyData`); their icons go by the character name
   (`Pet_Terrabite` -> `collection_pet_terrabite_normal`, the Giants sidekicks with "lil":
   `collection_pet_liltreerex_normal` for Barkley). Only UFO Hat has no icon. Readers for the
-  Alchemy formats are in `src/game/alchemy/` (IGA archives with LZMA blocks, IGZ textures, IGX
+  Alchemy formats are in `thirdparty/skylanders-portal/src/alchemy/` (IGA archives with LZMA blocks, IGZ textures, IGX
   text). Indexing takes about 150 ms in the background right after start-up; pictures are decoded
   when they first show. Nothing of the game's data goes into the repository. The menu
   library only sees a picture/name provider (`SetFigureImageProvider`, `SetFigureNameProvider`).

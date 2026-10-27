@@ -1,56 +1,41 @@
 # CLAUDE.md: SwapForceRecomp
 
+The rules every Skylanders repository follows (tests only on copies of the owner's data, git and
+GitHub, shared code, releases) are in Core of Light's maintainer/RULES.md
+(https://github.com/tsapZ/SkylandersCoreOfLight/blob/main/maintainer/RULES.md):
+
+@../../SkylandersCoreOfLight/SkylandersCoreOfLight/maintainer/RULES.md
+
 ## Goal
 
 Native Windows port of Skylanders: Swap Force (Xbox 360, `rom/default.xex`) via ReXGlue static
-recompilation: 4K/ultrawide, software + USB portal, settings overlay. Online co-op and profiles
-belong to the hub repo, Skylanders: Core of Light (`tsapZ/SkylandersCoreOfLight`), not to this
-game; this game must stay complete without the hub.
+recompilation, one of six built the same way: the SDK (`thirdparty/rexglue-sdk`) and the app,
+portal, menus, disc check and test tools (`thirdparty/skylanders-portal`) are shared. The game
+stays complete on its own; Core of Light, the launcher, only starts it.
 
-Template: GiantsRecomp (Skylanders Giants, same engine generation and toolchain). Reference clone
-with submodules at `../_ref/GiantsRecomp`; read its README.md and docs/*.md before changing build or
-RE tooling. The phase plan lives in `../PROJEKT.md` (outside the repo, never committed).
+## This game
 
-## Rules
-
-- Analyse first, then build. When unclear, ask instead of guessing.
-- Small commits, Conventional Commits (`feat:`, `fix:`, `build:`, `docs:`).
-- Never commit game data, secrets or tokens. Before EVERY commit check `git status`: no `rom/`
-  content, `*.xex`, `*.iso` or figure dumps.
-- No personal information about the owner in files, commit messages or docs.
-- Every `config/default.toml` entry and every kernel stub gets a comment: what is at the address,
-  how it was found, why the fix or stub is safe (same convention as GiantsRecomp).
-- Do not modify submodules (`thirdparty/`) except on clearly named own branches.
-- If Swap Force differs technically from Giants in a significant way, report it immediately and
-  adapt the plan.
-- Git identity is repo-local (`git config user.name/user.email`), never global.
-- Scripted or experimental game runs use a copied `--user_data_root`, never the user's real
-  `Documents\Skylanders\Swap Force` or the old `Documents\swapforcerecomp` (saves), nor
-  `Documents\Skylanders\Figures` (figure dumps). See docs/development.md.
+- The first of the six; the others were scaffolded from it (docs/game/swap-force.md).
+- Its template was TheBiemGamer's GiantsRecomp: a reference clone with submodules is at
+  `../_ref/GiantsRecomp`. The original phase plan is `../PROJEKT.md` (outside the repo, never
+  committed).
+- `docs/roadmap.md` is the owner's overview (phases, "now / next / later", issue checklists).
+- If it differs technically from the other games in a significant way, report it and adapt the
+  plan.
 
 ## Build
 
-Always from the **x64 Native Tools Command Prompt for VS 2022**, otherwise CMake does not find the
-compiler.
+From the **x64 Native Tools Command Prompt for VS 2022** (`release.py build` sets that up itself):
 
     just submodules        # git submodule update --init --recursive
-    just build-release     # configures on first run, then builds (also: build-debug)
+    just build-release     # configures on first run, then builds
     just regen-release     # rerun codegen from rom/default.xex, reconfigure, rebuild
     just test-release
     just play-release
-    just --list            # everything else (package, logs, clean)
-
-Codegen needs `rom/default.xex` (Phase 1). `tools/ghidra_re.ps1 setup` downloads Ghidra, JDK and
-the XEX loader into `logs/toolchain/` (gitignored); run it in Phase 1, not earlier.
-
-## Hooks ported from the Giants scaffold
-
-- `intro_skip_hook.cpp` and `ultrawide_hook.cpp` (3D camera only, the HUD is still stretched) are
-  ported to Swap Force; no Giants addresses are left in `src/hooks/`.
+    just --list            # everything else: packaging, scripted runs, Ghidra, RenderDoc, logs
 
 ## Status convention
 
-`docs/STATUS.md` is updated at the end of every session: what works, what doesn't, known bugs.
-Only record what the build actually did.
-`docs/roadmap.md` is the overview for the owner (phase table, "now / next / later", checklists with
-issue numbers): update it whenever an issue is closed or the plan changes, and keep the README's "How far it is" in step with it.
+`docs/STATUS.md` is updated at the end of every session (only what a build actually did);
+`docs/roadmap.md` when an issue is closed or the plan changes, and the README's "How far it is"
+with it.

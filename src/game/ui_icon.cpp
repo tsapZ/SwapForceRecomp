@@ -7,6 +7,9 @@
 
 namespace swapforcerecomp {
 
+// The games' shared Alchemy readers (skylanders-portal src/alchemy).
+namespace alchemy = skylanders::alchemy;
+
 using alchemy::IgzFile;
 
 std::string Lower(std::string s) {

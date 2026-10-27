@@ -12,6 +12,9 @@
 
 namespace swapforcerecomp {
 
+// The games' shared Alchemy readers (skylanders-portal src/alchemy).
+namespace alchemy = skylanders::alchemy;
+
 // Decodes the texture file at `index` (an igImage2 in an .igz), flipped the right way up: the
 // icons were made from .tga files, which store the bottom row first, and the textures keep that
 // order. nullptr if it isn't a texture the reader can decode.

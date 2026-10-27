@@ -41,7 +41,7 @@
 #include "portal_rex/title_music.h"
 #include "settings_pages.h"
 #include "portal_rex/portal_rex.h"
-#include "xex_verify.h"
+#include "xex/xex_verify.h"
 
 REXCVAR_DECLARE(std::string, scene_size);  // hooks/scene_size_hook.cpp
 
@@ -113,7 +113,7 @@ class SwapforcerecompApp : public rex::ReXApp {
     // screen gets the wider picture by itself (UltrawideActive below reads `resolution`).
     skylanders::ResolutionFromScreenIfAutomatic();
     // Before the GPU plugin creates its device (testing only, gpu_crash_diagnostics).
-    swapforcerecomp::EnableGpuCrashDiagnostics();
+    skylanders::dev::EnableGpuCrashDiagnostics();
     // A wider window with ultrawide_fov: the picture fills it (the camera sees more to the sides)
     // instead of the presenter's black bars, unless present_letterbox was set by hand.
     if (swapforcerecomp::UltrawideActive() && !rex::cvar::HasNonDefaultValue("present_letterbox")) {
@@ -175,13 +175,14 @@ class SwapforcerecompApp : public rex::ReXApp {
     skylanders::StartTitleMusicExport(game_data_root(), TitleMusic(),
                                       skylanders::SharedPicturesDir(user_data_root(), "Swap Force"));
     // A real crash logs where in the game it happened (guest call chain and registers).
-    swapforcerecomp::InstallCrashReport(runtime()->memory());
+    skylanders::dev::InstallCrashReport(runtime()->memory());
     // The achievements list (F7, F4 > Spiel > Erfolge); the kernel's list exists from launch on.
     skylanders::RegisterAchievementsMenu(
         imgui_drawer(), immediate_drawer(), &app_context(), runtime(),
         [this]() -> rex::system::AchievementManager* {
           return runtime() && runtime()->kernel_state() ? &achievements() : nullptr;
-        });    swapforcerecomp::InstallInputScript(
+        });
+    skylanders::dev::InstallInputScript(
         runtime()->input_system(), runtime()->memory(),
         [this]() -> uint64_t {
           auto* graphics_system = runtime() ? runtime()->graphics_system() : nullptr;
@@ -317,9 +318,10 @@ class SwapforcerecompApp : public rex::ReXApp {
     const auto xex = game_data_root_ / "default.xex";
     // Utf8() and wide messages, not path::string(): that throws for characters outside the ANSI
     // code page, and this runs on every startup.
-    REXLOG_INFO("Checking {} against the pinned SHA-256", swapforcerecomp::Utf8(xex));
-    const auto result = swapforcerecomp::VerifyXex(xex, SWAPFORCERECOMP_XEX_SHA256);
-    const auto problem = swapforcerecomp::DescribeXexProblem(xex, result, SWAPFORCERECOMP_XEX_SHA256);
+    REXLOG_INFO("Checking {} against the pinned SHA-256", skylanders::xex::Utf8(xex));
+    const auto result = skylanders::xex::VerifyXex(xex, SKYLANDERS_XEX_SHA256);
+    const auto problem = skylanders::xex::DescribeXexProblem(
+        xex, result, SKYLANDERS_XEX_SHA256, SKYLANDERS_GAME_TITLE);
     if (problem.empty()) {
       REXLOG_INFO("default.xex verified");
       return;
