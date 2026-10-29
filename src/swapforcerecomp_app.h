@@ -28,6 +28,7 @@
 #include "game/magic_moment_watch.h"
 #include "dev/gpu_diagnostics.h"
 #include "hooks/ultrawide_hook.h"
+#include "hooks/where_hook.h"
 #include "game/game_art.h"
 #include "game/game_fonts.h"
 #include "game/toy_images.h"
@@ -176,6 +177,8 @@ class SwapforcerecompApp : public rex::ReXApp {
                                       skylanders::SharedPicturesDir(user_data_root(), "Swap Force"));
     // A real crash logs where in the game it happened (guest call chain and registers).
     skylanders::dev::InstallCrashReport(runtime()->memory());
+    // And where the player was (the level and position), in the log and with a problem note.
+    swapforcerecomp::InstallWhere();
     // The achievements list (F7, F4 > Spiel > Erfolge); the kernel's list exists from launch on.
     skylanders::RegisterAchievementsMenu(
         imgui_drawer(), immediate_drawer(), &app_context(), runtime(),
