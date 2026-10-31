@@ -51,6 +51,7 @@ set(SWAPFORCERECOMP_SOURCES
     src/game/magic_moment_watch.cpp
     src/game/game_art.cpp
     src/game/game_fonts.cpp
+    src/game/level_names.cpp
     src/game/toy_images.cpp
     src/game/ui_icon.cpp
     src/hooks/difficulty_hook.cpp
