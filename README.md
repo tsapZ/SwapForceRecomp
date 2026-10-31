@@ -58,6 +58,7 @@ The setup isn't signed, so Windows may say "Windows protected your PC": click **
 - **A settings menu** in the game: graphics, frame rate, language, portal, controls.
 - **5.1 sound** as the game mixes it, or stereo.
 - **Achievements.**
+- **A Discord status,** if you switch it on: the game, your Skylander and the level.
 - **HD texture packs**: bigger textures in place of the game's own ([how](docs/texture-packs.md)).
 - **Languages:** English and German.
 
