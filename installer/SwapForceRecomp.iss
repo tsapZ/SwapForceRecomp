@@ -540,7 +540,7 @@ begin
 
   if Trim(RomPathEdit.Text) = '' then begin
     Log('ROM: no ISO file or extracted game folder chosen');
-    MsgBox('Choose your ISO file or extracted game folder first.', mbError, MB_OK);
+    SuppressibleMsgBox('Choose your ISO file or extracted game folder first.', mbError, MB_OK, IDOK);
     Result := False;
     Exit;
   end;
@@ -553,8 +553,8 @@ begin
   FreeMB := GetFreeSpaceMB(ExpandConstant('{app}'));
   if FreeMB < 9000 then begin
     Log('ROM: not enough free disk space, ' + IntToStr(FreeMB) + ' MB of 9000 MB');
-    MsgBox('Not enough free disk space. At least 9000 MB free is needed; ' + IntToStr(FreeMB) +
-      ' MB is available.', mbError, MB_OK);
+    SuppressibleMsgBox('Not enough free disk space. At least 9000 MB free is needed; ' + IntToStr(FreeMB) +
+      ' MB is available.', mbError, MB_OK, IDOK);
     Result := False;
     Exit;
   end;
@@ -575,7 +575,7 @@ begin
 
   if not Result then begin
     Log('ROM: ' + ErrorMsg);
-    MsgBox(ErrorMsg, mbError, MB_OK);
+    SuppressibleMsgBox(ErrorMsg, mbError, MB_OK, IDOK);
   end
   else
     RomStatusLabel.Caption := 'Done.';
