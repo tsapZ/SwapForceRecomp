@@ -904,3 +904,13 @@ launcher's achievements screen.
 ## 2026-11-01: 0.4.0-beta.3
 
 - The setup's version for what came since the last one: A bit faster renderer (unchanged shader constants skipped, only changed textures reloaded); Trap Team also gets the villain time cheat (#18)
+
+## 2026-11-02: No health loss
+
+- Extras > No health loss (`cheat_no_health_loss`, off), the setting Spyro's Adventure, Giants and Trap
+  Team have. Swap Force has a programmer's god mode of its own: the debug byte "GodMode"
+  (0x8320825D, PROGRAMMER_VARS) that its damage check sub_82975BD0 reads first; with it set the check zeroes
+  the damage of the players' Skylanders ("Damage reduced when in God-Mode"). src/hooks/god_mode_hook.cpp
+  reports the byte as set while the cheat is on (midasm hook at 0x82975BF0); enemies lose health as before.
+- The god mode lets hits through whose description forces the damage (lava, burning); a second
+  hook makes that byte 0 for a spared victim, a third logs the first kept-off hit. Kit sweep: tutorial, 120 s of random play with the cheat on: all 60 kept-off hits on the player's Skylander, ten enemies hit and beaten, HUD 250 of 250.

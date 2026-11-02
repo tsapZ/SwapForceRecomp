@@ -61,6 +61,7 @@ set(SWAPFORCERECOMP_SOURCES
     src/game/ui_icon.cpp
     src/hooks/difficulty_hook.cpp
     src/hooks/intro_skip_hook.cpp
+    src/hooks/god_mode_hook.cpp
     src/hooks/figure_intro_hook.cpp
     src/hooks/frame_rate_hook.cpp
     src/hooks/fxaa_scale_hook.cpp
