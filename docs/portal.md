@@ -191,6 +191,11 @@ controller or the keyboard:
   fork's `figure_stats` from the newer of the figure's two save areas (the game writes them in
   turn; a new figure's first save goes to the second one). Heroic challenges are not shown yet:
   the sources disagree on where they are stored.
+- **Backups (Y or P in the details):** the figure file's backups, newest first with the level and
+  gold each holds; A on one asks first ("No" chosen), then puts it back, and what the figure has
+  now is backed up before, so a restore can be undone. A copy is made before the game first saves
+  over a figure in a run and every 30 minutes, the newest ten kept, in `Backups\Figures` next to
+  the figures folder. A figure on the portal has to come off first.
 - **Preview card:** level and XP bar, gold, the hat, the bought upgrades as icons.
 - **Sidekicks:** in Giants and Swap Force a sidekick only tags along behind the Skylanders (it
   stores no data), so the menu puts it on the portal next to them, in a slot of its own like the
