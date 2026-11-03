@@ -914,3 +914,7 @@ launcher's achievements screen.
   reports the byte as set while the cheat is on (midasm hook at 0x82975BF0); enemies lose health as before.
 - The god mode lets hits through whose description forces the damage (lava, burning); a second
   hook makes that byte 0 for a spared victim, a third logs the first kept-off hit. Kit sweep: tutorial, 120 s of random play with the cheat on: all 60 kept-off hits on the player's Skylander, ten enemies hit and beaten, HUD 250 of 250.
+
+## 2026-11-03: shared libraries
+
+- Xbox 360 portal over WinUSB: each read can hold two 32-byte frames (the portal sends full packets), each now goes to the game; the first 12 commands are logged (TrapTeamRecomp #19)
