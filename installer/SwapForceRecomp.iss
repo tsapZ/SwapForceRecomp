@@ -1,5 +1,5 @@
 #define MyAppName "Swap Force Recompiled"
-#define MyAppVersion "0.4.2-beta.2"
+#define MyAppVersion "0.4.2-beta.3"
 #define MyAppExeName "swapforcerecompiled.exe"
 
 [Setup]
