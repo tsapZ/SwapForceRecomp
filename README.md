@@ -54,8 +54,11 @@ The setup isn't signed, so Windows may say "Windows protected your PC": click **
   in the game's own look. Swappers are put together from any top and bottom half there.
 - **A real portal works too**, the Swap Force one as well as the older PS3 and Wii portals, or both
   at once with the menu.
-- **Your figures keep their progress** (level, gold, hats, upgrades) in files you can back up.
-- **A settings menu** in the game: graphics, frame rate, language, portal, controls.
+- **Your figures keep their progress** (level, gold, hats, upgrades) in files you can back up, and
+  each one is backed up before the game first saves over it: the portal menu puts an older version back.
+- **Quick swap:** one button puts the Skylander you played before back on the portal.
+- **A settings menu** in the game: graphics, frame rate, language, portal, controls, and *Extras*
+  (no health loss, full gold; off by default, and *Show cheats* hides the lot).
 - **5.1 sound** as the game mixes it, or stereo.
 - **Achievements.**
 - **A Discord status,** if you switch it on: the game, your Skylander and the level.
