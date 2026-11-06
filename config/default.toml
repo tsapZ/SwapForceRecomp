@@ -237,6 +237,37 @@ address = 0x82975C24
 name = "GodModeKeptOffHook"
 registers = []
 
+# Extras: always crit, elemental power, gold and XP multipliers (src/hooks/attribute_cheats_hook.cpp).
+# Found 2026-11-05 from the script binding names getCriticalHitChance_Internal, getGoldMultiplier_Internal
+# and getXpMultiplier_Internal, registered beside their wrappers by sub_827584D0; each hook changes one
+# value in a register, only while its cheat is on. 0x82A09B04: in the damage code sub_82A09A68, the fadds
+# right after the call of sub_82A0F220 (f1 = the attacker's eCA_CriticalHitChance, added to the attack's
+# own chance, which is then rolled 0..100 against; reached only for an attacker with the attribute
+# component, so not for enemies). 0x82A18A28: in sub_82A18978 right after mr r3,r30 (r3 = whether the
+# Skylander's element is one of the area's; only the attribute getters call it). 0x82A193D0: blr of
+# sub_82A19348 (f1 = the gold multiplier, used by the pickup code sub_82985028). 0x82A19344: blr of
+# sub_82A19260 (f1 = the XP multiplier, used by sub_82980EA8 for XP pickups). The addresses come from
+# labels and call return addresses in generated/ (debug tool func_asm.py), not from counting.
+[[midasm_hook]]
+address = 0x82A09B04
+name = "AlwaysCritHook"
+registers = ["f1"]
+
+[[midasm_hook]]
+address = 0x82A18A28
+name = "ElementalPowerHook"
+registers = ["r3"]
+
+[[midasm_hook]]
+address = 0x82A193D0
+name = "GoldMultiplierHook"
+registers = ["f1"]
+
+[[midasm_hook]]
+address = 0x82A19344
+name = "XpMultiplierHook"
+registers = ["f1"]
+
 # Jump tables the analyzer under-counted, so the generated switch trapped (__builtin_trap, host
 # exception 0xC000001D) on the missing indices. All four tables sit directly after their bctr;
 # entries were read from the image with Ghidra until the first word that is no longer a code
