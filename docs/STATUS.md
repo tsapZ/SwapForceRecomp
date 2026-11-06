@@ -1050,3 +1050,7 @@ launcher's achievements screen.
 ## 2026-11-06: more cheats
 
 - Extras: always crit, elemental power everywhere, gold and XP multipliers (x2, x3, x5, x10), behind Show cheats (CoL #48, TT #20). src/hooks/attribute_cheats_hook.cpp, four midasm hooks on the game's own character attribute code, found in generated/ (debug tools: binding names beside their wrappers, listings with addresses anchored at labels and call returns): the damage code sub_82A09A68 rolls 0..100 against the attack's crit chance plus the attacker's (the hook at 0x82A09B04 makes the attacker's 100), sub_82A18978 is the element check of the attribute bonuses (0x82A18A28, r3 = 1), sub_82A19348 / sub_82A19260 the gold / XP multipliers of the pickup code (their blr, f1 times the setting). Developer kit runs in wildwoods/ww1 and the PGO training levels with all four on: element check 0 -> 1, crit chance 8 -> 100, gold multiplier 1.53 -> 7.65 (the HUD's gold 0 -> 8 after one coin), XP multiplier 2.03 -> 10.15; achievements held while any is on.
+
+## 2026-11-06: 0.4.2-beta.6
+
+- The setup's version for what came since the last one: Fewer copies into depth buffers at higher resolutions (Trap Team about 2 % faster at 2x); Swap Force, SuperChargers and Imaginators: always crit, elemental power everywhere, gold and XP multipliers as cheats
