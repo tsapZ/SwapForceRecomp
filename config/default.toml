@@ -301,3 +301,15 @@ labels = [0x83093180, 0x83093190, 0x8309331C, 0x830934A8, 0x83093634, 0x830937C0
 address = 0x8247A658
 register = 10
 labels = [0x8247A890, 0x8247A6FC, 0x8247A710, 0x8247A724, 0x8247A7A0, 0x8247A7D4, 0x8247A808, 0x8247A81C, 0x8247A740, 0x8247A81C, 0x8247A950, 0x8247A950, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A9F0, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A858, 0x8247A9F0, 0x8247A89C, 0x8247A89C, 0x8247A89C, 0x8247A89C, 0x8247A89C, 0x8247A89C, 0x8247A89C, 0x8247A89C, 0x8247A89C]
+
+# 0x825A8284 is in the game's movie update (sub_825A80E0): it compares the HBINK's (r31) FrameNum
+# (+12) with its Frames (+8) (subf + cntlzw) and ends the movie when they are equal, else calls
+# BinkNextFrame. Found with debug/bink_frame_check.py (the FrameNum and Frames loads and their
+# compare, next to Bink calls; the other match is inside Bink's own BinkNextFrame).
+# src/hooks/intro_skip_hook.cpp sets Frames to FrameNum when a movie_skip_buttons button was
+# pressed while this movie plays (skylanders-portal movie_skip.h), so the game ends the movie its
+# own way, as if it had played out; without a press it changes nothing.
+[[midasm_hook]]
+address = 0x825A8284
+name = "MovieEndCheckHook"
+registers = ["r31"]
