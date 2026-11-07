@@ -79,7 +79,7 @@ The setup isn't signed, so Windows may say "Windows protected your PC": click **
   by default, and *Show cheats* hides the lot).
 - **5.1 sound** as the game mixes it, or stereo.
 - **Achievements.**
-- **A Discord status,** if you switch it on: the game, your Skylander and the level.
+- **A Discord status:** the game, your Skylander and the level, while the Discord app runs. F4 > Game turns it off.
 - **HD texture packs**: bigger textures in place of the game's own ([how](docs/texture-packs.md)).
 - **Languages:** English and German.
 
