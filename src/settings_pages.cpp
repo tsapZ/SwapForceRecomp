@@ -10,6 +10,7 @@
 #include "portal_rex/discord_presence.h"
 #include "portal_rex/player_menu.h"
 #include "portal_rex/settings_schema.h"
+#include "localization.h"
 
 namespace swapforcerecomp {
 namespace {
@@ -316,13 +317,23 @@ SettingsPage FrameRatePage() {
 SettingsPage GamePage() {
   SettingsPage page{"Game", "Spiel", {}};
   Setting language{"language", "Language", "Sprache",
-                   "Text and voices. The disc has English and German.\n"
-                   "Automatic: German when Windows shows German, else English.",
-                   "Texte und Stimmen. Die Disc hat Englisch und Deutsch.\n"
-                   "Automatisch: Deutsch, wenn Windows Deutsch zeigt, sonst Englisch.",
-                   {{"auto", "Automatic", "Automatisch"},
-                    {"english", "English", "English"},
-                    {"german", "Deutsch", "Deutsch"}}};
+                   "Text and voices, in the languages your disc has.\n"
+                   "Automatic: the language of Windows if the disc has it, else English.",
+                   "Texte und Stimmen, in den Sprachen deiner Disc.\n"
+                   "Automatisch: die Sprache von Windows, wenn die Disc sie hat, sonst Englisch.",
+                   {{"auto", "Automatic", "Automatisch"}}};
+  // Each in its own language, as the other games list them.
+  for (const std::string& name : swapforcerecomp::DiscLanguages()) {
+    if (name == "english") language.options.push_back({"english", "English", "English"});
+    if (name == "german") language.options.push_back({"german", "Deutsch", "Deutsch"});
+    if (name == "french") {
+      language.options.push_back({"french", "Fran\xC3\xA7" "ais", "Fran\xC3\xA7" "ais"});
+    }
+    if (name == "spanish") {
+      language.options.push_back({"spanish", "Espa\xC3\xB1ol", "Espa\xC3\xB1ol"});
+    }
+    if (name == "italian") language.options.push_back({"italian", "Italiano", "Italiano"});
+  }
   language.restart = true;
   page.settings.push_back(language);
   Setting intro{"skip_intro", "Skip logo movies", "Logo-Videos \xC3\xBC" "berspringen",

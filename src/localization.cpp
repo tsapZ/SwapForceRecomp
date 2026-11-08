@@ -3,8 +3,10 @@
 #include <algorithm>
 #include <cctype>
 #include <charconv>
+#include <set>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <rex/cvar.h>
 #include <rex/logging.h>
@@ -17,9 +19,9 @@
 REXCVAR_DECLARE(uint32_t, user_language);
 
 REXCVAR_DEFINE_STRING(language, "auto", "Game",
-                      "Game text/voice language: auto (German when Windows shows German, else "
-                      "English: the disc has those two), english, german. A raw Xbox 360 "
-                      "language ID (a number) also works, for experiments.");
+                      "Game text/voice language: auto (the language of Windows if the disc has "
+                      "it, else English), or english, german, french, spanish, italian, those the "
+                      "disc has. A raw Xbox 360 language ID (a number) also works, for experiments.");
 
 namespace swapforcerecomp {
 
@@ -31,16 +33,62 @@ std::string Lower(std::string s) {
   return s;
 }
 
-// The Windows display language, as far as this disc has it (English and German): German for a
-// German Windows, English for any other, as "auto" in the other ports picks it.
+std::filesystem::path g_archives;
+
+bool DiscHas(const std::string& name) {
+  const auto& languages = DiscLanguages();
+  return std::find(languages.begin(), languages.end(), name) != languages.end();
+}
+
+// The Windows display language if the disc has it, else English, else the disc's first.
 std::string SystemLanguage() {
 #ifdef _WIN32
-  if (PRIMARYLANGID(GetUserDefaultUILanguage()) == LANG_GERMAN) return "german";
+  const char* windows = nullptr;
+  switch (PRIMARYLANGID(GetUserDefaultUILanguage())) {
+    case LANG_GERMAN: windows = "german"; break;
+    case LANG_FRENCH: windows = "french"; break;
+    case LANG_SPANISH: windows = "spanish"; break;
+    case LANG_ITALIAN: windows = "italian"; break;
+    default: break;
+  }
+  if (windows && DiscHas(windows)) return windows;
 #endif
-  return "english";
+  if (DiscHas("english")) return "english";
+  return DiscLanguages().front();
 }
 
 }  // namespace
+
+void SetDiscArchives(const std::filesystem::path& archives) { g_archives = archives; }
+
+const std::vector<std::string>& DiscLanguages() {
+  static const std::vector<std::string> languages = [] {
+    static const std::pair<const char*, const char*> kCodes[] = {
+        {"en", "english"}, {"de", "german"}, {"fr", "french"}, {"es", "spanish"}, {"it", "italian"}};
+    std::set<std::string> found;
+    std::error_code ec;
+    for (const auto& entry : std::filesystem::directory_iterator(g_archives, ec)) {
+      // <name>_<code>.pak, e.g. boss_kaos_bank_lv_de.pak.
+      const std::string name = Lower(entry.path().filename().string());
+      if (name.size() < 8 || name.compare(name.size() - 4, 4, ".pak") != 0 ||
+          name[name.size() - 7] != '_') {
+        continue;
+      }
+      const std::string code = name.substr(name.size() - 6, 2);
+      for (const auto& [c, language] : kCodes) {
+        if (code == c) found.insert(language);
+      }
+    }
+    std::vector<std::string> list;
+    for (const auto& [c, language] : kCodes) {
+      if (found.count(language)) list.push_back(language);
+    }
+    if (list.empty()) list = {"english", "german"};
+    REXLOG_INFO("Language: the disc has {} language(s)", list.size());
+    return list;
+  }();
+  return languages;
+}
 
 void ApplyLanguageSetting() {
   // A direct --user_language / user_language=<n> override (raw, for experimentation) always
@@ -60,6 +108,11 @@ void ApplyLanguageSetting() {
   };
 
   std::string setting = Lower(REXCVAR_GET(language));
+  if (kNames.count(setting) && !DiscHas(setting)) {
+    // A settings file from another disc: its language isn't on this one.
+    REXLOG_WARN("Language: the disc has no {}; using auto", setting);
+    setting = "auto";
+  }
   if (setting == "auto") {
     setting = SystemLanguage();
     REXLOG_INFO("Language: auto, from the Windows display language");
