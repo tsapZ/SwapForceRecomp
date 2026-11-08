@@ -114,10 +114,9 @@ The settings menu shows the keyboard keys for the game itself under Controls.
 ## How far it is
 
 The tutorial and Woodburrow have been played through with a controller and with the keyboard,
-cutscenes and dialogue included. The rest of the game should work the same way, but nobody has
-played it to the end yet. If something breaks further in, please
-[tell me](https://github.com/tsapZ/SwapForceRecomp/issues/new/choose).
-
+cutscenes and dialogue included, and in automated test runs all 18 story levels load without a
+crash. Nobody has played it to the end yet, so if something breaks further in, please [tell
+me](https://github.com/tsapZ/SwapForceRecomp/issues/new/choose).
 What's being worked on: [docs/roadmap.md](docs/roadmap.md). Known bugs and the details:
 [docs/STATUS.md](docs/STATUS.md).
 
