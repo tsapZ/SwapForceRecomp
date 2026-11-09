@@ -131,6 +131,8 @@ What's being worked on: [docs/roadmap.md](docs/roadmap.md). Known bugs and the d
 The first visit to a new area can stutter for a moment while the graphics card's shaders are made;
 after that it's smooth.
 
+**Voices are missing with headphones.** If Windows has your sound output set up as 5.1 or 7.1, the game sends surround sound, and voices on the center channel (in Spyro's Adventure all of the movies' voices) don't reach headphones. F4 > Game > *Sound output: Stereo* mixes everything down to two channels; so does setting the output to Stereo in Windows' sound settings.
+
 **Where are my saves and figures?** Saves in `Documents\Skylanders\Swap Force`, figures in
 `Documents\Skylanders\Figures` (shared by all six games). Core of Light can export all of it for a
 new PC.
