@@ -48,7 +48,7 @@ See [portal.md](portal.md#player-menu-l3--r3--f9).
 `portal_rex/settings_menu.cpp` draws the menu; the app describes its pages in
 `src/settings_pages.cpp`:
 
-- **Graphics:** preset (Performance: scale 1 + FSR, no native 3D picture; Quality: scale 2 + Automatic sharpening + native
+- **Graphics:** preset (As on the console: 1x without sharpening, 30 FPS, #72; Performance: scale 1 + FSR, no native 3D picture; Quality: scale 2 + Automatic sharpening + native
   3D picture, recommended; Best: scale 3, the same), internal resolution (`resolution_scale`), the native 3D picture (`scene_size`, on), sharpening (`present_effect`, Automatic: CAS, FSR 1 when enlarging), texture
   filtering (`anisotropic_override`), HD textures on or off (`hd_textures`, with a pack installed), the game's own edge smoothing kept sharp
   (`fxaa_follow_resolution_scale`, on), extra edge smoothing (`swap_post_effect`, with the warning
