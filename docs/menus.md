@@ -55,7 +55,7 @@ See [portal.md](portal.md#player-menu-l3--r3--f9).
   from #45), glow (`bloom_strength`: off, weak, as in the game, strong), motion blur
   (`motion_blur_strength`: off by default, half, as in the game), native 3D picture
   (`scene_size`: off = 1040x620 like the Xbox 360, or 1280x720; experimental, D3D12, restart),
-  fullscreen, window size (`resolution`).
+  fullscreen, the screen it opens on (`monitor`), window size (`resolution`).
 - **Frame rate:** 60 FPS and more (`present_interval`), frame rate limit (`frame_rate_limit`),
   VSync, render path (`render_target_path_d3d12`), graphics card (`d3d12_adapter`), graphics
   interface (`gpu_backend`: automatic = D3D12, D3D12, Vulkan).
