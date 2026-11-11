@@ -165,6 +165,16 @@ class SwapforcerecompApp : public rex::ReXApp {
     // pictures (2026-11-09). The SDK's switch (Xenia Canary's draw_resolution_scale_threshold,
     // D3D12 only); only when nothing set it.
     SetDefaultIfUnset("draw_resolution_scale_threshold", "640");
+    // Native surfaces: the SDK leaves a render target's pixels where the game drew them instead of
+    // copying them through its EDRAM model each time another target takes the same EDRAM, except
+    // the copies this game needs (gpu_native_surfaces_keep, in gpu_transfer_report's names).
+    // Swap Force reads depth as colour (its fog and sky: without those copies they go white in
+    // Wildwoods 3, Frostguard and the Barrens, 2026-11-08), so the depth -> colour kinds stay; the
+    // colour -> depth and colour -> colour ones go. In the hub at 2x, uncapped: 147.9 -> 158.9 FPS
+    // (+7.4 %); a story sweep of every level and pictures at a fixed spot looked the same as without
+    // (2026-11-10). Both only when nothing set them.
+    SetDefaultIfUnset("gpu_native_surfaces", "true");
+    SetDefaultIfUnset("gpu_native_surfaces_keep", "D0x1->C0x1,D1x1->C14x1,D0x1->C14x1,D1x1->C0x1");
     // Swap Force recognizes figures of its own and the two earlier games only.
     SetDefault("portal_menu_games", "Spyro's Adventure;Giants;Swap Force");
     // For the launcher (Core of Light): the settings menu's pages with their values as a file,
