@@ -93,7 +93,7 @@ registers = ["f1", "f2"]
 # +0x24) or its parent's or the back buffer's, times its scales, into +0x58/+0x5C. Found with a
 # write watch on the 360 pipeline's mainScene (1040x620, parsed from outdoor_shading_xenon.igx):
 # this function is the only reader. src/hooks/scene_size_hook.cpp swaps in scene_size for a target
-# that says 1040x620 (off unless scene_size is set; experimental, #41).
+# that says 1040x620 (on by default with scene_size = 1280x720, off when it is empty; #41).
 [[midasm_hook]]
 address = 0x8258EBE8
 name = "SceneSizeHook"
