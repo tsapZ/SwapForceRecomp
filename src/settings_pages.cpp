@@ -362,6 +362,8 @@ SettingsPage GamePage() {
       language.options.push_back({"spanish", "Espa\xC3\xB1ol", "Espa\xC3\xB1ol"});
     }
     if (name == "italian") language.options.push_back({"italian", "Italiano", "Italiano"});
+    // Dutch through the country, not a language id (localization.cpp, CoL #68).
+    if (name == "dutch") language.options.push_back({"dutch", "Nederlands", "Nederlands"});
   }
   language.restart = true;
   page.settings.push_back(language);

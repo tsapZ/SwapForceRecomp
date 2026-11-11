@@ -17,6 +17,8 @@
 
 // Defined in the SDK (xam_user.cpp); both XGetLanguage and ExGetXConfigSetting read this.
 REXCVAR_DECLARE(uint32_t, user_language);
+// Defined in the SDK (xam_locale.cpp): the console's country (XC_COUNTRY ids), which XGetLocale reads.
+REXCVAR_DECLARE(uint32_t, user_country);
 
 REXCVAR_DEFINE_STRING(language, "auto", "Game",
                       "Game text/voice language: auto (the language of Windows if the disc has "
@@ -49,6 +51,7 @@ std::string SystemLanguage() {
     case LANG_FRENCH: windows = "french"; break;
     case LANG_SPANISH: windows = "spanish"; break;
     case LANG_ITALIAN: windows = "italian"; break;
+    case LANG_DUTCH: windows = "dutch"; break;
     default: break;
   }
   if (windows && DiscHas(windows)) return windows;
@@ -64,7 +67,8 @@ void SetDiscArchives(const std::filesystem::path& archives) { g_archives = archi
 const std::vector<std::string>& DiscLanguages() {
   static const std::vector<std::string> languages = [] {
     static const std::pair<const char*, const char*> kCodes[] = {
-        {"en", "english"}, {"de", "german"}, {"fr", "french"}, {"es", "spanish"}, {"it", "italian"}};
+        {"en", "english"}, {"de", "german"}, {"fr", "french"}, {"es", "spanish"}, {"it", "italian"},
+        {"nl", "dutch"}};
     std::set<std::string> found;
     std::error_code ec;
     for (const auto& entry : std::filesystem::directory_iterator(g_archives, ec)) {
@@ -108,7 +112,7 @@ void ApplyLanguageSetting() {
   };
 
   std::string setting = Lower(REXCVAR_GET(language));
-  if (kNames.count(setting) && !DiscHas(setting)) {
+  if ((kNames.count(setting) || setting == "dutch") && !DiscHas(setting)) {
     // A settings file from another disc: its language isn't on this one.
     REXLOG_WARN("Language: the disc has no {}; using auto", setting);
     setting = "auto";
@@ -116,6 +120,17 @@ void ApplyLanguageSetting() {
   if (setting == "auto") {
     setting = SystemLanguage();
     REXLOG_INFO("Language: auto, from the Windows display language");
+  }
+  // Dutch isn't an Xbox 360 language id: the Skylanders games take Dutch from the console's country
+  // (language English, country the Netherlands), as Spyro's Adventure does (CoL #68, checked there
+  // 2026-11-09). A country set directly (--user_country) stays.
+  if (setting == "dutch") {
+    REXCVAR_SET(user_language, 1u);
+    if (!rex::cvar::HasNonDefaultValue("user_country")) {
+      REXCVAR_SET(user_country, 74u);  // XC_COUNTRY_NL
+    }
+    REXLOG_INFO("Language: dutch (English with the country {})", REXCVAR_GET(user_country));
+    return;
   }
   if (auto it = kNames.find(setting); it != kNames.end()) {
     REXCVAR_SET(user_language, it->second);
