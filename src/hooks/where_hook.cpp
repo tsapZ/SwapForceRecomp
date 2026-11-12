@@ -18,12 +18,14 @@
 #include <regex>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include <rex/hook.h>
 #include <rex/memory/utils.h>
 #include <rex/ppc/context.h>
 
 #include "dev/where.h"
+#include "portal_rex/soul_gems.h"
 
 namespace {
 
@@ -41,12 +43,42 @@ std::string LevelOfArchive(std::string_view path) {
   return m[1].str();
 }
 
+// The Soul Gem movies (skylanders-portal soul_gems.h): archives\Soul_Gem_<name>_Mix_360.bk2, one
+// per Skylander, by the game's own short names (its champ_s13_<name> / champ_l13_<name> sound
+// banks). toydata.pak names the variants of seven (BeeTree "Jolly Bumble Blast", Dabomb "Kickoff
+// CountDown", Fangirl "Enchanted Star Strike", Lockjaw "Dark Slobber Tooth", Reaper "Legendary Grim
+// Creeper", Shaman "Legendary Zoo Lou", Windup "VVind-up"); the others by what each Skylander is
+// (Aviator the flying ace Boom Jet, Fireworks the dragon-dance Fire Kraken, FireKnight the armoured
+// Blast Zone): to be checked with a figure run. An unknown one is logged by its short name.
+std::string SoulGemOf(std::string_view path) {
+  static const std::pair<std::string_view, std::string_view> kNames[] = {
+      {"Aviator", "Boom Jet"},        {"BeeTree", "Bumble Blast"},   {"CatGryphon", "Scratch"},
+      {"Cowboy", "Rattle Shake"},     {"DaBomb", "Countdown"},       {"DuneBug", "Dune Bug"},
+      {"EelGirl", "Punk Shock"},      {"Fangirl", "Star Strike"},    {"FireKnight", "Blast Zone"},
+      {"Fireworks", "Fire Kraken"},   {"Fortune", "Hoot Loop"},      {"Freeze", "Freeze Blade"},
+      {"Fryno", "Fryno"},             {"Gorilla", "Grilla Drilla"},  {"Lockjaw", "Slobber Tooth"},
+      {"Magnet", "Magna Charge"},     {"Miner", "Rubble Rouser"},    {"Ninja", "Stink Bomb"},
+      {"Ninjini", "Ninjini"},         {"Panther", "Trap Shadow"},    {"Pirate", "Wash Buckler"},
+      {"Puffer", "Pop Thorn"},        {"Reaper", "Grim Creeper"},    {"Scorpion", "Scorp"},
+      {"Shaman", "Zoo Lou"},          {"Spyder", "Spy Rise"},        {"Statue", "Doom Stone"},
+      {"Stormbird", "Free Ranger"},   {"Sungirl", "Smolderdash"},    {"SwordFish", "Rip Tide"},
+      {"TopsyDerby", "Roller Brawl"}, {"Vampire", "Night Shift"},    {"Windup", "Wind-Up"}};
+  std::string_view name = skylanders::AfterPrefix(skylanders::FileStem(path, ".bk2"), "Soul_Gem_");
+  if (name.empty()) return {};
+  name = name.substr(0, name.find("_Mix"));
+  for (const auto& [internal, skylander] : kNames) {
+    if (skylanders::SameName(name, internal)) return std::string(skylander);
+  }
+  return std::string(name);
+}
+
 }  // namespace
 
 namespace swapforcerecomp {
 
 void InstallWhere() {
   skylanders::dev::WatchLevelArchives(&LevelOfArchive);
+  skylanders::WatchSoulGems(&SoulGemOf);
 }
 
 }  // namespace swapforcerecomp
