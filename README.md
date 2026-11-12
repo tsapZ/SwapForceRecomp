@@ -118,6 +118,17 @@ The tutorial and Woodburrow have been played through with a controller and with 
 cutscenes and dialogue included, and in automated test runs all 18 story levels load without a
 crash. Nobody has played it to the end yet, so if something breaks further in, please [tell
 me](https://github.com/tsapZ/SwapForceRecomp/issues/new/choose).
+
+**What's tested** (as of 2026-11-12):
+
+| | |
+|---|---|
+| Every story level loads | all 18, by script |
+| Played by hand | the tutorial and the first level |
+| Real USB portal | a PS3 portal reads and saves figures; swapper toys on a real portal not yet ([#42](https://github.com/tsapZ/SwapForceRecomp/issues/42)) |
+| Two players | two controllers, by hand and by script |
+| Graphics | D3D12 and Vulkan, by script |
+
 What's being worked on, for all six games and the launcher: the [roadmap
 board](https://github.com/users/tsapZ/projects/1), and [docs/roadmap.md](docs/roadmap.md) for this
 game. Questions and ideas: [Discussions](https://github.com/tsapZ/SkylandersCoreOfLight/discussions). Known bugs and the details:
