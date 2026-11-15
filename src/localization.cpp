@@ -1,4 +1,5 @@
 #include "localization.h"
+#include "portal/system_locale.h"
 
 #include <algorithm>
 #include <cctype>
@@ -55,6 +56,8 @@ std::string SystemLanguage() {
     default: break;
   }
   if (windows && DiscHas(windows)) return windows;
+#else
+  if (const std::string posix = skylanders::PosixSystemLanguage(); DiscHas(posix)) return posix;
 #endif
   if (DiscHas("english")) return "english";
   return DiscLanguages().front();
