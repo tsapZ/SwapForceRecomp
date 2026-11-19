@@ -219,6 +219,8 @@ The banner and the button at the top are drawn by Core of Light's [`tools/make_b
 - **[skylanders-portal](https://github.com/TheBiemGamer/skylanders-portal)** by TheBiemGamer
   provides the portal protocol, software and USB portal, overlay and figure catalog. Submodule,
   in a fork with the shared portal and settings menus on top; keeps its own license.
+- **[morpheus284](https://github.com/morpheus284)**: the stone frame around the menus, cut from his Core of
+  Light artwork (CC BY 4.0).
 - **[extract-xiso](https://github.com/XboxDev/extract-xiso)** is included (prebuilt, unmodified) in
   `installer/` to unpack an Xbox 360 ISO. It keeps its own license
   (`installer/extract-xiso.LICENSE.txt`).
