@@ -6,7 +6,8 @@
 //   igLocalizedStringList of igLocalizedString, each with _string, _object and _field. The one
 //   whose _field is "metafield.CZoneInfo::_displayName" is the level's name ("Mount
 //   Cloudbreak" / "Wolkenbruch-Berg" for tutorial_a).
-// - German from the _de files, English from the _en files (the European English / German disc).
+// - German from the _de files, English from the _en files (the European English / German disc);
+//   a disc without English text gives its own language instead (EnglishOrDiscText, CoL #105).
 // - The level as where_hook.cpp names it: its archive, the same name as the zone info's in any
 //   case.
 
@@ -22,12 +23,17 @@
 #include <utility>
 #include <vector>
 
+#include <rex/cvar.h>
 #include <rex/logging.h>
 
 #include "alchemy/iga_archive.h"
 #include "alchemy/igx_reader.h"
 #include "portal_rex/discord_presence.h"
 #include "portal_rex/menu_draw.h"
+
+// Defined in the SDK (xam_user.cpp): the game's language, which localization.cpp sets from [Game]
+// language.
+REXCVAR_DECLARE(uint32_t, user_language);
 
 namespace swapforcerecomp {
 namespace {
@@ -44,6 +50,34 @@ using Table = std::unordered_map<std::string, std::string>;
 std::string Lower(std::string s) {
   for (char& c : s) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
   return s;
+}
+
+// The names for the English status: the _en files. A disc without them (CoL #105: the French /
+// Dutch Imaginators disc has only fr and nl texts) gives its own text instead: the language the
+// game runs in first (user_language 4 French, 5 Spanish, 6 Italian), then Dutch, French, Italian,
+// Spanish, whichever the disc has. Picked at each lookup, as the language is set at start-up,
+// maybe after these files were read.
+const Table& EnglishOrDiscText(const std::unordered_map<std::string, Table>& by_language) {
+  static const Table kNone;
+  const auto has = [&](const char* code) -> const Table* {
+    const auto it = by_language.find(code);
+    return it != by_language.end() && !it->second.empty() ? &it->second : nullptr;
+  };
+  if (const Table* table = has("en")) return *table;
+  const char* own = nullptr;
+  switch (REXCVAR_GET(user_language)) {
+    case 4: own = "fr"; break;
+    case 5: own = "es"; break;
+    case 6: own = "it"; break;
+    default: break;
+  }
+  if (own != nullptr) {
+    if (const Table* table = has(own)) return *table;
+  }
+  for (const char* code : {"nl", "fr", "it", "es"}) {
+    if (const Table* table = has(code)) return *table;
+  }
+  return kNone;
 }
 
 // The zone's name from its language file, empty if it has none.
@@ -87,14 +121,23 @@ void InstallLevelNames(const std::filesystem::path& archives) {
     }
     auto german = std::make_shared<Table>(by_language["de"]);
     auto english = std::make_shared<Table>(by_language["en"]);
+    std::vector<std::string> languages;
+    for (const auto& [code, table] : by_language) {
+      if (!table.empty()) languages.push_back(code);  // operator[] above adds empty en / es / de
+    }
+    std::sort(languages.begin(), languages.end());
+    std::string disc;
+    for (const std::string& code : languages) disc += (disc.empty() ? "" : " ") + code;
+    auto tables = std::make_shared<const std::unordered_map<std::string, Table>>(std::move(by_language));
     // Which levels have a name, so a log shows the ones the status leaves out.
     std::vector<std::string> known;
     for (const auto& [level, shown] : german->empty() ? *english : *german) known.push_back(level);
     std::sort(known.begin(), known.end());
     std::string list;
     for (const std::string& level : known) list += (list.empty() ? "" : " ") + level;
-    REXLOG_INFO("Level names: {} German, {} English ({})", german->size(), english->size(), list);
-    skylanders::SetDiscordLevelNames([german, english](const std::string& level) {
+    REXLOG_INFO("Level names: {} German, {} English ({}); the disc has: {}", german->size(), english->size(),
+                list, disc);
+    skylanders::SetDiscordLevelNames([german, tables](const std::string& level) {
       const bool in_german = skylanders::menu_draw::GermanText();
       std::string key = Lower(level);
       // Woodburrow, the hub (town_state1-13 as the story goes on): its zone infos have no name;
@@ -104,7 +147,10 @@ void InstallLevelNames(const std::filesystem::path& archives) {
         return std::string(in_german ? "Holzhausen" : "Woodburrow");
       }
       if (key == "cloudbreak") key = "tutorial_a";  // Mount Cloudbreak, the first level
-      const Table& table = in_german ? *german : *english;
+      if (in_german) {
+        if (const auto it = german->find(key); it != german->end()) return it->second;
+      }
+      const Table& table = EnglishOrDiscText(*tables);
       const auto it = table.find(key);
       return it == table.end() ? std::string() : it->second;
     });
