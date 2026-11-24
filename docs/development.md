@@ -98,9 +98,11 @@ The setup above is the Windows one. On Linux the same checkout builds natively:
   On ARM64, `just` uses `linux-arm64-release` and names the tarball
   `dist/SwapForceRecomp-linux-arm64.tar.gz`; on SteamOS, enable developer mode first.
 
-Unpack the tarball and run `./linux-setup.sh <your ISO>` once: it copies the disc into `rom/` and
-writes `swapforcerecomp.toml`. `./swapforcerecompiled` starts the game, `--portal_mode=software` runs it
-without a portal.
+Unpack the tarball and enter the release directory it creates, then run `./linux-setup.sh <your ISO>`
+once: it copies the disc into `rom/` and writes `swapforcerecomp.toml`. Unpacking an ISO needs
+[`xdvdfs`](https://github.com/antangelo/xdvdfs) or `extract-xiso` on `PATH`; an already extracted
+disc folder can be passed instead of the ISO. `./swapforcerecompiled` starts the game,
+`--portal_mode=software` runs it without a portal.
 
 ## Everyday commands
 
