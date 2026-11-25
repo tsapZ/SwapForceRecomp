@@ -39,6 +39,7 @@ the copy off.
 | 13 | Portal speaker (Swap Force's portal has none) | PC speakers, as in `software` mode |
 | 14 | The portal menu lifts a player's copy (opening the menu) | the copy is followed by its source file: put back, its writes go to the real figure again; replaced by a menu figure, the real one stays unused until it is lifted and put on again |
 | 15 | A real figure's backup is played from the menu while the figure is off the portal, then the figure is put on again | the backup file with the newer progress is kept as `... before.dump`, the real figure's own data becomes the backup; nothing is lost, but the menu progress is not copied onto the real figure |
+| 16 | One swapper half alone on the real portal (its other half not there, or a tag that no longer answers) and a swapper picked in the menu | only the picked swapper's other half goes on, next to the real one, and the game puts the two together ("Blast Zone Top stays on the real portal: only Doom Stone Bottom goes on next to it."). Not kept in Recent. A pick without a half of the other kind is refused as for any Skylander on the real portal (Core of Light #160) |
 
 ## What is not covered
 
