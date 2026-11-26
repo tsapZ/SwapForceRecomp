@@ -368,6 +368,11 @@ SettingsPage GamePage() {
     if (name == "italian") language.options.push_back({"italian", "Italiano", "Italiano"});
     // Dutch through the country, not a language id (localization.cpp, CoL #68).
     if (name == "dutch") language.options.push_back({"dutch", "Nederlands", "Nederlands"});
+    // Danish and Finnish through the country, Swedish and Norwegian by their ids (localization.cpp).
+    if (name == "swedish") language.options.push_back({"swedish", "Svenska", "Svenska"});
+    if (name == "norwegian") language.options.push_back({"norwegian", "Norsk", "Norsk"});
+    if (name == "danish") language.options.push_back({"danish", "Dansk", "Dansk"});
+    if (name == "finnish") language.options.push_back({"finnish", "Suomi", "Suomi"});
   }
   language.restart = true;
   page.settings.push_back(language);

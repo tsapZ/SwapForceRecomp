@@ -23,8 +23,9 @@ REXCVAR_DECLARE(uint32_t, user_country);
 
 REXCVAR_DEFINE_STRING(language, "auto", "Game",
                       "Game text/voice language: auto (the language of Windows if the disc has "
-                      "it, else English), or english, german, french, spanish, italian, those the "
-                      "disc has. A raw Xbox 360 language ID (a number) also works, for experiments.");
+                      "it, else English), or english, german, french, spanish, italian, dutch, "
+                      "swedish, norwegian, danish, finnish, those the disc has. A raw Xbox 360 "
+                      "language ID (a number) also works, for experiments.");
 
 namespace swapforcerecomp {
 
@@ -53,6 +54,10 @@ std::string SystemLanguage() {
     case LANG_SPANISH: windows = "spanish"; break;
     case LANG_ITALIAN: windows = "italian"; break;
     case LANG_DUTCH: windows = "dutch"; break;
+    case LANG_SWEDISH: windows = "swedish"; break;
+    case LANG_NORWEGIAN: windows = "norwegian"; break;
+    case LANG_DANISH: windows = "danish"; break;
+    case LANG_FINNISH: windows = "finnish"; break;
     default: break;
   }
   if (windows && DiscHas(windows)) return windows;
@@ -71,7 +76,7 @@ const std::vector<std::string>& DiscLanguages() {
   static const std::vector<std::string> languages = [] {
     static const std::pair<const char*, const char*> kCodes[] = {
         {"en", "english"}, {"de", "german"}, {"fr", "french"}, {"es", "spanish"}, {"it", "italian"},
-        {"nl", "dutch"}};
+        {"nl", "dutch"}, {"sv", "swedish"}, {"no", "norwegian"}, {"da", "danish"}, {"fi", "finnish"}};
     std::set<std::string> found;
     std::error_code ec;
     for (const auto& entry : std::filesystem::directory_iterator(g_archives, ec)) {
@@ -107,15 +112,22 @@ void ApplyLanguageSetting() {
     return;
   }
 
-  // Xbox 360 XLanguage IDs (include/rex/system/xcontent.h); only these five are confirmed to
-  // match a real console. Dutch/Swedish/Norwegian/Danish/Finnish aren't in that enum at all, even
-  // though this game's disc supports them on real hardware -- use a raw numeric id to try one.
+  // Xbox 360 XLanguage IDs (include/rex/system/xcontent.h). The game turns them into its own ids in
+  // sub_823EFC68, the same jump table as SuperChargers' sub_824D7E10 (English 1 -> 6, Swedish 13 -> 23,
+  // Norwegian 15 -> 17, ...), and its fallback sub_82B14E38 is SuperChargers' sub_828D2908: Danish and
+  // Finnish have no Xbox 360 language, the game takes them from the locale DK / FI (CoL #118).
   static const std::unordered_map<std::string, uint32_t> kNames = {
-      {"english", 1}, {"german", 3}, {"french", 4}, {"spanish", 5}, {"italian", 6},
+      {"english", 1}, {"german", 3},   {"french", 4},     {"spanish", 5},
+      {"italian", 6}, {"swedish", 13}, {"norwegian", 15},
+  };
+  // The country to go with a language, when not set directly (the SDK's xam_locale.cpp: 25 -> DK,
+  // 32 -> FI); Swedish and Norwegian get theirs as a console there would.
+  static const std::unordered_map<std::string, uint32_t> kCountries = {
+      {"danish", 25u}, {"finnish", 32u}, {"swedish", 90u}, {"norwegian", 75u},
   };
 
   std::string setting = Lower(REXCVAR_GET(language));
-  if ((kNames.count(setting) || setting == "dutch") && !DiscHas(setting)) {
+  if ((kNames.count(setting) || kCountries.count(setting) || setting == "dutch") && !DiscHas(setting)) {
     // A settings file from another disc: its language isn't on this one.
     REXLOG_WARN("Language: the disc has no {}; using auto", setting);
     setting = "auto";
@@ -135,9 +147,18 @@ void ApplyLanguageSetting() {
     REXLOG_INFO("Language: dutch (English with the country {})", REXCVAR_GET(user_country));
     return;
   }
+  if (auto c = kCountries.find(setting); c != kCountries.end() &&
+                                         !rex::cvar::HasNonDefaultValue("user_country")) {
+    REXCVAR_SET(user_country, c->second);
+  }
+  if (setting == "danish" || setting == "finnish") {
+    REXCVAR_SET(user_language, 1u);
+    REXLOG_INFO("Language: {} (English with the country {})", setting, REXCVAR_GET(user_country));
+    return;
+  }
   if (auto it = kNames.find(setting); it != kNames.end()) {
     REXCVAR_SET(user_language, it->second);
-    REXLOG_INFO("Language: {} (id {})", setting, it->second);
+    REXLOG_INFO("Language: {} (id {}, country {})", setting, it->second, REXCVAR_GET(user_country));
     return;
   }
 
