@@ -11,7 +11,7 @@ namespace swapforcerecomp {
 void SetDiscArchives(const std::filesystem::path& archives);
 
 // The languages the disc has, by the `language` setting's names (english, german, french, spanish,
-// italian), in that order. English and German when the folder can't be read (the owner's disc).
+// italian, dutch, swedish, norwegian, danish, finnish), in that order. English and German when the folder can't be read (the owner's disc).
 const std::vector<std::string>& DiscLanguages();
 
 // Resolves the `language` cvar (a friendly name, or a raw numeric Xbox 360 language ID for

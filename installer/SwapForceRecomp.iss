@@ -255,10 +255,20 @@ end;
 
 function LanguageTomlValue: AnsiString;
 begin
-  if LanguageCombo.ItemIndex = 1 then
-    Result := 'german'
+  case LanguageCombo.ItemIndex of
+    0: Result := 'auto';
+    2: Result := 'german';
+    3: Result := 'french';
+    4: Result := 'spanish';
+    5: Result := 'italian';
+    6: Result := 'dutch';
+    7: Result := 'swedish';
+    8: Result := 'norwegian';
+    9: Result := 'danish';
+    10: Result := 'finnish';
   else
     Result := 'english';
+  end;
 end;
 
 function PortalModeTomlValue: AnsiString;
@@ -461,17 +471,31 @@ begin
   LanguageLabel.Caption := 'Game language:';
   LanguageLabel.Top := 0;
 
-  // The European disc has English and German text and voices. Preselect German on a German
-  // Windows (primary language id 0x07).
+  // The European disc has English and German text and voices; the Nordic one has Swedish,
+  // Norwegian, Danish and Finnish (Core of Light #118, not tried here yet). English or German
+  // Windows preselect their language (primary language ids 0x09, 0x07); any other Windows language
+  // preselects Automatic: the game takes Windows' language if the disc has it, else English. An
+  // explicit language the disc lacks also runs as auto, but the settings would keep naming it.
   LanguageCombo := TNewComboBox.Create(SettingsPage);
   LanguageCombo.Parent := SettingsPage.Surface;
   LanguageCombo.Style := csDropDownList;
+  LanguageCombo.Items.Add('Automatic (the language of Windows, if the disc has it)');
   LanguageCombo.Items.Add('English');
   LanguageCombo.Items.Add('Deutsch (German)');
-  if (GetUILanguage and $3FF) = $07 then
-    LanguageCombo.ItemIndex := 1
+  LanguageCombo.Items.Add('Francais (French)');
+  LanguageCombo.Items.Add('Espanol (Spanish)');
+  LanguageCombo.Items.Add('Italiano (Italian)');
+  LanguageCombo.Items.Add('Nederlands (Dutch)');
+  LanguageCombo.Items.Add('Svenska (Swedish)');
+  LanguageCombo.Items.Add('Norsk (Norwegian)');
+  LanguageCombo.Items.Add('Dansk (Danish)');
+  LanguageCombo.Items.Add('Suomi (Finnish)');
+  case GetUILanguage and $3FF of
+    $09: LanguageCombo.ItemIndex := 1;
+    $07: LanguageCombo.ItemIndex := 2;
   else
     LanguageCombo.ItemIndex := 0;
+  end;
   LanguageCombo.Top := LanguageLabel.Top + LanguageLabel.Height + 4;
   LanguageCombo.Width := SettingsPage.SurfaceWidth;
 

@@ -88,7 +88,9 @@ The setup isn't signed, so Windows may say "Windows protected your PC": click **
 - **Achievements.**
 - **A Discord status:** the game, your Skylander and the level, while the Discord app runs. F4 > Game turns it off.
 - **HD texture packs**: bigger textures in place of the game's own ([how](docs/texture-packs.md)).
-- **Languages:** English and German.
+- **Languages:** those on your disc, in F4 > Game > Language: English and German on the European disc; French,
+  Spanish, Italian, Dutch, Swedish, Norwegian, Danish and Finnish when the disc has them (the Nordic disc's four
+  not tried yet).
 
 <img src=".github/images/settings.png" alt="The game's settings in Core of Light">
 
