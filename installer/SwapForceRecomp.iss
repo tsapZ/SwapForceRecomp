@@ -255,10 +255,15 @@ end;
 
 function LanguageTomlValue: AnsiString;
 begin
-  if LanguageCombo.ItemIndex = 1 then
-    Result := 'german'
+  case LanguageCombo.ItemIndex of
+    1: Result := 'german';
+    2: Result := 'swedish';
+    3: Result := 'norwegian';
+    4: Result := 'danish';
+    5: Result := 'finnish';
   else
     Result := 'english';
+  end;
 end;
 
 function PortalModeTomlValue: AnsiString;
@@ -461,17 +466,28 @@ begin
   LanguageLabel.Caption := 'Game language:';
   LanguageLabel.Top := 0;
 
-  // The European disc has English and German text and voices. Preselect German on a German
-  // Windows (primary language id 0x07).
+  // The European disc has English and German text and voices, the Nordic one Swedish, Norwegian,
+  // Danish and Finnish (Core of Light #118). Preselect the Windows display language (primary
+  // language ids 0x07 German, 0x1D Swedish, 0x14 Norwegian, 0x06 Danish, 0x0B Finnish). A language
+  // the disc doesn't have runs as auto: the game logs it and takes Windows' language or English.
   LanguageCombo := TNewComboBox.Create(SettingsPage);
   LanguageCombo.Parent := SettingsPage.Surface;
   LanguageCombo.Style := csDropDownList;
   LanguageCombo.Items.Add('English');
   LanguageCombo.Items.Add('Deutsch (German)');
-  if (GetUILanguage and $3FF) = $07 then
-    LanguageCombo.ItemIndex := 1
+  LanguageCombo.Items.Add('Svenska (Swedish)');
+  LanguageCombo.Items.Add('Norsk (Norwegian)');
+  LanguageCombo.Items.Add('Dansk (Danish)');
+  LanguageCombo.Items.Add('Suomi (Finnish)');
+  case GetUILanguage and $3FF of
+    $07: LanguageCombo.ItemIndex := 1;
+    $1D: LanguageCombo.ItemIndex := 2;
+    $14: LanguageCombo.ItemIndex := 3;
+    $06: LanguageCombo.ItemIndex := 4;
+    $0B: LanguageCombo.ItemIndex := 5;
   else
     LanguageCombo.ItemIndex := 0;
+  end;
   LanguageCombo.Top := LanguageLabel.Top + LanguageLabel.Height + 4;
   LanguageCombo.Width := SettingsPage.SurfaceWidth;
 

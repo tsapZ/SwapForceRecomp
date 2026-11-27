@@ -59,7 +59,8 @@ See [portal.md](portal.md#player-menu-l3--r3--f9).
 - **Frame rate:** 60 FPS and more (`present_interval`), frame rate limit (`frame_rate_limit`),
   VSync, render path (`render_target_path_d3d12`), graphics card (`d3d12_adapter`), graphics
   interface (`gpu_backend`: automatic = D3D12, D3D12, Vulkan).
-- **Game:** language (English or German, what the disc has), skip the logo movies, skip the
+- **Game:** language (those the disc has: English and German on the European disc; Swedish,
+  Norwegian, Danish and Finnish on the Nordic one), skip the logo movies, skip the
   opening movie, Nightmare from the start (`nightmare_from_start`; SwapForceRecomp #74: the
   hardest difficulty without finishing Story Mode first, the save itself unchanged).
 - **Portal:** virtual / USB / none (`portal_mode`), the portal menu opening by itself, only my
