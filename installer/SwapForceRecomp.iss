@@ -256,11 +256,16 @@ end;
 function LanguageTomlValue: AnsiString;
 begin
   case LanguageCombo.ItemIndex of
-    1: Result := 'german';
-    2: Result := 'swedish';
-    3: Result := 'norwegian';
-    4: Result := 'danish';
-    5: Result := 'finnish';
+    0: Result := 'auto';
+    2: Result := 'german';
+    3: Result := 'french';
+    4: Result := 'spanish';
+    5: Result := 'italian';
+    6: Result := 'dutch';
+    7: Result := 'swedish';
+    8: Result := 'norwegian';
+    9: Result := 'danish';
+    10: Result := 'finnish';
   else
     Result := 'english';
   end;
@@ -466,25 +471,28 @@ begin
   LanguageLabel.Caption := 'Game language:';
   LanguageLabel.Top := 0;
 
-  // The European disc has English and German text and voices, the Nordic one Swedish, Norwegian,
-  // Danish and Finnish (Core of Light #118). Preselect the Windows display language (primary
-  // language ids 0x07 German, 0x1D Swedish, 0x14 Norwegian, 0x06 Danish, 0x0B Finnish). A language
-  // the disc doesn't have runs as auto: the game logs it and takes Windows' language or English.
+  // The European disc has English and German text and voices; the Nordic one has Swedish,
+  // Norwegian, Danish and Finnish (Core of Light #118, not tried here yet). English or German
+  // Windows preselect their language (primary language ids 0x09, 0x07); any other Windows language
+  // preselects Automatic: the game takes Windows' language if the disc has it, else English. An
+  // explicit language the disc lacks also runs as auto, but the settings would keep naming it.
   LanguageCombo := TNewComboBox.Create(SettingsPage);
   LanguageCombo.Parent := SettingsPage.Surface;
   LanguageCombo.Style := csDropDownList;
+  LanguageCombo.Items.Add('Automatic (the language of Windows, if the disc has it)');
   LanguageCombo.Items.Add('English');
   LanguageCombo.Items.Add('Deutsch (German)');
+  LanguageCombo.Items.Add('Francais (French)');
+  LanguageCombo.Items.Add('Espanol (Spanish)');
+  LanguageCombo.Items.Add('Italiano (Italian)');
+  LanguageCombo.Items.Add('Nederlands (Dutch)');
   LanguageCombo.Items.Add('Svenska (Swedish)');
   LanguageCombo.Items.Add('Norsk (Norwegian)');
   LanguageCombo.Items.Add('Dansk (Danish)');
   LanguageCombo.Items.Add('Suomi (Finnish)');
   case GetUILanguage and $3FF of
-    $07: LanguageCombo.ItemIndex := 1;
-    $1D: LanguageCombo.ItemIndex := 2;
-    $14: LanguageCombo.ItemIndex := 3;
-    $06: LanguageCombo.ItemIndex := 4;
-    $0B: LanguageCombo.ItemIndex := 5;
+    $09: LanguageCombo.ItemIndex := 1;
+    $07: LanguageCombo.ItemIndex := 2;
   else
     LanguageCombo.ItemIndex := 0;
   end;

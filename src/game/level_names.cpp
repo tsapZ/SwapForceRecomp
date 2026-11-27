@@ -74,8 +74,9 @@ const Table& EnglishOrDiscText(const std::unordered_map<std::string, Table>& by_
     case 6: own = "it"; break;
     case 13: own = "sv"; break;
     case 15: own = "no"; break;
-    case 16: own = "nl"; break;
-    case 1:  // only reached without _en files
+    case 16: own = "nl"; break;  // (a raw override; localization.cpp sets Dutch as below)
+    case 1:  // only reached without _en files: the languages this game sets as English + country
+      if (REXCVAR_GET(user_country) == 74) own = "nl";
       if (REXCVAR_GET(user_country) == 25) own = "da";
       if (REXCVAR_GET(user_country) == 32) own = "fi";
       break;
